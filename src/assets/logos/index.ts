@@ -1,0 +1,1 @@
+export { default as MystoviaLogo } from './mystovia.png';
