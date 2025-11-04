@@ -10,7 +10,8 @@
     "dev:server": "nodemon --watch server/src --ext ts --exec tsx server/src/index.ts",
     "build": "astro build && tsc --project server/tsconfig.json",
     "preview": "astro preview",
-    "server:prod": "node server/dist/index.js"
+    "server:prod": "node server/dist/index.js",
+    "start": "pnpm run server:prod"
   },
   "keywords": [],
   "author": "",
