@@ -1,0 +1,83 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout title="TibiaPS - Home">
+  <div class="flex flex-col min-h-screen">
+    <Header />
+    
+    <main class="grow">
+      <!-- Hero Section -->
+      <section class="border-2 relative bg-linear-to-b from-gray-900 to-gray-800 py-20">
+        <div class="container mx-auto px-4 text-center">
+          <h1 class="text-5xl md:text-6xl font-bold mb-6">
+            Welcome to <span class="text-yellow-500">TibiaPS</span>
+          </h1>
+          <p class="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
+            Experience the classic Tibia gameplay with custom features, active community, and regular updates.
+          </p>
+          <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="/register" class="px-8 py-4 bg-yellow-600 hover:bg-yellow-700 rounded-lg font-semibold text-lg transition transform hover:scale-105">
+              Create Account
+            </a>
+            <a href="/downloads" class="px-8 py-4 bg-gray-700 hover:bg-gray-600 rounded-lg font-semibold text-lg transition transform hover:scale-105">
+              Download Client
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- Features Section -->
+      <section class="py-16 bg-gray-800">
+        <div class="container mx-auto px-4">
+          <h2 class="text-3xl font-bold text-center mb-12">Why Choose Us?</h2>
+          <div class="grid md:grid-cols-3 gap-8">
+            <div class="bg-gray-900 p-6 rounded-lg border border-gray-700">
+              <div class="text-yellow-500 text-4xl mb-4">⚔️</div>
+              <h3 class="text-xl font-semibold mb-2">Custom Content</h3>
+              <p class="text-gray-400">Unique quests, items, and monsters to keep gameplay fresh and exciting.</p>
+            </div>
+            <div class="bg-gray-900 p-6 rounded-lg border border-gray-700">
+              <div class="text-yellow-500 text-4xl mb-4">👥</div>
+              <h3 class="text-xl font-semibold mb-2">Active Community</h3>
+              <p class="text-gray-400">Join hundreds of players online daily in our thriving community.</p>
+            </div>
+            <div class="bg-gray-900 p-6 rounded-lg border border-gray-700">
+              <div class="text-yellow-500 text-4xl mb-4">🛡️</div>
+              <h3 class="text-xl font-semibold mb-2">Regular Updates</h3>
+              <p class="text-gray-400">Frequent updates, bug fixes, and new content additions.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Server Stats -->
+      <section class="py-16 bg-gray-900">
+        <div class="container mx-auto px-4">
+          <div class="grid md:grid-cols-4 gap-8 text-center">
+            <div>
+              <div class="text-4xl font-bold text-yellow-500 mb-2">500+</div>
+              <div class="text-gray-400">Registered Players</div>
+            </div>
+            <div>
+              <div class="text-4xl font-bold text-yellow-500 mb-2">150+</div>
+              <div class="text-gray-400">Online Now</div>
+            </div>
+            <div>
+              <div class="text-4xl font-bold text-yellow-500 mb-2">99.9%</div>
+              <div class="text-gray-400">Uptime</div>
+            </div>
+            <div>
+              <div class="text-4xl font-bold text-yellow-500 mb-2">7.6</div>
+              <div class="text-gray-400">Server Version</div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <Footer />
+  </div>
+</Layout>

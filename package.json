@@ -1,0 +1,46 @@
+{
+  "name": "otserver-monorepo",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"pnpm dev:astro\" \"pnpm dev:server\"",
+    "dev:astro": "astro dev",
+    "dev:server": "nodemon --watch server/src --ext ts --exec tsx server/src/index.ts",
+    "build": "astro build && tsc --project server/tsconfig.json",
+    "preview": "astro preview",
+    "server:prod": "node server/dist/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.17.0",
+  "dependencies": {
+    "@astrojs/db": "^0.18.2",
+    "@astrojs/vue": "^5.1.2",
+    "@tailwindcss/vite": "^4.1.16",
+    "astro": "^5.15.3",
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mysql2": "^3.15.3",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.16",
+    "vue": "^3.5.22"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.16",
+    "@types/bcryptjs": "^3.0.0",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.5",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/mysql": "^2.15.27",
+    "@types/node": "^24.10.0",
+    "concurrently": "^9.2.1",
+    "nodemon": "^3.1.10",
+    "tsx": "^4.20.6"
+  }
+}
