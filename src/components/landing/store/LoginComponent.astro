@@ -1,0 +1,63 @@
+---
+import Input from "@ui/Input.astro";
+import ErrorMessage from "@ui/ErrorMessage.astro";
+import SubmitBtn from "@lib/components/ui/SubmitBtn.astro";
+
+let error = "";
+---
+
+<form
+  id="loginForm"
+  class="max-w-[250px] w-full bg-gray-800 rounded-lg shadow-xl p-2"
+>
+  <h2 class="text-md font-bold text-center mb-2">Ingresar</h2>
+
+  <Input
+    id="email"
+    label="Correo electrónico"
+    type="email"
+    placeholder="tu@correo.com"
+    required
+  />
+  <Input
+    id="password"
+    label="Contraseña"
+    type="password"
+    placeholder="••••••••"
+    required
+  />
+
+  <ErrorMessage
+    message={error}
+    visible={!!error}
+  />
+
+  <SubmitBtn label="Login" />
+
+  <p class="text-center text-sm mt-2 text-gray-400">
+    ¿No tenes una cuenta? <a
+      href="/register"
+      class="text-yellow-500 hover:text-yellow-400 font-medium"
+      >Registrate</a
+    >
+  </p>
+</form>
+
+<script>
+  import { useAuth } from "@hooks/useAuth";
+
+  const form = document.getElementById("loginForm") as HTMLFormElement & {
+    email: HTMLInputElement;
+    password: HTMLInputElement;
+  };
+
+  form?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const email = form.email.value;
+    const password = form.password.value;
+
+    const res = await useAuth("login", { email, password });
+    if (res.success) window.location.href = "/create-character";
+    else alert(res.error);
+  });
+</script>

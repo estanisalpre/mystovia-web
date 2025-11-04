@@ -7,6 +7,14 @@ export default defineConfig({
   integrations: [vue()],
   vite: {
     plugins: [tailwindcss()],
+    resolve: {
+      alias: {
+        '@hooks': path.resolve('./src/hooks'),
+        '@lib': path.resolve('./src/lib'),
+        '@components': path.resolve('./src/lib/components'),
+        '@ui': path.resolve('./src/lib/components/ui'),
+      },
+    },
   },
   server: {
     port: 4321,

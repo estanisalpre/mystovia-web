@@ -2,48 +2,42 @@
 import { MystoviaLogo } from "../assets/logos";
 ---
 
-<nav class="container mx-auto px-4 py-4 backdrop-blur-3xl">
-  <img src={MystoviaLogo.src} alt="Mystovia Logo"class="w-50 h-auto">
-  <div class="flex items-center justify-between">
-    <div class="flex items-center space-x-8">
-      <a
-        href="/"
-        class="text-2xl font-bold text-yellow-500 hover:text-yellow-400 transition"
-      >
-        OTServer
-      </a>
-      <div class="hidden md:flex space-x-6">
-        <a
-          href="/"
-          class="hover:text-yellow-500 transition"
-          >Home</a
-        >
-        <a
-          href="/downloads"
-          class="hover:text-yellow-500 transition"
-          >Downloads</a
-        >
-        <a
-          href="/rules"
-          class="hover:text-yellow-500 transition"
-          >Rules</a
-        >
-      </div>
-    </div>
+<header class="fixed z-100 top-0 flex-center w-full px-10 gap-20 py-2 backdrop-blur-md bg-black/30">
+  <a href="/">
+    <img
+      src={MystoviaLogo.src}
+      alt="Mystovia Logo"
+      class="w-50 h-auto cursor-pointer"
+    />
+  </a>
 
-    <div class="flex items-center space-x-4">
-      <a
-        href="/login"
-        class="px-4 py-2 text-sm hover:text-yellow-500 transition"
-      >
-        Login
-      </a>
-      <a
-        href="/register"
-        class="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 rounded transition text-sm font-medium"
-      >
-        Register
-      </a>
-    </div>
-  </div>
-</nav>
+  <nav class="w-auto flex-center gap-2 px-4 py-2">
+    <a
+      href="/downloads"
+      class="hover:text-yellow-500 transition"
+      >Descargas</a
+    >
+    <a
+      href="/downloads"
+      class="hover:text-yellow-500 transition"
+      >Descargas</a
+    >
+    <a
+      href="/rules"
+      class="hover:text-yellow-500 transition"
+      >Reglas</a
+    >
+    <a
+      href="/login"
+      class="text-sm hover:text-yellow-500 transition"
+    >
+      Login
+    </a>
+    <a
+      href="/register"
+      class="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 rounded transition text-sm font-medium"
+    >
+      Register
+    </a>
+  </nav>
+</header>
