@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import jwt from 'jsonwebtoken';
-import db from '../config/database';
-import { RegisterRequest, LoginRequest } from '../types';
+import db from '../config/database.js';
+import { RegisterRequest, LoginRequest } from '../types/index.js';
 
 export const register = async (req: Request<{}, {}, RegisterRequest>, res: Response) => {
   try {

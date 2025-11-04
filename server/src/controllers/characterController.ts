@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import db from '../config/database';
+import db from '../config/database.js';
 import { CreateCharacterRequest } from '../types';
 
 export const createCharacter = async (req: Request<{}, {}, CreateCharacterRequest>, res: Response) => {
