@@ -48,8 +48,11 @@
   @apply flex items-center justify-center;
 }
 
-@utility medieval-font {
+@layer utilities {
+  .medieval-font {
     font-family: "Cinzel", serif;
+    letter-spacing: 1px;
+  }
 }
 
 /* form styles */
@@ -57,10 +60,10 @@
   @apply flex flex-col mb-4;
 }
 .form-label {
-  @apply text-sm font-medium mb-2;
+  @apply text-sm font-medium mb-1;
 }
 .form-input {
-  @apply w-full h-[35px] px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500;
+  @apply w-full h-[35px] text-sm px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500;
 }
 .form-error {
   @apply bg-red-900/50 border border-red-700 text-red-200 px-4 py-3 rounded;

@@ -20,6 +20,7 @@
   "dependencies": {
     "@astrojs/db": "^0.18.2",
     "@astrojs/vue": "^5.1.2",
+    "@lucide/astro": "^0.552.0",
     "@tailwindcss/vite": "^4.1.16",
     "astro": "^5.15.3",
     "bcryptjs": "^3.0.3",
@@ -30,6 +31,8 @@
     "mysql2": "^3.15.3",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.16",
+    "tsparticles": "^3.9.1",
+    "tsparticles-engine": "^2.12.0",
     "vue": "^3.5.22"
   },
   "devDependencies": {
