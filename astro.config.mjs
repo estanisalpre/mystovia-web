@@ -1,11 +1,12 @@
 import { defineConfig } from 'astro/config';
 import vue from '@astrojs/vue';
 import tailwindcss from '@tailwindcss/vite';
+import react from '@astrojs/react';
 import path from "node:path";
 
 // https://astro.build/config
 export default defineConfig({
-  integrations: [vue()],
+  integrations: [vue(), react()],
   vite: {
     plugins: [tailwindcss()],
     resolve: {

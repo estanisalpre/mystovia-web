@@ -2,7 +2,7 @@
 import { MystoviaLogo } from "../assets/logos";
 ---
 
-<header class="fixed z-100 top-0 flex-center w-full px-10 gap-20 py-2 backdrop-blur-md bg-black/30">
+<header class="fixed z-100 top-0 flex-center w-full px-42 py-2 backdrop-blur-md bg-black/30">
   <a href="/">
     <img
       src={MystoviaLogo.src}
@@ -11,7 +11,7 @@ import { MystoviaLogo } from "../assets/logos";
     />
   </a>
 
-  <nav class="w-auto flex-center gap-2 px-4 py-2">
+  <nav class="w-full flex-center gap-2 px-4 py-2">
     <a
       href="/downloads"
       class="hover:text-yellow-500 transition"
@@ -27,17 +27,20 @@ import { MystoviaLogo } from "../assets/logos";
       class="hover:text-yellow-500 transition"
       >Reglas</a
     >
+  </nav>
+
+  <div class="flex-center gap-4">
     <a
       href="/login"
-      class="text-sm hover:text-yellow-500 transition"
+      class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded transition text-sm font-medium"
     >
-      Login
+      INGRESAR
     </a>
     <a
       href="/register"
       class="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 rounded transition text-sm font-medium"
     >
-      Register
+      REGISTRARME
     </a>
-  </nav>
+  </div>
 </header>
