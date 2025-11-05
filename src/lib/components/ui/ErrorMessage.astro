@@ -1,0 +1,14 @@
+---
+export interface Props {
+  message?: string;
+  visible?: boolean;
+}
+
+const { message = '', visible = false } = Astro.props;
+---
+
+{visible && (
+  <div class="form-error">
+    {message}
+  </div>
+)}

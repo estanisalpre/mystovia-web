@@ -1,0 +1,25 @@
+---
+import type { HtmlHTMLAttributes } from 'vue';
+
+export interface Props {
+  id: string;
+  label: string;
+  type?: 'text' | 'email' | 'password' | 'number' | 'date' | 'url';
+  placeholder?: string;
+  required?: boolean;
+}
+
+const { id, label, type = 'text', placeholder = '', required = false } = Astro.props;
+---
+
+<div class="form-group">
+  <label for={id} class="form-label">{label}</label>
+  <input
+    id={id}
+    name={id}
+    type={type}
+    placeholder={placeholder}
+    required={required}
+    class="form-input"
+  />
+</div>

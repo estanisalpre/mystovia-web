@@ -1,0 +1,16 @@
+{
+  "extends": "astro/tsconfigs/strict",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": "src",
+    "paths": {
+      "@hooks/*": ["hooks/*"],
+      "@lib/*": ["lib/*"],
+      "@components/*": ["lib/components/*"],
+      "@ui/*": ["lib/components/ui/*"]
+    }
+  }
+}

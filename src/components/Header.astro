@@ -1,0 +1,43 @@
+---
+import { MystoviaLogo } from "../assets/logos";
+---
+
+<header class="fixed z-100 top-0 flex-center w-full px-10 gap-20 py-2 backdrop-blur-md bg-black/30">
+  <a href="/">
+    <img
+      src={MystoviaLogo.src}
+      alt="Mystovia Logo"
+      class="w-50 h-auto cursor-pointer"
+    />
+  </a>
+
+  <nav class="w-auto flex-center gap-2 px-4 py-2">
+    <a
+      href="/downloads"
+      class="hover:text-yellow-500 transition"
+      >Descargas</a
+    >
+    <a
+      href="/downloads"
+      class="hover:text-yellow-500 transition"
+      >Descargas</a
+    >
+    <a
+      href="/rules"
+      class="hover:text-yellow-500 transition"
+      >Reglas</a
+    >
+    <a
+      href="/login"
+      class="text-sm hover:text-yellow-500 transition"
+    >
+      Login
+    </a>
+    <a
+      href="/register"
+      class="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 rounded transition text-sm font-medium"
+    >
+      Register
+    </a>
+  </nav>
+</header>

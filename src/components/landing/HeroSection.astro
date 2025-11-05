@@ -1,0 +1,35 @@
+---
+import { MystoviaLogo } from "../../assets/logos";
+---
+
+<section class="flex justfiy-start items-center pt-32 flex-col relative py-20">
+  <!-- <div class="absolute inset-0 z-10 bg-black/60"></div> -->
+  <h1 class="text-5xl flex-center gap-2 md:text-6xl font-bold mb-6 z-50">
+    Bienvenidos a
+    <img
+      src={MystoviaLogo.src}
+      alt="Mystovia Logo Header"
+      class="w-120 h-auto"
+    />
+  </h1>
+
+  <p class="text-xl text-gray-300 mb-8 max-w-2xl mx-auto z-50">
+    Experience the classic Tibia gameplay with custom features, active
+    community, and regular updates.
+  </p>
+
+  <div class="flex z-50 flex-col sm:flex-row gap-4 justify-center">
+    <a
+      href="/register"
+      class="px-8 py-4 bg-yellow-600 hover:bg-yellow-700 rounded-lg font-semibold text-lg transition transform hover:scale-105"
+    >
+      Crear cuenta
+    </a>
+    <a
+      href="/downloads"
+      class="px-8 py-4 bg-gray-700 hover:bg-gray-600 rounded-lg font-semibold text-lg transition transform hover:scale-105"
+    >
+      Descargar cliente
+    </a>
+  </div>
+</section>

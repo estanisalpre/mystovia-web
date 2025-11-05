@@ -1,0 +1,72 @@
+@import 'tailwindcss';
+
+/* 🎨 Mystovia Theme */
+@layer base {
+  :root {
+    /* 🌑 backgrounds */
+    --color-bg-primary: #0A0F1E;
+    --color-bg-secondary: #14223B;
+    --color-bg-tertiary: #1F2E4A;
+    --color-bg-overlay: rgba(10, 15, 30, 0.8);
+    /* ✨ texts */
+    --color-text-gold: #C9A14A;
+    --color-text-gold-light: #E1C57A;
+    --color-text-gold-bright: #FFD76B;
+    /* ⚡ buttons */
+    --color-btn-gold: #FFB800;
+    --color-btn-glow: #FFD642;
+    --color-btn-hover: #FFE27A;
+    /* 💠 complements */
+    --color-accent-purple: #2E1A47;
+    --color-accent-cyan: #4CB7C2;
+    --color-text-muted: #6B7280;
+  }
+
+  body {
+    /* @apply bg-[var(--color-bg-primary)] text-[var(--color-text-gold)]; */
+    font-family: "Raleway", sans-serif;
+  }
+
+  /* a {
+    @apply text-[var(--color-text-gold-bright)] hover:text-[var(--color-btn-glow)];
+  } */
+
+  /* button {
+    background-color: var(--color-btn-gold);
+    color: #000;
+    box-shadow: 0 0 12px var(--color-btn-glow), 0 0 30px var(--color-btn-gold);
+    transition: all 0.3s ease;
+  }
+
+  button:hover {
+    background-color: var(--color-btn-hover);
+    box-shadow: 0 0 15px var(--color-btn-hover), 0 0 40px var(--color-btn-glow);
+  } */
+}
+
+@utility flex-center {
+  @apply flex items-center justify-center;
+}
+
+@layer utilities {
+  .medieval-font {
+    font-family: "Cinzel", serif;
+    letter-spacing: 1px;
+  }
+}
+
+/* form styles */
+.form-group {
+  @apply flex flex-col mb-4;
+}
+.form-label {
+  @apply text-sm font-medium mb-1;
+}
+.form-input {
+  @apply w-full h-[35px] text-sm px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500;
+}
+.form-error {
+  @apply bg-red-900/50 border border-red-700 text-red-200 px-4 py-3 rounded;
+}
+
+
