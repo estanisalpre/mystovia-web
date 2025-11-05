@@ -5,10 +5,10 @@ import { RegisterRequest, LoginRequest } from '../types/index.js';
 
 export const register = async (req: Request<{}, {}, RegisterRequest>, res: Response) => {
   try {
-    const { email, password } = req.body;
+    const { username, email, password } = req.body;
 
-    if (!email || !password) {
-      return res.status(400).json({ error: 'Email and password are required' });
+    if (!username || !email || !password) {
+      return res.status(400).json({ error: 'Usuario, email y contraseña son requeridos.' });
     }
 
     const [existingUsers] = await db.query(
@@ -16,26 +16,33 @@ export const register = async (req: Request<{}, {}, RegisterRequest>, res: Respo
       [email]
     );
 
+    const [existingUsernames] = await db.query(
+      'SELECT * FROM accounts WHERE name = ?',
+      [username]
+    );
+
     if (Array.isArray(existingUsers) && existingUsers.length > 0) {
-      return res.status(400).json({ error: 'User already exists' });
+      return res.status(400).json({ error: 'Correo ya registrado' });
     }
 
-    const accountName = email.split('@')[0] + Math.floor(Math.random() * 10000);
+    if (Array.isArray(existingUsernames) && existingUsernames.length > 0) {
+      return res.status(400).json({ error: 'Nombre de usuario ya registrado.' });
+    }
 
-    // Guardar contraseña en plain text (como Tibia)
+
     const [result] = await db.query(
       `INSERT INTO accounts (name, password, email, premdays, lastday, \`key\`, blocked, warnings, group_id) 
        VALUES (?, ?, ?, 0, 0, '0', 0, 0, 1)`,
-      [accountName, password, email] // SIN bcrypt
+      [username, password, email] 
     );
 
     res.status(201).json({ 
-      message: 'User registered successfully',
+      message: 'Usuario registrado con éxito.',
       userId: (result as any).insertId,
-      accountName: accountName
+      accountName: username
     });
   } catch (error) {
-    console.error('Register error:', error);
+    console.error('Error al registrar:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 };
@@ -63,7 +70,6 @@ export const login = async (req: Request<{}, {}, LoginRequest>, res: Response) =
       return res.status(403).json({ error: 'Account is blocked' });
     }
 
-    // Comparar contraseña en plain text
     if (user.password !== password) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
