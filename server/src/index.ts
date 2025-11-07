@@ -7,6 +7,8 @@ import { fileURLToPath } from 'url';
 import authRoutes from './routes/authRoutes.js';
 import characterRoutes from './routes/characterRoutes.js';
 import serverRoutes from './routes/serverRoutes.js';
+import marketplaceRoutes from './routes/marketplaceRoutes.js';
+import adminMarketplaceRoutes from './routes/adminMarketplaceRoutes.js';
 
 dotenv.config();
 
@@ -22,6 +24,8 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/characters', characterRoutes);
 app.use('/api/server', serverRoutes);
+app.use('/api/marketplace', marketplaceRoutes);
+app.use('/api/admin/marketplace', adminMarketplaceRoutes);
 
 const frontendPath = path.resolve(__dirname, '../../dist');
 app.use(express.static(frontendPath));

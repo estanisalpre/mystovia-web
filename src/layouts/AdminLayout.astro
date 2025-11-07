@@ -1,0 +1,113 @@
+---
+import '../styles/global.css';
+import { Shield, Package, ShoppingBag, BarChart3, Users, LogOut } from 'lucide-react';
+
+interface Props {
+  title: string;
+  activeTab?: 'items' | 'orders' | 'stats';
+}
+
+const { title, activeTab } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
+    <title>{title} - Admin Panel</title>
+
+    <!-- google fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  </head>
+  <body class="bg-gray-900 text-white min-h-screen">
+    <!-- Admin Header -->
+    <header class="bg-gray-800 border-b border-gray-700">
+      <div class="container mx-auto px-4">
+        <div class="flex items-center justify-between h-16">
+          <div class="flex items-center gap-3">
+            <Shield class="text-yellow-500" size={28} />
+            <div>
+              <h1 class="text-white font-bold text-lg">Admin Panel</h1>
+              <p class="text-gray-400 text-xs">Marketplace Management</p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-4">
+            <a
+              href="/"
+              class="text-gray-400 hover:text-white transition-colors text-sm"
+            >
+              Back to Site
+            </a>
+            <button
+              id="adminLogout"
+              class="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors text-sm"
+            >
+              <LogOut size={16} />
+              Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <nav class="bg-gray-800/50 border-b border-gray-700">
+      <div class="container mx-auto px-4">
+        <div class="flex gap-1">
+          <a
+            href="/admin/marketplace"
+            class={`flex items-center gap-2 px-6 py-4 border-b-2 transition-colors ${
+              activeTab === 'items'
+                ? 'border-blue-500 text-white bg-gray-800/50'
+                : 'border-transparent text-gray-400 hover:text-white'
+            }`}
+          >
+            <Package size={18} />
+            <span>Items Management</span>
+          </a>
+
+          <a
+            href="/admin/marketplace/orders"
+            class={`flex items-center gap-2 px-6 py-4 border-b-2 transition-colors ${
+              activeTab === 'orders'
+                ? 'border-blue-500 text-white bg-gray-800/50'
+                : 'border-transparent text-gray-400 hover:text-white'
+            }`}
+          >
+            <ShoppingBag size={18} />
+            <span>Orders</span>
+          </a>
+
+          <a
+            href="/admin/marketplace/stats"
+            class={`flex items-center gap-2 px-6 py-4 border-b-2 transition-colors ${
+              activeTab === 'stats'
+                ? 'border-blue-500 text-white bg-gray-800/50'
+                : 'border-transparent text-gray-400 hover:text-white'
+            }`}
+          >
+            <BarChart3 size={18} />
+            <span>Statistics</span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+      <slot />
+    </main>
+
+    <script>
+      document.getElementById('adminLogout')?.addEventListener('click', () => {
+        localStorage.removeItem('token');
+        window.location.href = '/login';
+      });
+    </script>
+  </body>
+</html>
