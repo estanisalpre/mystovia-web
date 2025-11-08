@@ -27,20 +27,12 @@ const PORT = process.env.PORT || 3000;
 
 const allowedOrigins = [
   process.env.FRONTEND_URL || 'http://localhost:4321',
-  'http://localhost:3001', // por si sirves el front desde el back
-  'http://localhost:4321', 
-  'https://otserver-monorepo.onrender.com',
+  'https://otserver-monorepo.onrender.com'
 ];
 
 // Middleware
 app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('CORS not allowed for this origin: ' + origin));
-    }
-  },
+  origin: allowedOrigins,
   credentials: true,
 }));
 
