@@ -23,15 +23,28 @@ console.log('  BACKEND_URL:', process.env.BACKEND_URL);
 console.log('  MP_ACCESS_TOKEN:', process.env.MP_ACCESS_TOKEN ? '✓ Set' : '✗ Not set');
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3000;
+
+const allowedOrigins = [
+  process.env.FRONTEND_URL || 'http://localhost:4321',
+  'http://localhost:3001', // por si sirves el front desde el back
+  'http://localhost:4321', 
+];
 
 // Middleware
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:4321',
-  credentials: true // Allow cookies to be sent
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('CORS not allowed for this origin: ' + origin));
+    }
+  },
+  credentials: true,
 }));
+
 app.use(express.json());
-app.use(cookieParser()); // Parse cookies
+app.use(cookieParser()); 
 // API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/characters', characterRoutes);
