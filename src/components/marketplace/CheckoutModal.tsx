@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { X, AlertCircle, Check } from 'lucide-react';
-
-const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3001';
+import { getCharacters, createCheckout } from '../../utils/api';
 
 interface Character {
   id: number;
@@ -39,20 +38,16 @@ export default function CheckoutModal({
 
   const loadCharacters = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`${API_URL}/api/characters`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
+      const result = await getCharacters();
 
-      const data = await response.json();
-
-      if (data.success) {
-        setCharacters(data.characters);
-        if (data.characters.length > 0) {
-          setSelectedCharacter(data.characters[0].id);
+      if (result.success && result.data?.characters) {
+        setCharacters(result.data.characters);
+        if (result.data.characters.length > 0) {
+          setSelectedCharacter(result.data.characters[0].id);
         }
+      } else {
+        // If authentication fails, user will be redirected to login by the api helper
+        console.error('Failed to load characters:', result.error);
       }
     } catch (error) {
       console.error('Error loading characters:', error);
@@ -69,31 +64,22 @@ export default function CheckoutModal({
     setError('');
 
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`${API_URL}/api/marketplace/orders`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          player_id: selectedCharacter
-        })
-      });
+      const result = await createCheckout(selectedCharacter);
 
-      const data = await response.json();
+      if (result.success && result.data?.init_point) {
+        // Redirect to MercadoPago payment page
+        // Use sandbox_init_point for testing, init_point for production
+        const paymentUrl = import.meta.env.DEV
+          ? result.data.sandbox_init_point || result.data.init_point
+          : result.data.init_point;
 
-      if (data.success) {
-        setSuccess(true);
-        setTimeout(() => {
-          onSuccess();
-        }, 2000);
+        window.location.href = paymentUrl;
       } else {
-        setError(data.error || 'Failed to create order');
+        setError(result.error || 'Failed to create checkout');
       }
     } catch (error) {
-      console.error('Error creating order:', error);
-      setError('Failed to create order. Please try again.');
+      console.error('Error creating checkout:', error);
+      setError('Failed to create checkout. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -110,7 +96,7 @@ export default function CheckoutModal({
       ></div>
 
       {/* Modal */}
-      <div className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-gray-900 rounded-xl shadow-2xl z-70 border border-gray-800">
+      <div className="fixed left-1/2 top-60 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-gray-900 rounded-xl shadow-2xl z-70 border border-gray-800">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-800">
           <h2 className="text-2xl font-bold text-white">Checkout</h2>
@@ -181,7 +167,7 @@ export default function CheckoutModal({
 
               <div className="bg-blue-500/10 border border-blue-500/50 rounded-lg p-4 mb-6">
                 <p className="text-blue-400 text-sm">
-                  <strong>Note:</strong> This will create a pending order. Payment integration with MercadoPago will be added soon. For now, contact an administrator to complete the payment.
+                  <strong>Note:</strong> You will be redirected to MercadoPago to complete your payment securely.
                 </p>
               </div>
 
@@ -190,7 +176,7 @@ export default function CheckoutModal({
                 disabled={loading || characters.length === 0}
                 className="w-full bg-linear-to-r from-blue-600 to-purple-600 text-white py-4 rounded-lg font-bold hover:from-blue-700 hover:to-purple-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? 'Creating Order...' : 'Create Order'}
+                {loading ? 'Redirecting to Payment...' : 'Proceed to Payment'}
               </button>
             </>
           )}

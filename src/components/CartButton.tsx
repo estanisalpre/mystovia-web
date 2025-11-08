@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ShoppingCart } from 'lucide-react';
 import ShoppingCartSidebar from './marketplace/ShoppingCartSidebar';
-
-const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3001';
+import { verifyAuth, getCart } from '../utils/api';
 
 interface CartItem {
   id: number;
@@ -20,20 +19,20 @@ export default function CartButton() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [cartOpen, setCartOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user is logged in
-    const token = localStorage.getItem('token');
-    setIsLoggedIn(!!token);
+    checkAuthAndLoadCart();
 
-    if (token) {
-      loadCart();
+    // Refresh cart every 10 seconds if logged in
+    const interval = setInterval(() => {
+      if (isLoggedIn) {
+        loadCart();
+      }
+    }, 10000);
 
-      // Refresh cart every 10 seconds
-      const interval = setInterval(loadCart, 10000);
-      return () => clearInterval(interval);
-    }
-  }, []);
+    return () => clearInterval(interval);
+  }, [isLoggedIn]);
 
   // Listen for custom cart update events
   useEffect(() => {
@@ -45,26 +44,39 @@ export default function CartButton() {
     return () => window.removeEventListener('cart-updated', handleCartUpdate);
   }, []);
 
-  const loadCart = async () => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      setCart([]);
-      return;
-    }
-
+  const checkAuthAndLoadCart = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/marketplace/cart`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      const data = await response.json();
+      // Check if user is authenticated using cookie-based auth with auto-refresh
+      const result = await verifyAuth();
 
-      if (data.success) {
-        setCart(data.cart);
+      if (result.success) {
+        setIsLoggedIn(true);
+        await loadCart();
+      } else {
+        setIsLoggedIn(false);
+        setCart([]);
+      }
+    } catch (error) {
+      console.error('Auth check failed:', error);
+      setIsLoggedIn(false);
+      setCart([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const loadCart = async () => {
+    try {
+      const result = await getCart();
+
+      if (result.success && result.data?.cart) {
+        setCart(result.data.cart || []);
+      } else {
+        setCart([]);
       }
     } catch (error) {
       console.error('Error loading cart:', error);
+      setCart([]);
     }
   };
 
@@ -79,8 +91,14 @@ export default function CartButton() {
   const cartItemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
   const cartTotal = cart.reduce((sum, item) => sum + item.subtotal, 0);
 
+  // Don't show anything while loading
+  if (isLoading) {
+    return null;
+  }
+
+  // Don't show cart button if not logged in
   if (!isLoggedIn) {
-    return null; // Don't show cart button if not logged in
+    return null;
   }
 
   return (

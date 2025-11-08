@@ -8,6 +8,11 @@ import {
   CartWithItems,
   OrderWithDetails
 } from '../types/index.js';
+import {
+  createSingleProductPreference,
+  getPaymentById,
+  WebhookPayload
+} from '../lib/mercadopago.js';
 
 /**
  * Get all active market items
@@ -354,10 +359,10 @@ export const clearCart = async (req: Request, res: Response) => {
 };
 
 /**
- * Create order from cart
- * This creates a pending order - payment integration will be added later
+ * Create checkout preference with MercadoPago
+ * This creates a pending order and returns the MercadoPago preference URL
  */
-export const createOrder = async (req: Request, res: Response) => {
+export const createCheckout = async (req: Request, res: Response) => {
   const connection = await db.getConnection();
 
   try {
@@ -371,6 +376,21 @@ export const createOrder = async (req: Request, res: Response) => {
     }
 
     await connection.beginTransaction();
+
+    // Get user email
+    const [accounts] = await connection.query(
+      'SELECT email FROM accounts WHERE id = ?',
+      [userId]
+    ) as any[];
+
+    if (!accounts || accounts.length === 0) {
+      await connection.rollback();
+      return res.status(404).json({
+        error: 'Account not found'
+      });
+    }
+
+    const userEmail = accounts[0].email;
 
     // Verify player belongs to user
     const [players] = await connection.query(
@@ -390,6 +410,7 @@ export const createOrder = async (req: Request, res: Response) => {
       `SELECT
         ci.*,
         mi.name,
+        mi.description,
         mi.price,
         mi.stock,
         mi.items_json,
@@ -421,10 +442,10 @@ export const createOrder = async (req: Request, res: Response) => {
     // Calculate total
     const total = cartItems.reduce((sum: number, item: any) => sum + parseFloat(item.subtotal), 0);
 
-    // Create order
+    // Create order with pending status
     const [orderResult] = await connection.query(
-      'INSERT INTO orders (account_id, player_id, total_amount, status) VALUES (?, ?, ?, ?)',
-      [userId, player_id, total, 'pending']
+      'INSERT INTO orders (account_id, player_id, total_amount, status, payment_method) VALUES (?, ?, ?, ?, ?)',
+      [userId, player_id, total, 'pending', 'mercadopago']
     ) as any;
 
     const orderId = orderResult.insertId;
@@ -442,20 +463,26 @@ export const createOrder = async (req: Request, res: Response) => {
           JSON.stringify(typeof cartItem.items_json === 'string' ? JSON.parse(cartItem.items_json) : cartItem.items_json)
         ]
       );
-
-      // Update stock if not unlimited
-      if (cartItem.stock !== -1) {
-        await connection.query(
-          'UPDATE market_items SET stock = stock - ? WHERE id = ?',
-          [cartItem.quantity, cartItem.market_item_id]
-        );
-      }
     }
 
-    // Clear cart
+    // Create MercadoPago preference
+    const itemsDescription = cartItems
+      .map((item: any) => `${item.quantity}x ${item.name}`)
+      .join(', ');
+
+    const preference = await createSingleProductPreference({
+      productName: `Order #${orderId} - Marketplace Items`,
+      productDescription: itemsDescription,
+      productId: orderId.toString(),
+      productPrice: total,
+      userEmail: userEmail,
+      orderId: orderId.toString(),
+    });
+
+    // Save preference_id to order
     await connection.query(
-      'DELETE FROM cart_items WHERE account_id = ?',
-      [userId]
+      'UPDATE orders SET preference_id = ? WHERE id = ?',
+      [preference.id, orderId]
     );
 
     await connection.commit();
@@ -464,17 +491,140 @@ export const createOrder = async (req: Request, res: Response) => {
       success: true,
       order_id: orderId,
       total: total.toFixed(2),
-      message: 'Order created successfully. Proceed to payment.'
+      preference_id: preference.id,
+      init_point: preference.init_point,
+      sandbox_init_point: preference.sandbox_init_point,
+      message: 'Checkout created successfully. Redirecting to payment...'
     });
-  } catch (error) {
+  } catch (error: any) {
     await connection.rollback();
-    console.error('Error creating order:', error);
+    console.error('Error creating checkout:', error);
     res.status(500).json({
-      error: 'Failed to create order'
+      error: 'Failed to create checkout',
+      details: error.message
     });
   } finally {
     connection.release();
   }
+};
+
+/**
+ * MercadoPago webhook handler
+ * Handles payment notifications from MercadoPago
+ */
+export const handleMercadoPagoWebhook = async (req: Request, res: Response) => {
+  const connection = await db.getConnection();
+
+  try {
+    const payload = req.body as WebhookPayload;
+
+    console.log('MercadoPago Webhook received:', payload);
+
+    // Only process payment notifications
+    if (payload.type === 'payment') {
+      const mpPayment = await getPaymentById(payload.data.id);
+
+      console.log('Payment details:', mpPayment);
+
+      const orderId = mpPayment.external_reference;
+
+      if (!orderId) {
+        console.log('No external_reference found in payment');
+        return res.status(400).json({ error: 'No order reference found' });
+      }
+
+      // Log the payment
+      await connection.query(
+        'INSERT INTO payment_logs (order_id, payment_provider, payment_id, status, status_detail, transaction_amount, webhook_data) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        [
+          orderId,
+          'mercadopago',
+          mpPayment.id,
+          mpPayment.status,
+          mpPayment.status_detail,
+          mpPayment.transaction_amount,
+          JSON.stringify(payload)
+        ]
+      );
+
+      // Update order based on payment status
+      if (mpPayment.status === 'approved') {
+        console.log(`Payment ${mpPayment.id} approved for order ${orderId}`);
+
+        await connection.beginTransaction();
+
+        // Update order status
+        await connection.query(
+          'UPDATE orders SET status = ?, payment_id = ? WHERE id = ?',
+          ['approved', mpPayment.id?.toString() || null, orderId]
+        );
+
+        // Get order items to update stock
+        const [orderItems] = await connection.query(
+          'SELECT market_item_id, quantity FROM order_items WHERE order_id = ?',
+          [orderId]
+        ) as any[];
+
+        // Update stock for each item
+        for (const item of orderItems) {
+          await connection.query(
+            'UPDATE market_items SET stock = stock - ? WHERE id = ? AND stock != -1',
+            [item.quantity, item.market_item_id]
+          );
+        }
+
+        // Clear user's cart
+        const [orders] = await connection.query(
+          'SELECT account_id FROM orders WHERE id = ?',
+          [orderId]
+        ) as any[];
+
+        if (orders && orders.length > 0) {
+          await connection.query(
+            'DELETE FROM cart_items WHERE account_id = ?',
+            [orders[0].account_id]
+          );
+        }
+
+        await connection.commit();
+
+        // TODO: Here you can add logic to deliver items to player's depot/mailbox
+        // TODO: Send email notification to user
+
+        return res.json({ success: true, message: 'Payment approved and order updated' });
+      } else if (mpPayment.status === 'rejected' || mpPayment.status === 'cancelled') {
+        // Update order status to cancelled
+        await connection.query(
+          'UPDATE orders SET status = ?, payment_id = ? WHERE id = ?',
+          ['cancelled', mpPayment.id?.toString() || null, orderId]
+        );
+
+        return res.json({ success: true, message: 'Payment rejected, order cancelled' });
+      }
+    }
+
+    res.json({ success: true, message: 'Webhook processed' });
+  } catch (error: any) {
+    await connection.rollback();
+    console.error('Error processing webhook:', error);
+    res.status(500).json({
+      error: 'Failed to process webhook',
+      details: error.message
+    });
+  } finally {
+    connection.release();
+  }
+};
+
+/**
+ * DEPRECATED: Old create order function
+ * Use createCheckout instead
+ */
+export const createOrder = async (_req: Request, res: Response) => {
+  return res.status(410).json({
+    error: 'This endpoint is deprecated. Use /checkout instead.',
+    message: 'Please update your client to use the new checkout endpoint with MercadoPago integration.'
+  });
 };
 
 /**

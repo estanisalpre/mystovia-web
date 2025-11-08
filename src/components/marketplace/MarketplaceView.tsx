@@ -115,18 +115,12 @@ export default function MarketplaceView() {
   };
 
   const addToCart = async (itemId: number, weaponId?: number) => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      window.location.href = '/login';
-      return;
-    }
-
     try {
       const response = await fetch(`${API_URL}/api/marketplace/cart`, {
         method: 'POST',
+        credentials: 'include', // Use cookies instead of Authorization header
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({
           market_item_id: itemId,
@@ -141,9 +135,8 @@ export default function MarketplaceView() {
         // Dispatch custom event to update cart in header
         window.dispatchEvent(new Event('cart-updated'));
       } else {
-        // Check if it's an invalid session error
-        if (data.code === 'INVALID_SESSION' || response.status === 401) {
-          localStorage.removeItem('token');
+        // Check if it's an authentication error
+        if (data.code === 'INVALID_SESSION' || data.code === 'NO_TOKEN' || response.status === 401) {
           window.location.href = '/login';
         }
       }

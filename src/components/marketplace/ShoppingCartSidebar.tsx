@@ -40,12 +40,11 @@ export default function ShoppingCartSidebar({
     setUpdating(cartItemId);
 
     try {
-      const token = localStorage.getItem('token');
       const response = await fetch(`${API_URL}/api/marketplace/cart/${cartItemId}`, {
         method: 'PUT',
+        credentials: 'include', // Use cookies instead of Authorization header
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify({ quantity: newQuantity })
       });
@@ -64,12 +63,9 @@ export default function ShoppingCartSidebar({
 
   const removeItem = async (cartItemId: number) => {
     try {
-      const token = localStorage.getItem('token');
       const response = await fetch(`${API_URL}/api/marketplace/cart/${cartItemId}`, {
         method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+        credentials: 'include', // Use cookies instead of Authorization header
       });
 
       const data = await response.json();
@@ -84,12 +80,9 @@ export default function ShoppingCartSidebar({
 
   const clearCart = async () => {
     try {
-      const token = localStorage.getItem('token');
       const response = await fetch(`${API_URL}/api/marketplace/cart`, {
         method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+        credentials: 'include', // Use cookies instead of Authorization header
       });
 
       const data = await response.json();

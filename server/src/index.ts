@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -10,16 +11,27 @@ import serverRoutes from './routes/serverRoutes.js';
 import marketplaceRoutes from './routes/marketplaceRoutes.js';
 import adminMarketplaceRoutes from './routes/adminMarketplaceRoutes.js';
 
-dotenv.config();
+// Load .env from project root
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+
+// Log environment variables for debugging
+console.log('📍 Environment variables loaded:');
+console.log('  FRONTEND_URL:', process.env.FRONTEND_URL);
+console.log('  BACKEND_URL:', process.env.BACKEND_URL);
+console.log('  MP_ACCESS_TOKEN:', process.env.MP_ACCESS_TOKEN ? '✓ Set' : '✗ Not set');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:4321',
+  credentials: true // Allow cookies to be sent
+}));
 app.use(express.json());
+app.use(cookieParser()); // Parse cookies
 // API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/characters', characterRoutes);
