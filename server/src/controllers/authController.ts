@@ -4,43 +4,57 @@ import bcrypt from 'bcryptjs';
 import db from '../config/database.js';
 import { RegisterRequest, LoginRequest } from '../types/index.js';
 
-/**
- * Register a new user with secure password hashing
- */
+// 🔧 Configuración global
+const isProduction = process.env.NODE_ENV === 'production';
+const cookieDomain = isProduction ? new URL(process.env.FRONTEND_URL || '').hostname : undefined;
+const sameSiteMode: 'none' | 'lax' = isProduction ? 'none' : 'lax';
+
+/** 🔐 Genera tokens JWT */
+const generateTokens = (userId: number, email: string, username: string) => {
+  const accessToken = jwt.sign(
+    { userId, email, accountName: username },
+    process.env.JWT_SECRET || 'secret',
+    { expiresIn: '15m' }
+  );
+
+  const refreshToken = jwt.sign(
+    { userId, email, type: 'refresh' },
+    process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET || 'refresh-secret',
+    { expiresIn: '7d' }
+  );
+
+  return { accessToken, refreshToken };
+};
+
+/** 🧩 Configuración base para cookies */
+const cookieConfig = (maxAge: number) => ({
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: sameSiteMode,
+  domain: cookieDomain,
+  maxAge
+});
+
+/** 🧍 Registro */
 export const register = async (req: Request<{}, {}, RegisterRequest>, res: Response) => {
   try {
     const { username, email, password } = req.body;
-
-    if (!username || !email || !password) {
+    if (!username || !email || !password)
       return res.status(400).json({ error: 'Usuario, email y contraseña son requeridos.' });
-    }
 
-    // Validate password strength
-    if (password.length < 8) {
+    if (password.length < 8)
       return res.status(400).json({ error: 'La contraseña debe tener al menos 8 caracteres.' });
-    }
 
-    const [existingUsers] = await db.query(
-      'SELECT * FROM accounts WHERE email = ?',
-      [email]
-    );
+    const [existingEmail] = await db.query('SELECT 1 FROM accounts WHERE email = ?', [email]);
+    const [existingName] = await db.query('SELECT 1 FROM accounts WHERE name = ?', [username]);
 
-    const [existingUsernames] = await db.query(
-      'SELECT * FROM accounts WHERE name = ?',
-      [username]
-    );
-
-    if (Array.isArray(existingUsers) && existingUsers.length > 0) {
+    if (Array.isArray(existingEmail) && existingEmail.length > 0)
       return res.status(400).json({ error: 'Correo ya registrado' });
-    }
 
-    if (Array.isArray(existingUsernames) && existingUsernames.length > 0) {
+    if (Array.isArray(existingName) && existingName.length > 0)
       return res.status(400).json({ error: 'Nombre de usuario ya registrado.' });
-    }
 
-    // Hash password with bcrypt
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     const [result] = await db.query(
       `INSERT INTO accounts (name, password, email, premdays, lastday, \`key\`, blocked, warnings, group_id)
@@ -49,134 +63,61 @@ export const register = async (req: Request<{}, {}, RegisterRequest>, res: Respo
     );
 
     const userId = (result as any).insertId;
+    const { accessToken, refreshToken } = generateTokens(userId, email, username);
 
-    // Create access token (short-lived)
-    const accessToken = jwt.sign(
-      { userId, email, accountName: username },
-      process.env.JWT_SECRET || 'secret',
-      { expiresIn: '15m' }
-    );
-
-    // Create refresh token (long-lived)
-    const refreshToken = jwt.sign(
-      { userId, email, type: 'refresh' },
-      process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET || 'refresh-secret',
-      { expiresIn: '7d' }
-    );
-
-    // Store refresh token in database
     await db.query(
       'INSERT INTO refresh_tokens (account_id, token, expires_at) VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 7 DAY))',
       [userId, refreshToken]
     );
 
-    // Set HttpOnly cookies for tokens
-    res.cookie('accessToken', accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 15 * 60 * 1000 // 15 minutes
-    });
-
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
-    });
+    res.cookie('accessToken', accessToken, cookieConfig(15 * 60 * 1000));
+    res.cookie('refreshToken', refreshToken, cookieConfig(7 * 24 * 60 * 60 * 1000));
 
     res.status(201).json({
       success: true,
       message: 'Usuario registrado con éxito.',
-      user: {
-        id: userId,
-        email,
-        accountName: username
-      }
+      user: { id: userId, email, accountName: username }
     });
   } catch (error) {
     console.error('Error al registrar:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: 'Error interno del servidor' });
   }
 };
 
-/**
- * Login with secure password verification and token generation
- */
+/** 🔑 Login */
 export const login = async (req: Request<{}, {}, LoginRequest>, res: Response) => {
   try {
     const { email, password } = req.body;
+    if (!email || !password)
+      return res.status(400).json({ error: 'Email y contraseña son requeridos.' });
 
-    if (!email || !password) {
-      return res.status(400).json({ error: 'Email and password are required' });
-    }
-
-    const [users] = await db.query(
-      'SELECT * FROM accounts WHERE email = ?',
-      [email]
-    );
-
-    if (!Array.isArray(users) || users.length === 0) {
-      return res.status(401).json({ error: 'Invalid credentials' });
-    }
+    const [users] = await db.query('SELECT * FROM accounts WHERE email = ?', [email]);
+    if (!Array.isArray(users) || users.length === 0)
+      return res.status(401).json({ error: 'Credenciales inválidas.' });
 
     const user = users[0] as any;
 
-    if (user.blocked === 1) {
-      return res.status(403).json({ error: 'Account is blocked' });
-    }
+    if (user.blocked === 1)
+      return res.status(403).json({ error: 'Cuenta bloqueada.' });
 
-    // Verify password with bcrypt
     const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid)
+      return res.status(401).json({ error: 'Credenciales inválidas.' });
 
-    if (!isPasswordValid) {
-      return res.status(401).json({ error: 'Invalid credentials' });
-    }
+    const { accessToken, refreshToken } = generateTokens(user.id, user.email, user.name);
 
-    // Create access token (short-lived)
-    const accessToken = jwt.sign(
-      { userId: user.id, email: user.email, accountName: user.name },
-      process.env.JWT_SECRET || 'secret',
-      { expiresIn: '15m' }
-    );
-
-    // Create refresh token (long-lived)
-    const refreshToken = jwt.sign(
-      { userId: user.id, email: user.email, type: 'refresh' },
-      process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET || 'refresh-secret',
-      { expiresIn: '7d' }
-    );
-
-    // Delete old refresh tokens for this user
-    await db.query(
-      'DELETE FROM refresh_tokens WHERE account_id = ?',
-      [user.id]
-    );
-
-    // Store new refresh token
+    await db.query('DELETE FROM refresh_tokens WHERE account_id = ?', [user.id]);
     await db.query(
       'INSERT INTO refresh_tokens (account_id, token, expires_at) VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 7 DAY))',
       [user.id, refreshToken]
     );
 
-    // Set HttpOnly cookies
-    res.cookie('accessToken', accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 15 * 60 * 1000 // 15 minutes
-    });
-
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
-    });
+    res.cookie('accessToken', accessToken, cookieConfig(15 * 60 * 1000));
+    res.cookie('refreshToken', refreshToken, cookieConfig(7 * 24 * 60 * 60 * 1000));
 
     res.json({
       success: true,
-      message: 'Login successful',
+      message: 'Inicio de sesión exitoso',
       user: {
         id: user.id,
         email: user.email,
@@ -186,126 +127,84 @@ export const login = async (req: Request<{}, {}, LoginRequest>, res: Response) =
     });
   } catch (error) {
     console.error('Login error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: 'Error interno del servidor' });
   }
 };
 
-/**
- * Logout - Clear tokens
- */
+/** 🚪 Logout */
 export const logout = async (req: Request, res: Response) => {
   try {
     const refreshToken = req.cookies.refreshToken;
-
     if (refreshToken) {
-      // Delete refresh token from database
-      await db.query(
-        'DELETE FROM refresh_tokens WHERE token = ?',
-        [refreshToken]
-      );
+      await db.query('DELETE FROM refresh_tokens WHERE token = ?', [refreshToken]);
     }
 
-    // Clear cookies
-    res.clearCookie('accessToken');
-    res.clearCookie('refreshToken');
+    res.clearCookie('accessToken', { domain: cookieDomain });
+    res.clearCookie('refreshToken', { domain: cookieDomain });
 
-    res.json({
-      success: true,
-      message: 'Logged out successfully'
-    });
+    res.json({ success: true, message: 'Sesión cerrada con éxito.' });
   } catch (error) {
     console.error('Logout error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: 'Error interno del servidor' });
   }
 };
 
-/**
- * Refresh access token using refresh token
- */
+/** 🔄 Refrescar token de acceso */
 export const refreshAccessToken = async (req: Request, res: Response) => {
   try {
     const refreshToken = req.cookies.refreshToken;
+    if (!refreshToken)
+      return res.status(401).json({ error: 'Refresh token requerido.' });
 
-    if (!refreshToken) {
-      return res.status(401).json({ error: 'Refresh token required' });
-    }
-
-    // Verify refresh token
     const decoded = jwt.verify(
       refreshToken,
       process.env.JWT_REFRESH_SECRET || process.env.JWT_SECRET || 'refresh-secret'
     ) as any;
 
-    // Check if token exists in database and is not expired
     const [tokens] = await db.query(
       'SELECT * FROM refresh_tokens WHERE token = ? AND account_id = ? AND expires_at > NOW()',
       [refreshToken, decoded.userId]
     ) as any[];
 
-    if (!tokens || tokens.length === 0) {
-      return res.status(403).json({ error: 'Invalid or expired refresh token' });
-    }
+    if (!tokens || tokens.length === 0)
+      return res.status(403).json({ error: 'Token inválido o expirado.' });
 
-    // Get user data
-    const [users] = await db.query(
-      'SELECT * FROM accounts WHERE id = ?',
-      [decoded.userId]
-    ) as any[];
-
-    if (!users || users.length === 0) {
-      return res.status(404).json({ error: 'User not found' });
-    }
+    const [users] = await db.query('SELECT * FROM accounts WHERE id = ?', [decoded.userId]) as any[];
+    if (!users || users.length === 0)
+      return res.status(404).json({ error: 'Usuario no encontrado.' });
 
     const user = users[0];
-
-    // Create new access token
     const newAccessToken = jwt.sign(
       { userId: user.id, email: user.email, accountName: user.name },
       process.env.JWT_SECRET || 'secret',
       { expiresIn: '15m' }
     );
 
-    // Set new access token cookie
-    res.cookie('accessToken', newAccessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 15 * 60 * 1000
-    });
+    res.cookie('accessToken', newAccessToken, cookieConfig(15 * 60 * 1000));
 
-    res.json({
-      success: true,
-      message: 'Token refreshed successfully'
-    });
+    res.json({ success: true, message: 'Token refrescado correctamente.' });
   } catch (error) {
     console.error('Token refresh error:', error);
-    res.status(403).json({ error: 'Invalid or expired refresh token' });
+    res.status(403).json({ error: 'Token inválido o expirado.' });
   }
 };
 
-/**
- * Verify current user - returns user info from token
- */
+/** 👤 Verificar usuario autenticado */
 export const verifyUser = async (req: Request, res: Response) => {
   try {
     const user = (req as any).user;
+    if (!user)
+      return res.status(401).json({ error: 'No autenticado.' });
 
-    if (!user) {
-      return res.status(401).json({ error: 'Not authenticated' });
-    }
-
-    // Get fresh user data from database
     const [users] = await db.query(
       'SELECT id, email, name, premdays FROM accounts WHERE id = ?',
       [user.userId]
     ) as any[];
 
-    if (!users || users.length === 0) {
-      return res.status(404).json({ error: 'User not found' });
-    }
+    if (!users || users.length === 0)
+      return res.status(404).json({ error: 'Usuario no encontrado.' });
 
     const userData = users[0];
-
     res.json({
       success: true,
       user: {
@@ -317,6 +216,6 @@ export const verifyUser = async (req: Request, res: Response) => {
     });
   } catch (error) {
     console.error('Verify user error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: 'Error interno del servidor' });
   }
 };

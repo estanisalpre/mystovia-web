@@ -29,6 +29,7 @@ const allowedOrigins = [
   process.env.FRONTEND_URL || 'http://localhost:4321',
   'http://localhost:3001', // por si sirves el front desde el back
   'http://localhost:4321', 
+  'https://otserver-monorepo.onrender.com',
 ];
 
 // Middleware
