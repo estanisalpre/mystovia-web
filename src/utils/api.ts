@@ -29,16 +29,23 @@ export async function apiRequest<T = any>(
       },
     });
 
-    // If token expired, try to refresh
+    // Handle token expiration and refresh
     if (response.status === 401 && !skipRefresh) {
-      const errorData = await response.json();
+      let errorData: any = null;
 
-      if (errorData.code === 'TOKEN_EXPIRED') {
-        // Try to refresh the token
+      // Try reading the error safely using clone()
+      try {
+        errorData = await response.clone().json();
+      } catch (_) {
+        // Response might not be JSON
+      }
+
+      if (errorData?.code === 'TOKEN_EXPIRED') {
+        // Attempt token refresh
         const refreshed = await refreshToken();
 
         if (refreshed) {
-          // Retry the original request
+          // Retry original request
           response = await fetch(`${API_URL}${endpoint}`, {
             ...fetchOptions,
             credentials: 'include',
@@ -48,19 +55,20 @@ export async function apiRequest<T = any>(
             },
           });
         } else {
-          // Refresh failed, redirect to login
+          // Refresh failed → force logout
           window.location.href = '/login';
           return { success: false, error: 'Session expired. Please login again.' };
         }
       }
     }
 
-    const data = await response.json();
+    // Try reading JSON response safely
+    const data = await response.json().catch(() => null);
 
     if (!response.ok) {
       return {
         success: false,
-        error: data.error || 'Request failed',
+        error: (data && data.error) || 'Request failed',
       };
     }
 
@@ -137,6 +145,7 @@ export async function logout() {
 export async function verifyAuth() {
   return apiRequest('/api/auth/verify', {
     method: 'GET',
+    credentials: 'include',
   });
 }
 
@@ -146,6 +155,7 @@ export async function verifyAuth() {
 export async function getCharacters() {
   return apiRequest('/api/characters', {
     method: 'GET',
+    credentials: 'include',
   });
 }
 
@@ -164,6 +174,7 @@ export async function getMarketplaceItems(filters?: {
 
   return apiRequest(`/api/marketplace/items${query}`, {
     method: 'GET',
+    credentials: 'include',
   });
 }
 
@@ -173,6 +184,7 @@ export async function getMarketplaceItems(filters?: {
 export async function getCart() {
   return apiRequest('/api/marketplace/cart', {
     method: 'GET',
+    credentials: 'include',
   });
 }
 
@@ -182,6 +194,7 @@ export async function getCart() {
 export async function addToCart(marketItemId: number, quantity: number = 1, selectedWeaponId?: number) {
   return apiRequest('/api/marketplace/cart', {
     method: 'POST',
+    credentials: 'include',
     body: JSON.stringify({
       market_item_id: marketItemId,
       quantity,
@@ -196,6 +209,7 @@ export async function addToCart(marketItemId: number, quantity: number = 1, sele
 export async function updateCartItem(cartItemId: number, quantity: number) {
   return apiRequest(`/api/marketplace/cart/${cartItemId}`, {
     method: 'PUT',
+    credentials: 'include',
     body: JSON.stringify({ quantity }),
   });
 }
@@ -206,6 +220,7 @@ export async function updateCartItem(cartItemId: number, quantity: number) {
 export async function removeFromCart(cartItemId: number) {
   return apiRequest(`/api/marketplace/cart/${cartItemId}`, {
     method: 'DELETE',
+    credentials: 'include',
   });
 }
 
@@ -215,6 +230,7 @@ export async function removeFromCart(cartItemId: number) {
 export async function clearCart() {
   return apiRequest('/api/marketplace/cart', {
     method: 'DELETE',
+    credentials: 'include',
   });
 }
 
@@ -224,6 +240,7 @@ export async function clearCart() {
 export async function createCheckout(playerId: number) {
   return apiRequest('/api/marketplace/checkout', {
     method: 'POST',
+    credentials: 'include',
     body: JSON.stringify({ player_id: playerId }),
   });
 }
@@ -234,6 +251,7 @@ export async function createCheckout(playerId: number) {
 export async function getOrders() {
   return apiRequest('/api/marketplace/orders', {
     method: 'GET',
+    credentials: 'include',
   });
 }
 
@@ -243,6 +261,7 @@ export async function getOrders() {
 export async function getOrder(orderId: number) {
   return apiRequest(`/api/marketplace/orders/${orderId}`, {
     method: 'GET',
+    credentials: 'include',
   });
 }
 
