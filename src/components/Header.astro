@@ -1,5 +1,7 @@
 ---
 import { MystoviaLogo } from "../assets/logos";
+import CartButton from "./CartButton";
+import HeaderAuth from "./HeaderAuth";
 ---
 
 <header class="fixed z-100 top-0 flex-center w-full px-42 py-2 backdrop-blur-md bg-black/30">
@@ -18,9 +20,9 @@ import { MystoviaLogo } from "../assets/logos";
       >Descargas</a
     >
     <a
-      href="/downloads"
-      class="hover:text-yellow-500 transition"
-      >Descargas</a
+      href="/marketplace"
+      class="hover:text-yellow-500 transition font-semibold"
+      >Tienda</a
     >
     <a
       href="/rules"
@@ -30,17 +32,7 @@ import { MystoviaLogo } from "../assets/logos";
   </nav>
 
   <div class="flex-center gap-4">
-    <a
-      href="/login"
-      class="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded transition text-sm font-medium"
-    >
-      INGRESAR
-    </a>
-    <a
-      href="/register"
-      class="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 rounded transition text-sm font-medium"
-    >
-      REGISTRARME
-    </a>
+    <CartButton client:only="react" />
+    <HeaderAuth client:only="react" />
   </div>
 </header>

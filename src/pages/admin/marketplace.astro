@@ -1,0 +1,8 @@
+---
+import AdminLayout from '../../layouts/AdminLayout.astro';
+import AdminMarketplace from '../../components/admin/AdminMarketplace';
+---
+
+<AdminLayout title="Manage Items" activeTab="items">
+  <AdminMarketplace client:load />
+</AdminLayout>

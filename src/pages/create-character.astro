@@ -151,11 +151,6 @@ let error = "";
 </Layout>
 
 <script>
-  const token = localStorage.getItem("token");
-  if (!token) {
-    window.location.href = "/login";
-  }
-
   const characterForm = document.getElementById(
     "characterForm"
   ) as HTMLFormElement;
@@ -164,12 +159,30 @@ let error = "";
   const charactersList = document.getElementById("charactersList")!;
   const API_URL = import.meta.env.PUBLIC_API_URL;
 
+  // Check authentication using cookie-based auth
+  async function checkAuth() {
+    try {
+      const response = await fetch(`${API_URL}/api/auth/verify`, {
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        // Not authenticated, redirect to login
+        window.location.href = "/login";
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      window.location.href = "/login";
+      return false;
+    }
+  }
+
   async function loadCharacters() {
     try {
       const response = await fetch(`${API_URL}/api/characters`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        credentials: 'include', // Use cookies instead of Authorization header
       });
 
       if (!response.ok) {
@@ -222,9 +235,9 @@ let error = "";
     try {
       const response = await fetch(`${API_URL}/api/characters/create`, {
         method: "POST",
+        credentials: 'include', // Use cookies instead of Authorization header
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ name, vocation }),
       });
@@ -251,5 +264,11 @@ let error = "";
     }
   });
 
-  loadCharacters();
+  // Initialize: Check auth and load characters
+  (async () => {
+    const isAuthenticated = await checkAuth();
+    if (isAuthenticated) {
+      loadCharacters();
+    }
+  })();
 </script>

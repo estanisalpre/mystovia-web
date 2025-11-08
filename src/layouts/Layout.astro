@@ -28,12 +28,12 @@ const { title, description = "Tibia Private Server" } = Astro.props;
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 </head>
-<body class="min-h-screen text-white">
+<body class="min-h-screen text-white flex flex-col">
   <Header />
-  <main class="relative grow bg-cover bg-center bg-fixed"
+  <main class="relative flex-1 bg-cover bg-center bg-fixed"
     style={{ backgroundImage: `url(${bg5.src})` }}
   >
-    <div class="absolute inset-0 bg-black/50 pointer-events-none"></div>
+    <div class="absolute inset-0 bg-black/50 pointer-events-none z-0"></div>
     <Particles client:load />
     <slot />
   </main>

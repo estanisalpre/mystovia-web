@@ -1,0 +1,159 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="My Characters - TibiaPS">
+  <section class="grow z-100 flex-col pt-20 flex items-center justify-center min-h-screen py-12 px-4">
+    <div class="max-w-4xl w-full">
+      <div class="flex justify-between items-center mb-8">
+        <h2 class="text-3xl font-bold">Mis Personajes</h2>
+        <a
+          href="/create-character"
+          class="px-6 py-3 bg-yellow-600 hover:bg-yellow-700 text-white font-semibold rounded-lg transition transform hover:scale-105"
+        >
+          + Crear Personaje
+        </a>
+      </div>
+
+      <!-- Characters Grid -->
+      <div
+        id="charactersGrid"
+        class="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
+      >
+        <div class="col-span-full text-gray-400 text-center py-12">
+          Cargando personajes...
+        </div>
+      </div>
+
+      <!-- Empty State (will be shown if no characters) -->
+      <div
+        id="emptyState"
+        class="hidden bg-black/30 border border-white/30 backdrop-blur-md rounded-lg shadow-xl p-12 text-center"
+      >
+        <div class="text-6xl mb-4">⚔️</div>
+        <h3 class="text-2xl font-bold mb-4">No tienes personajes aún</h3>
+        <p class="text-gray-400 mb-6">
+          Crea tu primer personaje para comenzar tu aventura en TibiaPS
+        </p>
+        <a
+          href="/create-character"
+          class="inline-block px-8 py-4 bg-yellow-600 hover:bg-yellow-700 text-white font-semibold rounded-lg transition transform hover:scale-105"
+        >
+          Crear mi primer personaje
+        </a>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  const charactersGrid = document.getElementById("charactersGrid")!;
+  const emptyState = document.getElementById("emptyState")!;
+  const API_URL = import.meta.env.PUBLIC_API_URL;
+
+  // Check authentication using cookie-based auth
+  async function checkAuth() {
+    try {
+      const response = await fetch(`${API_URL}/api/auth/verify`, {
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        // Not authenticated, redirect to login
+        window.location.href = "/login";
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      window.location.href = "/login";
+      return false;
+    }
+  }
+
+  async function loadCharacters() {
+    try {
+      const response = await fetch(`${API_URL}/api/characters`, {
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to load characters");
+      }
+
+      const data = await response.json();
+
+      if (data.characters.length === 0) {
+        // Show empty state
+        charactersGrid.classList.add("hidden");
+        emptyState.classList.remove("hidden");
+      } else {
+        // Show characters grid
+        charactersGrid.classList.remove("hidden");
+        emptyState.classList.add("hidden");
+
+        charactersGrid.innerHTML = data.characters
+          .map(
+            (char: any) => `
+          <div class="bg-black/30 border border-white/30 backdrop-blur-md rounded-lg shadow-xl p-6 hover:border-yellow-500 transition-all">
+            <div class="flex items-start justify-between mb-4">
+              <div class="flex-1">
+                <h3 class="text-xl font-bold text-yellow-500 mb-1">${char.name}</h3>
+                <p class="text-sm text-gray-400">Level ${char.level} ${char.vocationName}</p>
+              </div>
+              <div class="text-4xl">⚔️</div>
+            </div>
+
+            <div class="space-y-2 text-sm">
+              <div class="flex justify-between">
+                <span class="text-gray-400">Health:</span>
+                <span class="text-red-400 font-semibold">${char.health}/${char.healthmax}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-400">Mana:</span>
+                <span class="text-blue-400 font-semibold">${char.mana}/${char.manamax}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-400">Soul:</span>
+                <span class="text-purple-400 font-semibold">${char.soul}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-400">Capacity:</span>
+                <span class="text-green-400 font-semibold">${char.cap}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-400">Magic Level:</span>
+                <span class="text-cyan-400 font-semibold">${char.maglevel}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-gray-400">Experience:</span>
+                <span class="text-yellow-400 font-semibold">${char.experience.toLocaleString()}</span>
+              </div>
+            </div>
+
+            ${char.lastlogin > 0 ? `
+              <div class="mt-4 pt-4 border-t border-gray-700">
+                <p class="text-xs text-gray-500">
+                  Último login: ${new Date(char.lastlogin * 1000).toLocaleDateString('es-ES')}
+                </p>
+              </div>
+            ` : ''}
+          </div>
+        `
+          )
+          .join("");
+      }
+    } catch (error) {
+      charactersGrid.innerHTML =
+        '<div class="col-span-full text-red-400 text-center py-12">Error al cargar personajes. Por favor, intenta de nuevo.</div>';
+    }
+  }
+
+  // Initialize: Check auth and load characters
+  (async () => {
+    const isAuthenticated = await checkAuth();
+    if (isAuthenticated) {
+      loadCharacters();
+    }
+  })();
+</script>
