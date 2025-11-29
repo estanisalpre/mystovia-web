@@ -126,10 +126,7 @@ export async function deliverItemsToInbox(
  * ADVANCED: Deliver items directly to player depot
  * This requires knowing the exact TFS schema
  * Use this if you want items to appear immediately in-game
- *
- * NOTE: This is commented out because it requires specific TFS schema knowledge
  */
-/*
 export async function deliverItemsToDepot(
   playerId: number,
   items: DeliveryItem[],
@@ -142,52 +139,86 @@ export async function deliverItemsToDepot(
 
     // TFS typically uses player_depotitems table
     // Structure: (player_id, sid, pid, itemtype, count, attributes)
-    // sid = slot id (depot slot)
-    // pid = parent id (depot container)
+    // sid = slot id (unique identifier for the item)
+    // pid = parent id (0 for depot containers, or the sid of the container holding this item)
 
-    // Find depot container for player
-    const [depots] = await connection.query(
-      'SELECT * FROM player_depotitems WHERE player_id = ? AND pid = 0 ORDER BY sid LIMIT 1',
+    console.log(`🎁 Delivering ${items.length} items to player ${playerId} depot...`);
+
+    // Get the next available sid for this player
+    const [maxSid] = await connection.query(
+      'SELECT COALESCE(MAX(sid), 100) as max_sid FROM player_depotitems WHERE player_id = ?',
       [playerId]
     ) as any[];
 
-    let depotId;
-    if (depots && depots.length > 0) {
-      depotId = depots[0].sid;
-    } else {
-      // Create depot if doesn't exist
-      // This is server-specific
-      throw new Error('Depot not found. Items will be delivered via storage system instead.');
-    }
+    let nextSid = maxSid[0].max_sid + 1;
 
     // Insert each item into depot
     for (const item of items) {
-      // Get next available slot in depot
-      const [maxSlot] = await connection.query(
-        'SELECT MAX(sid) as max_sid FROM player_depotitems WHERE player_id = ? AND pid = ?',
-        [playerId, depotId]
-      ) as any[];
+      console.log(`  📦 Adding ${item.count}x ${item.name} (ID: ${item.itemId}) to depot`);
 
-      const nextSlot = (maxSlot[0].max_sid || 0) + 1;
-
-      // Insert item
+      // Insert item directly into depot
+      // pid = 0 means it's at the root level of depot (or you can use a specific depot box sid)
       await connection.query(
-        'INSERT INTO player_depotitems (player_id, sid, pid, itemtype, count) VALUES (?, ?, ?, ?, ?)',
-        [playerId, nextSlot, depotId, item.itemId, item.count]
+        'INSERT INTO player_depotitems (player_id, sid, pid, itemtype, count, attributes) VALUES (?, ?, ?, ?, ?, ?)',
+        [playerId, nextSid, 0, item.itemId, item.count, '']
       );
+
+      nextSid++;
     }
 
+    // Also log the delivery in item_deliveries table for tracking
+    const itemsJson = JSON.stringify({
+      order_id: orderId,
+      items: items,
+      delivered_at: new Date().toISOString(),
+      player_id: playerId,
+      delivery_method: 'depot'
+    });
+
+    // Create delivery log table if not exists
+    await connection.query(`
+      CREATE TABLE IF NOT EXISTS item_deliveries (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        order_id INT NOT NULL,
+        player_id INT NOT NULL,
+        account_id INT NOT NULL,
+        items_json TEXT NOT NULL,
+        delivered_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        claimed TINYINT(1) DEFAULT 1,
+        claimed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        delivery_method VARCHAR(50) DEFAULT 'depot',
+        INDEX idx_player (player_id),
+        INDEX idx_order (order_id),
+        INDEX idx_claimed (claimed)
+      ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    `);
+
+    // Get player's account_id
+    const [players] = await connection.query(
+      'SELECT account_id FROM players WHERE id = ?',
+      [playerId]
+    ) as any[];
+
+    const accountId = players[0]?.account_id || 0;
+
+    // Insert delivery record
+    await connection.query(
+      'INSERT INTO item_deliveries (order_id, player_id, account_id, items_json, claimed, claimed_at, delivery_method) VALUES (?, ?, ?, ?, 1, CURRENT_TIMESTAMP, ?)',
+      [orderId, playerId, accountId, itemsJson, 'depot']
+    );
+
     await connection.commit();
+
+    console.log(`✅ Successfully delivered ${items.length} items to player ${playerId} depot!`);
     return true;
   } catch (error) {
     await connection.rollback();
-    console.error('Error delivering to depot:', error);
+    console.error('❌ Error delivering to depot:', error);
     throw error;
   } finally {
     connection.release();
   }
 }
-*/
 
 /**
  * Get pending deliveries for a player

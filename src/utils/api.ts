@@ -1,6 +1,6 @@
 /**
  * Secure API Helper
- * Handles authentication, token refresh, and cookie-based requests
+ * Handles authentication and cookie-based requests (without JWT)
  */
 
 const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3001';
@@ -11,7 +11,7 @@ interface ApiRequestOptions extends RequestInit {
 
 /**
  * Make an authenticated API request
- * Automatically handles token refresh on expiration
+ * Uses simple cookie-based authentication (without JWT)
  */
 export async function apiRequest<T = any>(
   endpoint: string,
@@ -29,6 +29,7 @@ export async function apiRequest<T = any>(
       },
     });
 
+    /* ⏸️ JWT DESACTIVADO TEMPORALMENTE - No necesitamos refresh de tokens
     // Handle token expiration and refresh
     if (response.status === 401 && !skipRefresh) {
       let errorData: any = null;
@@ -61,6 +62,7 @@ export async function apiRequest<T = any>(
         }
       }
     }
+    */
 
     // Try reading JSON response safely
     const data = await response.json().catch(() => null);
@@ -85,9 +87,10 @@ export async function apiRequest<T = any>(
   }
 }
 
+/* ⏸️ JWT DESACTIVADO TEMPORALMENTE
 /**
  * Refresh the access token
- */
+ *
 async function refreshToken(): Promise<boolean> {
   try {
     const response = await fetch(`${API_URL}/api/auth/refresh`, {
@@ -101,6 +104,7 @@ async function refreshToken(): Promise<boolean> {
     return false;
   }
 }
+*/
 
 /**
  * Login with email and password
