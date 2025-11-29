@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 // import jwt from 'jsonwebtoken'; // JWT COMENTADO - No se usa por ahora
-import bcrypt from 'bcryptjs';
+// import bcrypt from 'bcryptjs'; // BCRYPT COMENTADO - No se usa por ahora
 import db from '../config/database.js';
 import { RegisterRequest, LoginRequest } from '../types/index.js';
 
@@ -56,12 +56,15 @@ export const register = async (req: Request<{}, {}, RegisterRequest>, res: Respo
     if (Array.isArray(existingName) && existingName.length > 0)
       return res.status(400).json({ error: 'Nombre de usuario ya registrado.' });
 
+    /* ⏸️ BCRYPT DESACTIVADO TEMPORALMENTE
     const hashedPassword = await bcrypt.hash(password, 10);
+    */
 
+    // 🔓 Guardar contraseña en texto plano (sin encriptar)
     const [result] = await db.query(
       `INSERT INTO accounts (name, password, email, premdays, lastday, \`key\`, blocked, warnings, group_id)
        VALUES (?, ?, ?, 0, 0, '0', 0, 0, 1)`,
-      [username, hashedPassword, email]
+      [username, password, email]
     );
 
     const userId = (result as any).insertId;
@@ -109,8 +112,14 @@ export const login = async (req: Request<{}, {}, LoginRequest>, res: Response) =
     if (user.blocked === 1)
       return res.status(403).json({ error: 'Cuenta bloqueada.' });
 
+    /* ⏸️ BCRYPT DESACTIVADO TEMPORALMENTE
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid)
+      return res.status(401).json({ error: 'Credenciales inválidas.' });
+    */
+
+    // 🔓 Comparar contraseña en texto plano (sin encriptar)
+    if (password !== user.password)
       return res.status(401).json({ error: 'Credenciales inválidas.' });
 
     /* ⏸️ JWT DESACTIVADO TEMPORALMENTE
