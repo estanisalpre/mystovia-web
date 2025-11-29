@@ -86,7 +86,7 @@ export async function deliverItemsToInbox(
     // Create a delivery log entry in a custom table
     // First, check if the table exists, if not create it
     await connection.query(`
-      CREATE TABLE IF NOT EXISTS item_deliveries (
+      CREATE TABLE IF NOT EXISTS items_deliveries (
         id INT AUTO_INCREMENT PRIMARY KEY,
         order_id INT NOT NULL,
         player_id INT NOT NULL,
@@ -103,7 +103,7 @@ export async function deliverItemsToInbox(
 
     // Insert delivery record
     await connection.query(
-      'INSERT INTO item_deliveries (order_id, player_id, account_id, items_json) VALUES (?, ?, ?, ?)',
+      'INSERT INTO items_deliveries (order_id, player_id, account_id, items_json) VALUES (?, ?, ?, ?)',
       [orderId, playerId, accountId, itemsJson]
     );
 
@@ -164,14 +164,14 @@ export async function deliverItemsToDepot(
     // The Lua script will set claimed = 1 when items are delivered
     try {
       await connection.query(
-        'INSERT INTO item_deliveries (order_id, player_id, account_id, items_json, claimed) VALUES (?, ?, ?, ?, 0)',
+        'INSERT INTO items_deliveries (order_id, player_id, account_id, items_json, claimed) VALUES (?, ?, ?, ?, 0)',
         [orderId, playerId, accountId, itemsJson]
       );
     } catch (insertError: any) {
       // If table doesn't exist, create it
       if (insertError.code === 'ER_NO_SUCH_TABLE') {
         await connection.query(`
-          CREATE TABLE IF NOT EXISTS item_deliveries (
+          CREATE TABLE IF NOT EXISTS items_deliveries (
             id INT AUTO_INCREMENT PRIMARY KEY,
             order_id INT NOT NULL,
             player_id INT NOT NULL,
@@ -188,7 +188,7 @@ export async function deliverItemsToDepot(
 
         // Retry insert
         await connection.query(
-          'INSERT INTO item_deliveries (order_id, player_id, account_id, items_json, claimed) VALUES (?, ?, ?, ?, 0)',
+          'INSERT INTO items_deliveries (order_id, player_id, account_id, items_json, claimed) VALUES (?, ?, ?, ?, 0)',
           [orderId, playerId, accountId, itemsJson]
         );
       } else {
@@ -216,7 +216,7 @@ export async function deliverItemsToDepot(
 export async function getPendingDeliveries(playerId: number) {
   try {
     const [deliveries] = await db.query(
-      'SELECT * FROM item_deliveries WHERE player_id = ? AND claimed = 0 ORDER BY delivered_at DESC',
+      'SELECT * FROM items_deliveries WHERE player_id = ? AND claimed = 0 ORDER BY delivered_at DESC',
       [playerId]
     ) as any[];
 
@@ -238,7 +238,7 @@ export async function getPendingDeliveries(playerId: number) {
 export async function markDeliveryAsClaimed(deliveryId: number) {
   try {
     await db.query(
-      'UPDATE item_deliveries SET claimed = 1, claimed_at = CURRENT_TIMESTAMP WHERE id = ?',
+      'UPDATE items_deliveries SET claimed = 1, claimed_at = CURRENT_TIMESTAMP WHERE id = ?',
       [deliveryId]
     );
     return true;
