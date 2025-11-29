@@ -144,6 +144,19 @@ export async function deliverItemsToDepot(
 
     console.log(`🎁 Delivering ${items.length} items to player ${playerId} depot...`);
 
+    // Find the depot container (look for existing items and find their parent container)
+    const [existingItems] = await connection.query(
+      'SELECT pid FROM player_depotitems WHERE player_id = ? AND pid != 0 LIMIT 1',
+      [playerId]
+    ) as any[];
+
+    // Use the pid from existing items, or default to 0 if no items exist yet
+    const depotContainerPid = existingItems && existingItems.length > 0
+      ? existingItems[0].pid
+      : 0;
+
+    console.log(`  📦 Using depot container pid: ${depotContainerPid}`);
+
     // Get the next available sid for this player
     const [maxSid] = await connection.query(
       'SELECT COALESCE(MAX(sid), 100) as max_sid FROM player_depotitems WHERE player_id = ?',
@@ -154,13 +167,12 @@ export async function deliverItemsToDepot(
 
     // Insert each item into depot
     for (const item of items) {
-      console.log(`  📦 Adding ${item.count}x ${item.name} (ID: ${item.itemId}) to depot`);
+      console.log(`  📦 Adding ${item.count}x ${item.name} (ID: ${item.itemId}) to depot with pid=${depotContainerPid}`);
 
-      // Insert item directly into depot
-      // pid = 0 means it's at the root level of depot (or you can use a specific depot box sid)
+      // Insert item directly into depot using the correct parent container
       await connection.query(
         'INSERT INTO player_depotitems (player_id, sid, pid, itemtype, count, attributes) VALUES (?, ?, ?, ?, ?, ?)',
-        [playerId, nextSid, 0, item.itemId, item.count, '']
+        [playerId, nextSid, depotContainerPid, item.itemId, item.count, '']
       );
 
       nextSid++;

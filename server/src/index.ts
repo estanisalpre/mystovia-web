@@ -73,7 +73,6 @@ let astroHandler = null;
 try {
   const mod = await import("../../dist/server/entry.mjs");
   astroHandler = mod.handler;
-  console.log("⚡ Astro SSR handler loaded.");
 } catch (e) {
   console.error("❌ Astro SSR handler NOT found:", e);
 }

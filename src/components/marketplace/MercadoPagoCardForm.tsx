@@ -372,7 +372,7 @@ export default function MercadoPagoCardForm({
           <button
             type="submit"
             disabled={processing}
-            className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg font-bold hover:from-blue-700 hover:to-purple-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="flex-1 bg-linear-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg font-bold hover:from-blue-700 hover:to-purple-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {processing ? 'Procesando...' : `Pagar $${amount.toFixed(2)}`}
           </button>
