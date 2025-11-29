@@ -2,6 +2,7 @@
 import { MystoviaLogo } from "../assets/logos";
 import CartButton from "./CartButton";
 import HeaderAuth from "./HeaderAuth";
+import { Store } from "@lucide/astro";
 ---
 
 <header class="fixed z-100 top-0 flex-center w-full px-42 py-2 backdrop-blur-md bg-black/30">
@@ -9,30 +10,25 @@ import HeaderAuth from "./HeaderAuth";
     <img
       src={MystoviaLogo.src}
       alt="Mystovia Logo"
-      class="w-50 h-auto cursor-pointer"
+      class="w-50 h-auto cursor-pointer transform transition-all hover:mb-2"
     />
   </a>
 
-  <nav class="w-full flex-center gap-2 px-4 py-2">
-    <a
-      href="/downloads"
-      class="hover:text-yellow-500 transition"
-      >Descargas</a
-    >
-    <a
-      href="/marketplace"
-      class="hover:text-yellow-500 transition font-semibold"
-      >Tienda</a
-    >
-    <a
-      href="/rules"
-      class="hover:text-yellow-500 transition"
-      >Reglas</a
-    >
+  <nav class="w-full medieval-font font-semibold flex-center gap-6 px-4 py-2">
+    <a href="/marketplace" class="nav-link-important">
+      <Store size={18} /> Tienda
+    </a>
+    <a href="/news" class="nav-link">Noticias</a>
+    <a href="/forum" class="nav-link">Foro</a>
+    <a href="/wiki" class="nav-link">Wiki</a>
+    <a href="/downloads" class="nav-link">Descargas</a>
+    <a href="/rules" class="nav-link">Reglas</a>
+    <a href="/faqs" class="nav-link">FAQs</a>
+    <a href="/support" class="nav-link">Soporte</a>
   </nav>
 
-  <div class="flex-center gap-4">
+  <aside class="flex-center gap-4">
     <CartButton client:only="react" />
     <HeaderAuth client:only="react" />
-  </div>
+  </aside>
 </header>

@@ -58,6 +58,15 @@ export async function createSingleProductPreference(
     external_reference: options.orderId,
     // Webhook notification URL
     notification_url: `${backendUrl}/api/marketplace/mp/webhook`,
+    // Metadata to help with debugging
+    metadata: {
+      order_id: options.orderId,
+      product_id: options.productId,
+    },
+    // Payment methods configuration
+    payment_methods: {
+      installments: 1, // Single payment only
+    },
   };
 
   // Only add back_urls and auto_return if we're NOT in localhost
@@ -89,6 +98,49 @@ export async function createSingleProductPreference(
 export async function getPaymentById(id: string) {
   const payment = new Payment(client);
   return payment.get({ id });
+}
+
+/**
+ * Create a payment with card token (Checkout API)
+ * Used when integrating the card form directly in the frontend
+ */
+export async function createCardPayment(paymentData: {
+  token: string;
+  issuer_id: string | number;
+  payment_method_id: string;
+  transaction_amount: number;
+  installments: number;
+  description: string;
+  payer: {
+    email: string;
+    identification: {
+      type: string;
+      number: string;
+    };
+  };
+  external_reference?: string;
+  metadata?: any;
+}) {
+  const payment = new Payment(client);
+
+  // Convert issuer_id to number if it's a string
+  const issuerId = typeof paymentData.issuer_id === 'string'
+    ? parseInt(paymentData.issuer_id, 10)
+    : paymentData.issuer_id;
+
+  return payment.create({
+    body: {
+      token: paymentData.token,
+      issuer_id: issuerId,
+      payment_method_id: paymentData.payment_method_id,
+      transaction_amount: paymentData.transaction_amount,
+      installments: paymentData.installments,
+      description: paymentData.description,
+      payer: paymentData.payer,
+      external_reference: paymentData.external_reference,
+      metadata: paymentData.metadata,
+    },
+  });
 }
 
 /**

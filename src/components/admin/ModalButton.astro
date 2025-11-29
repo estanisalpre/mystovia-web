@@ -1,0 +1,29 @@
+---
+import { hasPermission } from '@utils/permissions';
+
+interface Props {
+    user: any;
+    permission: string;
+    btnName: string;
+    btnDescription: string;
+    url: string;
+    icon: any; 
+}
+
+const { user, permission, btnName, btnDescription, url, icon: Icon } = Astro.props;
+---
+
+{hasPermission(user?.groupId, permission) && (
+  <a
+    href={url}
+    class="modal-button-container"
+  >
+    <div class="card-body flex flex-col items-start gap-2">
+      <div class="flex items-center gap-2 text-primary">
+        <Icon size={22} color="#7bf1a8" /> 
+        <h2 class="font-extrabold text-green-300">{btnName}</h2>
+      </div>
+      <p>{btnDescription}</p>
+    </div>
+  </a>
+)}

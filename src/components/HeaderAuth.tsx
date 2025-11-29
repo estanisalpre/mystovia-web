@@ -1,11 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
-import { LogOut, User, Users, ChevronDown } from 'lucide-react';
+import { LogOut, User, Users, ChevronDown, Shield } from 'lucide-react';
 import { verifyAuth, logout as apiLogout } from '../utils/api';
+import { hasPermission } from '../utils/permissions';
 
 interface UserData {
   id: number;
   email: string;
   accountName: string;
+  groupId?: number;
 }
 
 export default function HeaderAuth() {
@@ -45,7 +47,8 @@ export default function HeaderAuth() {
         setUser({
           id: result.data.user.id,
           email: result.data.user.email,
-          accountName: result.data.user.accountName
+          accountName: result.data.user.accountName,
+          groupId: result.data.user.groupId
         });
         setIsLoggedIn(true);
       } else {
@@ -132,6 +135,18 @@ export default function HeaderAuth() {
                 <span>Mis personajes</span>
               </a>
 
+              {/* Panel Admin - Solo para usuarios con permisos */}
+              {hasPermission(user.groupId, 'view_admin_panel') && (
+                <a
+                  href="/admin"
+                  className="flex items-center gap-3 px-4 py-3 text-sm text-yellow-400 hover:bg-gray-700 hover:text-yellow-300 transition-colors"
+                  onClick={() => setIsDropdownOpen(false)}
+                >
+                  <Shield size={18} />
+                  <span className="font-semibold">Panel Admin</span>
+                </a>
+              )}
+
               {/* Divider */}
               <div className="border-t border-gray-700 my-1"></div>
 
@@ -154,18 +169,18 @@ export default function HeaderAuth() {
   }
 
   return (
-    <div className="flex items-center gap-4">
+    <div className="flex text-md items-center gap-4 medieval-font font-bold">
       <a
         href="/login"
-        className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded transition text-sm font-medium"
+        className="px-4 py-2 border backdrop-blur-md transform hover:mb-2 transition-all"
       >
-        INGRESAR
+        Ingresar
       </a>
       <a
         href="/register"
-        className="px-4 py-2 bg-yellow-600 hover:bg-yellow-700 rounded transition text-sm font-medium"
+        className="px-4 py-2 bg-yellow-500 text-black transform hover:mb-2 transition-all"
       >
-        REGISTRARME
+        Registrarme
       </a>
     </div>
   );

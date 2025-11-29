@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { X, AlertCircle, Check } from 'lucide-react';
-import { getCharacters, createCheckout } from '../../utils/api';
+import { getCharacters } from '../../utils/api';
+import MercadoPagoCardForm from './MercadoPagoCardForm';
 
 interface Character {
   id: number;
@@ -13,7 +14,7 @@ interface CheckoutModalProps {
   isOpen: boolean;
   onClose: () => void;
   total: number;
-  onSuccess: () => void;
+  onSuccess?: () => void;
 }
 
 export default function CheckoutModal({
@@ -24,15 +25,16 @@ export default function CheckoutModal({
 }: CheckoutModalProps) {
   const [characters, setCharacters] = useState<Character[]>([]);
   const [selectedCharacter, setSelectedCharacter] = useState<number | null>(null);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [showPaymentForm, setShowPaymentForm] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
       loadCharacters();
       setError('');
       setSuccess(false);
+      setShowPaymentForm(false);
     }
   }, [isOpen]);
 
@@ -46,7 +48,6 @@ export default function CheckoutModal({
           setSelectedCharacter(result.data.characters[0].id);
         }
       } else {
-        // If authentication fails, user will be redirected to login by the api helper
         console.error('Failed to load characters:', result.error);
       }
     } catch (error) {
@@ -54,34 +55,42 @@ export default function CheckoutModal({
     }
   };
 
-  const handleCheckout = async () => {
+  const handleProceedToPayment = () => {
     if (!selectedCharacter) {
       setError('Please select a character to receive the items');
       return;
     }
 
-    setLoading(true);
     setError('');
+    setShowPaymentForm(true);
+  };
 
-    try {
-      const result = await createCheckout(selectedCharacter);
+  const handlePaymentSuccess = (paymentData: any) => {
+    console.log('Payment successful:', paymentData);
+    setSuccess(true);
 
-      if (result.success && result.data?.init_point) {
-        // Redirect to MercadoPago payment page
-        // Use sandbox_init_point for testing, init_point for production
-        const paymentUrl = import.meta.env.DEV
-          ? result.data.sandbox_init_point || result.data.init_point
-          : result.data.init_point;
+    // Dispatch cart update event
+    window.dispatchEvent(new Event('cart-updated'));
 
-        window.location.href = paymentUrl;
-      } else {
-        setError(result.error || 'Failed to create checkout');
-      }
-    } catch (error) {
-      console.error('Error creating checkout:', error);
-      setError('Failed to create checkout. Please try again.');
-    } finally {
-      setLoading(false);
+    // Close modal after showing success message
+    setTimeout(() => {
+      onSuccess?.();
+      onClose();
+    }, 2000);
+  };
+
+  const handlePaymentError = (error: string) => {
+    console.error('Payment error:', error);
+    setError(error);
+    setShowPaymentForm(false);
+  };
+
+  const handleCancel = () => {
+    if (showPaymentForm) {
+      setShowPaymentForm(false);
+      setError('');
+    } else {
+      onClose();
     }
   };
 
@@ -92,16 +101,18 @@ export default function CheckoutModal({
       {/* Overlay */}
       <div
         className="fixed inset-0 bg-black/70 z-60"
-        onClick={onClose}
+        onClick={handleCancel}
       ></div>
 
       {/* Modal */}
-      <div className="fixed left-1/2 top-60 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-gray-900 rounded-xl shadow-2xl z-70 border border-gray-800">
+      <div className="fixed left-1/2 top-100 -translate-x-1/2 -translate-y-1/2 w-full max-w-4xl bg-gray-900 rounded-xl shadow-2xl z-70 border border-gray-800 max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-800">
-          <h2 className="text-2xl font-bold text-white">Checkout</h2>
+        <div className="flex items-center justify-between p-6 border-b border-gray-800 sticky top-0 bg-gray-900 z-10">
+          <h2 className="text-2xl font-bold text-white">
+            {showPaymentForm ? 'Complete Payment' : 'Checkout'}
+          </h2>
           <button
-            onClick={onClose}
+            onClick={handleCancel}
             className="text-gray-400 hover:text-white transition-colors"
           >
             <X size={24} />
@@ -115,11 +126,19 @@ export default function CheckoutModal({
               <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Check size={32} className="text-white" />
               </div>
-              <h3 className="text-xl font-bold text-white mb-2">Order Created!</h3>
+              <h3 className="text-xl font-bold text-white mb-2">Payment Successful!</h3>
               <p className="text-gray-400">
-                Your order has been created successfully. Complete the payment to receive your items.
+                Your payment has been processed successfully. Items will be delivered to your character shortly.
               </p>
             </div>
+          ) : showPaymentForm ? (
+            <MercadoPagoCardForm
+              amount={total}
+              playerId={selectedCharacter!}
+              onPaymentSuccess={handlePaymentSuccess}
+              onPaymentError={handlePaymentError}
+              onCancel={handleCancel}
+            />
           ) : (
             <>
               <div className="mb-6">
@@ -167,16 +186,16 @@ export default function CheckoutModal({
 
               <div className="bg-blue-500/10 border border-blue-500/50 rounded-lg p-4 mb-6">
                 <p className="text-blue-400 text-sm">
-                  <strong>Note:</strong> You will be redirected to MercadoPago to complete your payment securely.
+                  <strong>Note:</strong> Payment form will be shown in the next step. Your card data is handled securely by MercadoPago.
                 </p>
               </div>
 
               <button
-                onClick={handleCheckout}
-                disabled={loading || characters.length === 0}
-                className="w-full bg-linear-to-r from-blue-600 to-purple-600 text-white py-4 rounded-lg font-bold hover:from-blue-700 hover:to-purple-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                onClick={handleProceedToPayment}
+                disabled={characters.length === 0}
+                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-4 rounded-lg font-bold hover:from-blue-700 hover:to-purple-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? 'Redirecting to Payment...' : 'Proceed to Payment'}
+                Proceed to Payment
               </button>
             </>
           )}

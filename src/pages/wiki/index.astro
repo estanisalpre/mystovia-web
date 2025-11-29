@@ -1,0 +1,45 @@
+---
+import Layout from '../../layouts/Layout.astro';
+
+const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3000';
+
+let categoriesData;
+
+try {
+  const response = await fetch(`${API_URL}/api/wiki/categories`);
+  categoriesData = await response.json();
+} catch (error) {
+  console.error('Error fetching categories:', error);
+  categoriesData = { categories: [] };
+}
+
+const { categories } = categoriesData;
+---
+
+<Layout title="Wiki del Servidor">
+  <section class="page-container">
+    <div class="mb-8">
+      <h1 class="text-4xl font-bold mb-4">📚 Wiki del Servidor</h1>
+      <p class="text-lg text-base-content/70">
+        Todo lo que necesitas saber sobre el servidor
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {categories.map((category: any) => (
+        <a href={`/wiki/${category.slug}`} class="card bg-base-100 shadow-xl hover:shadow-2xl transition-all hover:scale-105">
+          <div class="card-body">
+            <h2 class="card-title text-2xl">{category.name}</h2>
+            {category.description && (
+              <p class="text-base-content/70">{category.description}</p>
+            )}
+            <div class="card-actions justify-between items-center mt-4">
+              <span class="badge badge-primary">{category.articles_count || 0} artículos</span>
+              <span class="text-primary">Ver →</span>
+            </div>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+</Layout>

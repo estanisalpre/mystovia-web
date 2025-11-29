@@ -1,0 +1,91 @@
+---
+import Layout from '@layouts/Layout.astro';
+import HeaderComponent from '@lib/components/shared/HeaderComponent.astro';
+import { Download } from '@lucide/astro';
+
+const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3000';
+
+let downloadsData;
+
+try {
+  const response = await fetch(`${API_URL}/api/downloads`);
+  downloadsData = await response.json();
+} catch (error) {
+  console.error('Error fetching downloads:', error);
+  downloadsData = { categories: [] };
+}
+
+const { categories } = downloadsData;
+
+function formatFileSize(bytes: number): string {
+  if (!bytes) return 'N/A';
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(1024));
+  return Math.round((bytes / Math.pow(1024, i)) * 100) / 100 + ' ' + sizes[i];
+}
+---
+
+<Layout title="Descargas">
+  <section class="page-container">
+    <HeaderComponent
+      title="Descargas"
+      description="Descarga los archivos más recientes y esenciales para tu experiencia en Mystovia."
+      icon={Download}
+    />
+
+    {categories.length === 0 ? (
+      <section class="text-center py-12">
+        <p class="text-lg text-base-content/70">No hay descargas disponibles aún.</p>
+      </section>
+    ) : (
+      <section class="space-y-8">
+        {categories.map((category: any) => (
+          <div>
+            <h2 class="text-2xl font-bold mb-4">{category.name}</h2>
+            {category.description && (
+              <p class="text-base-content/70 mb-4">{category.description}</p>
+            )}
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {category.downloads.map((download: any) => (
+                <div class="card bg-base-100 shadow-xl">
+                  <div class="card-body">
+                    <h3 class="card-title">{download.name}</h3>
+
+                    {download.version && (
+                      <div class="badge badge-secondary">{download.version}</div>
+                    )}
+
+                    {download.description && (
+                      <p class="text-sm text-base-content/70">{download.description}</p>
+                    )}
+
+                    <div class="text-xs text-base-content/60 space-y-1 mt-2">
+                      {download.file_size && (
+                        <div>📦 Tamaño: {formatFileSize(download.file_size)}</div>
+                      )}
+                      <div>⬇️ {download.download_count} descargas</div>
+                      <div>📅 {new Date(download.created_at).toLocaleDateString('es-ES')}</div>
+                    </div>
+
+                    <div class="card-actions justify-end mt-4">
+                      <a
+                        href={download.file_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onclick={`fetch('/api/downloads/${download.id}/register', { method: 'POST' })`}
+                        class="btn btn-primary btn-sm"
+                      >
+                        Descargar
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </section>
+    )}
+  </section>
+</Layout>

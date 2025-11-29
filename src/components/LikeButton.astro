@@ -1,0 +1,57 @@
+---
+interface Props {
+  newsId: number;
+  initialLikes: number;
+  userLiked: boolean;
+  isAuthenticated: boolean;
+}
+
+const { newsId, initialLikes, userLiked, isAuthenticated } = Astro.props;
+---
+
+<div
+  x-data={`{
+    likes: ${initialLikes},
+    liked: ${userLiked},
+    loading: false,
+    async toggleLike() {
+      if (!${isAuthenticated}) {
+        window.location.href = '/login';
+        return;
+      }
+
+      this.loading = true;
+      try {
+        const response = await fetch('/api/news/${newsId}/like', {
+          method: 'POST',
+          credentials: 'include'
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          this.liked = data.liked;
+          this.likes += data.liked ? 1 : -1;
+        } else {
+          alert(data.error || 'Error al dar like');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error al dar like');
+      } finally {
+        this.loading = false;
+      }
+    }
+  }`}
+>
+  <button
+    @click="toggleLike()"
+    :disabled="loading"
+    class="btn btn-sm gap-2"
+    :class="liked ? 'btn-primary' : 'btn-outline'"
+  >
+    <span x-show="!loading">❤️</span>
+    <span x-show="loading" class="loading loading-spinner loading-xs"></span>
+    <span x-text="likes"></span>
+  </button>
+</div>

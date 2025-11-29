@@ -19,6 +19,7 @@
   "packageManager": "pnpm@10.17.0",
   "dependencies": {
     "@astrojs/db": "^0.18.2",
+    "@astrojs/node": "^9.5.0",
     "@astrojs/vue": "^5.1.2",
     "@lucide/astro": "^0.552.0",
     "@tailwindcss/vite": "^4.1.16",
@@ -32,6 +33,7 @@
     "lucide-react": "^0.552.0",
     "mercadopago": "^2.10.0",
     "mysql2": "^3.15.3",
+    "nodemailer": "^7.0.10",
     "postcss": "^8.5.6",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
@@ -50,6 +52,7 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/mysql": "^2.15.27",
     "@types/node": "^24.10.0",
+    "@types/nodemailer": "^7.0.3",
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
     "concurrently": "^9.2.1",

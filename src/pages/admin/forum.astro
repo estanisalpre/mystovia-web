@@ -1,0 +1,114 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { hasPermission } from '../../utils/permissions';
+
+const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3000';
+
+const accessToken = Astro.cookies.get('accessToken')?.value;
+let user = null;
+
+if (accessToken) {
+  try {
+    const verifyResponse = await fetch(`${API_URL}/api/auth/verify`, {
+      headers: { Cookie: `accessToken=${accessToken}` }
+    });
+    if (verifyResponse.ok) {
+      const data = await verifyResponse.json();
+      user = data.user;
+    }
+  } catch (error) {
+    console.error('Error verifying user:', error);
+  }
+}
+
+if (!hasPermission(user?.groupId, 'manage_forum')) {
+  return Astro.redirect('/');
+}
+
+// Fetch categories with recent topics
+let categoriesData;
+
+try {
+  const response = await fetch(`${API_URL}/api/forum/categories`);
+  categoriesData = await response.json();
+} catch (error) {
+  console.error('Error fetching data:', error);
+  categoriesData = { categories: [] };
+}
+
+const { categories } = categoriesData;
+---
+
+<Layout title="Admin - Moderación de Foro">
+  <section class="page-container">
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-3xl font-bold">💬 Moderación de Foro</h1>
+      <a href="/admin" class="btn btn-ghost">← Volver</a>
+    </div>
+
+    <div class="alert alert-info mb-6">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current shrink-0 w-6 h-6">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+      <span>Desde aquí puedes moderar temas. Ve a cada tema individualmente para fijarlo, bloquearlo o eliminarlo.</span>
+    </div>
+
+    <div class="space-y-6 border-red-500">
+      {categories.map((category: any) => (
+        <div class="card bg-base-100 shadow-xl">
+          <div class="card-body">
+            <div class="flex justify-between items-start">
+              <div>
+                <h2 class="card-title text-2xl">{category.name}</h2>
+                {category.description && (
+                  <p class="text-base-content/70 mt-2">{category.description}</p>
+                )}
+              </div>
+              <a href={`/forum/category/${category.id}`} class="btn btn-primary btn-sm">
+                Ver Categoría →
+              </a>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="text-sm text-base-content/60">
+              <p>Desde la vista de categoría y temas individuales puedes:</p>
+              <ul class="list-disc list-inside mt-2 space-y-1">
+                <li>📌 Fijar/Desfijar temas importantes</li>
+                <li>🔒 Bloquear/Desbloquear temas</li>
+                <li>🗑️ Eliminar temas y comentarios inapropiados</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="stats shadow">
+        <div class="stat">
+          <div class="stat-title">Total Categorías</div>
+          <div class="stat-value text-primary">{categories.length}</div>
+        </div>
+      </div>
+
+      <div class="card bg-base-200">
+        <div class="card-body">
+          <h3 class="font-semibold">🔧 Acciones Rápidas</h3>
+          <div class="space-y-2 mt-2">
+            <a href="/forum" class="btn btn-sm btn-outline w-full">Ver Foro Público</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="card bg-base-200">
+        <div class="card-body">
+          <h3 class="font-semibold">📊 Estadísticas</h3>
+          <p class="text-sm text-base-content/70">
+            Las estadísticas detalladas estarán disponibles en futuras actualizaciones.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>

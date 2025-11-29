@@ -1,0 +1,151 @@
+---
+export const prerender = false;
+
+import Layout from '../../layouts/Layout.astro';
+import LikeButton from '../../components/LikeButton.astro';
+
+const { id } = Astro.params;
+
+// Get user from cookies
+const accessToken = Astro.cookies.get('accessToken')?.value;
+let user = null;
+
+if (accessToken) {
+  try {
+    const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3000';
+    const verifyResponse = await fetch(`${API_URL}/api/auth/verify`, {
+      headers: {
+        Cookie: `accessToken=${accessToken}`
+      }
+    });
+
+    if (verifyResponse.ok) {
+      const data = await verifyResponse.json();
+      user = data.user;
+    }
+  } catch (error) {
+    console.error('Error verifying user:', error);
+  }
+}
+
+// Fetch news
+const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3000';
+let newsData;
+
+try {
+  const response = await fetch(`${API_URL}/api/news/${id}`);
+  newsData = await response.json();
+
+  if (!response.ok) {
+    return Astro.redirect('/news');
+  }
+} catch (error) {
+  console.error('Error fetching news:', error);
+  return Astro.redirect('/news');
+}
+
+const { news: newsItem } = newsData;
+---
+
+<Layout title={newsItem.title}>
+  <div class="container mx-auto px-4 py-8 max-w-4xl">
+    <!-- Breadcrumb -->
+    <div class="text-sm breadcrumbs mb-4">
+      <ul>
+        <li><a href="/">Inicio</a></li>
+        <li><a href="/news">Noticias</a></li>
+        <li>{newsItem.title}</li>
+      </ul>
+    </div>
+
+    <!-- Article -->
+    <article class="bg-base-100 rounded-lg shadow-xl overflow-hidden">
+      {newsItem.image_url && (
+        <figure class="w-full h-96 overflow-hidden">
+          <img
+            src={newsItem.image_url}
+            alt={newsItem.title}
+            class="w-full h-full object-cover"
+          />
+        </figure>
+      )}
+
+      <div class="p-8">
+        <!-- Category -->
+        {newsItem.category_name && (
+          <div class="badge badge-primary mb-4">{newsItem.category_name}</div>
+        )}
+
+        <!-- Title -->
+        <h1 class="text-4xl font-bold mb-4">{newsItem.title}</h1>
+
+        <!-- Meta info -->
+        <div class="flex items-center justify-between mb-6 pb-6 border-b border-base-300">
+          <div class="flex items-center gap-4 text-sm text-base-content/60">
+            <span class="flex items-center gap-1">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+              </svg>
+              {newsItem.author_name}
+            </span>
+            <span class="flex items-center gap-1">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              {new Date(newsItem.published_at).toLocaleDateString('es-ES', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              })}
+            </span>
+            <span class="flex items-center gap-1">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+              {newsItem.views_count} vistas
+            </span>
+          </div>
+
+          <LikeButton
+            newsId={newsItem.id}
+            initialLikes={newsItem.likes_count}
+            userLiked={newsItem.userLiked || false}
+            isAuthenticated={!!user}
+          />
+        </div>
+
+        <!-- Content -->
+        <div class="prose prose-lg max-w-none" set:html={newsItem.content}></div>
+      </div>
+    </article>
+
+    <!-- Back button -->
+    <div class="mt-8">
+      <a href="/news" class="btn btn-outline">
+        ← Volver a Noticias
+      </a>
+    </div>
+  </div>
+</Layout>
+
+<style>
+  .prose {
+    color: inherit;
+  }
+
+  .prose h1,
+  .prose h2,
+  .prose h3,
+  .prose h4 {
+    color: inherit;
+  }
+
+  .prose a {
+    color: hsl(var(--p));
+  }
+
+  .prose a:hover {
+    color: hsl(var(--pf));
+  }
+</style>

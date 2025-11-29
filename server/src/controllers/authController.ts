@@ -70,13 +70,13 @@ export const register = async (req: Request<{}, {}, RegisterRequest>, res: Respo
       [userId, refreshToken]
     );
 
-    res.cookie('accessToken', accessToken, cookieConfig(15 * 60 * 1000));
+    res.cookie('accessToken', accessToken, cookieConfig(120 * 60 * 1000));
     res.cookie('refreshToken', refreshToken, cookieConfig(7 * 24 * 60 * 60 * 1000));
 
     res.status(201).json({
       success: true,
       message: 'Usuario registrado con éxito.',
-      user: { id: userId, email, accountName: username }
+      user: { id: userId, email, accountName: username, groupId: 1 }
     });
   } catch (error) {
     console.error('Error al registrar:', error);
@@ -122,7 +122,8 @@ export const login = async (req: Request<{}, {}, LoginRequest>, res: Response) =
         id: user.id,
         email: user.email,
         accountName: user.name,
-        premdays: user.premdays
+        premdays: user.premdays,
+        groupId: user.group_id
       }
     });
   } catch (error) {
@@ -177,7 +178,7 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
     const newAccessToken = jwt.sign(
       { userId: user.id, email: user.email, accountName: user.name },
       process.env.JWT_SECRET || 'secret',
-      { expiresIn: '15m' }
+      { expiresIn: '120m' }
     );
 
     res.cookie('accessToken', newAccessToken, cookieConfig(15 * 60 * 1000));
@@ -197,7 +198,7 @@ export const verifyUser = async (req: Request, res: Response) => {
       return res.status(401).json({ error: 'No autenticado.' });
 
     const [users] = await db.query(
-      'SELECT id, email, name, premdays FROM accounts WHERE id = ?',
+      'SELECT id, email, name, premdays, group_id FROM accounts WHERE id = ?',
       [user.userId]
     ) as any[];
 
@@ -211,7 +212,8 @@ export const verifyUser = async (req: Request, res: Response) => {
         id: userData.id,
         email: userData.email,
         accountName: userData.name,
-        premdays: userData.premdays
+        premdays: userData.premdays,
+        groupId: userData.group_id
       }
     });
   } catch (error) {
