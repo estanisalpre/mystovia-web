@@ -6,7 +6,7 @@ import {
   refreshAccessToken,
   verifyUser
 } from '../controllers/authController.js';
-import { authenticateToken } from '../middleware/authMiddleware.js';
+// import { authenticateToken } from '../middleware/authMiddleware.js'; // JWT COMENTADO - No se usa por ahora
 
 const router = Router();
 
@@ -16,7 +16,7 @@ router.post('/login', login);
 router.post('/logout', logout);
 router.post('/refresh', refreshAccessToken);
 
-// Protected routes
-router.get('/verify', authenticateToken, verifyUser);
+// Verify route - ahora verifyUser maneja su propia autenticación (sin JWT)
+router.get('/verify', verifyUser);
 
 export default router;

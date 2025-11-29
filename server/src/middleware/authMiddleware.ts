@@ -1,10 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
+// import jwt from 'jsonwebtoken'; // JWT COMENTADO - No se usa por ahora
+import db from '../config/database.js';
 
+/* ⏸️ JWT DESACTIVADO TEMPORALMENTE
 /**
  * Authenticate user using HttpOnly cookie or Authorization header
  * Supports both cookie-based auth (preferred) and Bearer token for backwards compatibility
- */
+ *
 export const authenticateToken = (req: Request, res: Response, next: NextFunction) => {
   // Try to get token from cookie first (more secure)
   let token = req.cookies?.accessToken;
@@ -42,11 +44,58 @@ export const authenticateToken = (req: Request, res: Response, next: NextFunctio
     next();
   });
 };
+*/
 
+/**
+ * Authenticate user using simple cookie-based session (without JWT)
+ */
+export const authenticateToken = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const userId = req.cookies?.userId;
+
+    if (!userId) {
+      return res.status(401).json({
+        error: 'No autenticado',
+        code: 'NO_AUTH'
+      });
+    }
+
+    // Verificar que el usuario existe en la base de datos
+    const [users] = await db.query(
+      'SELECT id, email, name, group_id FROM accounts WHERE id = ?',
+      [userId]
+    ) as any[];
+
+    if (!users || users.length === 0) {
+      return res.status(401).json({
+        error: 'Usuario no encontrado',
+        code: 'USER_NOT_FOUND'
+      });
+    }
+
+    const user = users[0];
+    (req as any).user = {
+      userId: user.id,
+      email: user.email,
+      accountName: user.name,
+      groupId: user.group_id
+    };
+
+    next();
+  } catch (error) {
+    console.error('Auth middleware error:', error);
+    return res.status(500).json({
+      error: 'Error de autenticación',
+      code: 'AUTH_ERROR'
+    });
+  }
+};
+
+/* ⏸️ JWT DESACTIVADO TEMPORALMENTE
 /**
  * Optional authentication - attaches user if token exists but doesn't require it
  * Useful for endpoints that work for both authenticated and non-authenticated users
- */
+ *
 export const optionalAuth = (req: Request, _res: Response, next: NextFunction) => {
   let token = req.cookies?.accessToken;
 
@@ -65,4 +114,39 @@ export const optionalAuth = (req: Request, _res: Response, next: NextFunction) =
     }
     next();
   });
+};
+*/
+
+/**
+ * Optional authentication - attaches user if cookie exists but doesn't require it (without JWT)
+ */
+export const optionalAuth = async (req: Request, _res: Response, next: NextFunction) => {
+  try {
+    const userId = req.cookies?.userId;
+
+    if (!userId) {
+      return next();
+    }
+
+    // Verificar que el usuario existe en la base de datos
+    const [users] = await db.query(
+      'SELECT id, email, name, group_id FROM accounts WHERE id = ?',
+      [userId]
+    ) as any[];
+
+    if (users && users.length > 0) {
+      const user = users[0];
+      (req as any).user = {
+        userId: user.id,
+        email: user.email,
+        accountName: user.name,
+        groupId: user.group_id
+      };
+    }
+
+    next();
+  } catch (error) {
+    console.error('Optional auth error:', error);
+    next(); // Continue even if there's an error
+  }
 };
