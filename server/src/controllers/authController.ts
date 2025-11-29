@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import jwt from 'jsonwebtoken';
+// import jwt from 'jsonwebtoken'; // JWT COMENTADO - No se usa por ahora
 import bcrypt from 'bcryptjs';
 import db from '../config/database.js';
 import { RegisterRequest, LoginRequest } from '../types/index.js';
@@ -9,7 +9,8 @@ const isProduction = process.env.NODE_ENV === 'production';
 const cookieDomain = isProduction ? new URL(process.env.FRONTEND_URL || '').hostname : undefined;
 const sameSiteMode: 'none' | 'lax' = isProduction ? 'none' : 'lax';
 
-/** 🔐 Genera tokens JWT */
+/* ⏸️ JWT DESACTIVADO TEMPORALMENTE
+/** 🔐 Genera tokens JWT *
 const generateTokens = (userId: number, email: string, username: string) => {
   const accessToken = jwt.sign(
     { userId, email, accountName: username },
@@ -25,13 +26,14 @@ const generateTokens = (userId: number, email: string, username: string) => {
 
   return { accessToken, refreshToken };
 };
+*/
 
 /** 🧩 Configuración base para cookies */
 const cookieConfig = (maxAge: number) => ({
   httpOnly: true,
   secure: isProduction,
   sameSite: sameSiteMode,
-  domain: isProduction ? undefined : undefined, 
+  domain: isProduction ? undefined : undefined,
   maxAge
 });
 
@@ -63,6 +65,8 @@ export const register = async (req: Request<{}, {}, RegisterRequest>, res: Respo
     );
 
     const userId = (result as any).insertId;
+
+    /* ⏸️ JWT DESACTIVADO TEMPORALMENTE
     const { accessToken, refreshToken } = generateTokens(userId, email, username);
 
     await db.query(
@@ -72,6 +76,11 @@ export const register = async (req: Request<{}, {}, RegisterRequest>, res: Respo
 
     res.cookie('accessToken', accessToken, cookieConfig(120 * 60 * 1000));
     res.cookie('refreshToken', refreshToken, cookieConfig(7 * 24 * 60 * 60 * 1000));
+    */
+
+    // 🍪 Guardar sesión simple con cookie de usuario (sin JWT)
+    res.cookie('userId', userId, cookieConfig(7 * 24 * 60 * 60 * 1000));
+    res.cookie('userEmail', email, cookieConfig(7 * 24 * 60 * 60 * 1000));
 
     res.status(201).json({
       success: true,
@@ -104,6 +113,7 @@ export const login = async (req: Request<{}, {}, LoginRequest>, res: Response) =
     if (!isPasswordValid)
       return res.status(401).json({ error: 'Credenciales inválidas.' });
 
+    /* ⏸️ JWT DESACTIVADO TEMPORALMENTE
     const { accessToken, refreshToken } = generateTokens(user.id, user.email, user.name);
 
     await db.query('DELETE FROM refresh_tokens WHERE account_id = ?', [user.id]);
@@ -114,6 +124,11 @@ export const login = async (req: Request<{}, {}, LoginRequest>, res: Response) =
 
     res.cookie('accessToken', accessToken, cookieConfig(15 * 60 * 1000));
     res.cookie('refreshToken', refreshToken, cookieConfig(7 * 24 * 60 * 60 * 1000));
+    */
+
+    // 🍪 Guardar sesión simple con cookie de usuario (sin JWT)
+    res.cookie('userId', user.id, cookieConfig(7 * 24 * 60 * 60 * 1000));
+    res.cookie('userEmail', user.email, cookieConfig(7 * 24 * 60 * 60 * 1000));
 
     res.json({
       success: true,
@@ -133,8 +148,9 @@ export const login = async (req: Request<{}, {}, LoginRequest>, res: Response) =
 };
 
 /** 🚪 Logout */
-export const logout = async (req: Request, res: Response) => {
+export const logout = async (_req: Request, res: Response) => {
   try {
+    /* ⏸️ JWT DESACTIVADO TEMPORALMENTE
     const refreshToken = req.cookies.refreshToken;
     if (refreshToken) {
       await db.query('DELETE FROM refresh_tokens WHERE token = ?', [refreshToken]);
@@ -142,6 +158,11 @@ export const logout = async (req: Request, res: Response) => {
 
     res.clearCookie('accessToken', { domain: cookieDomain });
     res.clearCookie('refreshToken', { domain: cookieDomain });
+    */
+
+    // 🍪 Limpiar cookies simples (sin JWT)
+    res.clearCookie('userId', { domain: cookieDomain });
+    res.clearCookie('userEmail', { domain: cookieDomain });
 
     res.json({ success: true, message: 'Sesión cerrada con éxito.' });
   } catch (error) {
@@ -150,7 +171,8 @@ export const logout = async (req: Request, res: Response) => {
   }
 };
 
-/** 🔄 Refrescar token de acceso */
+/* ⏸️ JWT DESACTIVADO TEMPORALMENTE
+/** 🔄 Refrescar token de acceso *
 export const refreshAccessToken = async (req: Request, res: Response) => {
   try {
     const refreshToken = req.cookies.refreshToken;
@@ -189,8 +211,16 @@ export const refreshAccessToken = async (req: Request, res: Response) => {
     res.status(403).json({ error: 'Token inválido o expirado.' });
   }
 };
+*/
 
-/** 👤 Verificar usuario autenticado */
+/** 🔄 Refrescar token de acceso (versión sin JWT) */
+export const refreshAccessToken = async (_req: Request, res: Response) => {
+  // Sin JWT, no hay necesidad de refrescar tokens
+  res.json({ success: true, message: 'No se requiere refrescar tokens.' });
+};
+
+/* ⏸️ JWT DESACTIVADO TEMPORALMENTE
+/** 👤 Verificar usuario autenticado (versión con JWT) *
 export const verifyUser = async (req: Request, res: Response) => {
   try {
     const user = (req as any).user;
@@ -200,6 +230,41 @@ export const verifyUser = async (req: Request, res: Response) => {
     const [users] = await db.query(
       'SELECT id, email, name, premdays, group_id FROM accounts WHERE id = ?',
       [user.userId]
+    ) as any[];
+
+    if (!users || users.length === 0)
+      return res.status(404).json({ error: 'Usuario no encontrado.' });
+
+    const userData = users[0];
+    res.json({
+      success: true,
+      user: {
+        id: userData.id,
+        email: userData.email,
+        accountName: userData.name,
+        premdays: userData.premdays,
+        groupId: userData.group_id
+      }
+    });
+  } catch (error) {
+    console.error('Verify user error:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+};
+*/
+
+/** 👤 Verificar usuario autenticado (versión sin JWT) */
+export const verifyUser = async (req: Request, res: Response) => {
+  try {
+    // Obtener el userId de las cookies simples
+    const userId = req.cookies?.userId;
+
+    if (!userId)
+      return res.status(401).json({ error: 'Usuario no existente.' });
+
+    const [users] = await db.query(
+      'SELECT id, email, name, premdays, group_id FROM accounts WHERE id = ?',
+      [userId]
     ) as any[];
 
     if (!users || users.length === 0)
