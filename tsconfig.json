@@ -6,6 +6,7 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "baseUrl": "src",
+    "skipLibCheck": true,
     "paths": {
       "@hooks/*": ["hooks/*"],
       "@lib/*": ["lib/*"],

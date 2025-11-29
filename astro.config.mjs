@@ -3,7 +3,6 @@ import vue from '@astrojs/vue';
 import tailwindcss from '@tailwindcss/vite';
 import react from '@astrojs/react';
 import path from "node:path";
-import node from '@astrojs/node';
 
 // https://astro.build/config
 export default defineConfig({
@@ -26,7 +25,5 @@ export default defineConfig({
     port: 4321,
   },
   output: 'server',
-  adapter: node({
-    mode: 'standalone'
-  }),
+  adapter: node({ mode: "standalone" })
 });
