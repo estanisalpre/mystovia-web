@@ -123,9 +123,9 @@ export async function deliverItemsToInbox(
 }
 
 /**
- * ADVANCED: Deliver items directly to player depot
- * This requires knowing the exact TFS schema
- * Use this if you want items to appear immediately in-game
+ * Queue items for delivery to player
+ * Items will be delivered by the TFS Lua script when player logs in
+ * This is the RECOMMENDED approach for TFS servers
  */
 export async function deliverItemsToDepot(
   playerId: number,
@@ -137,46 +137,11 @@ export async function deliverItemsToDepot(
   try {
     await connection.beginTransaction();
 
-    // TFS typically uses player_depotitems table
-    // Structure: (player_id, sid, pid, itemtype, count, attributes)
-    // sid = slot id (unique identifier for the item)
-    // pid = parent id (0 for depot containers, or the sid of the container holding this item)
+    console.log(`📦 Queueing ${items.length} items for delivery to player ${playerId}...`);
 
-    console.log(`🎁 Delivering ${items.length} items to player ${playerId} depot...`);
-
-    // Find the depot container (look for existing items and find their parent container)
-    const [existingItems] = await connection.query(
-      'SELECT pid FROM player_depotitems WHERE player_id = ? AND pid != 0 LIMIT 1',
-      [playerId]
-    ) as any[];
-
-    // Use the pid from existing items, or default to 0 if no items exist yet
-    const depotContainerPid = existingItems && existingItems.length > 0
-      ? existingItems[0].pid
-      : 0;
-
-    console.log(`  📦 Using depot container pid: ${depotContainerPid}`);
-
-    // Get the next available sid for this player
-    const [maxSid] = await connection.query(
-      'SELECT COALESCE(MAX(sid), 100) as max_sid FROM player_depotitems WHERE player_id = ?',
-      [playerId]
-    ) as any[];
-
-    let nextSid = maxSid[0].max_sid + 1;
-
-    // Insert each item into depot
-    for (const item of items) {
-      console.log(`  📦 Adding ${item.count}x ${item.name} (ID: ${item.itemId}) to depot with pid=${depotContainerPid}`);
-
-      // Insert item directly into depot using the correct parent container
-      await connection.query(
-        'INSERT INTO player_depotitems (player_id, sid, pid, itemtype, count, attributes) VALUES (?, ?, ?, ?, ?, ?)',
-        [playerId, nextSid, depotContainerPid, item.itemId, item.count, '']
-      );
-
-      nextSid++;
-    }
+    // NOTE: We do NOT insert into player_depotitems directly
+    // The TFS Lua script (marketplace_delivery.lua) will handle the actual item delivery
+    // This prevents issues with players being online and depot being cached in memory
 
     // Also log the delivery in item_deliveries table for tracking
     const itemsJson = JSON.stringify({
@@ -195,10 +160,11 @@ export async function deliverItemsToDepot(
 
     const accountId = players[0]?.account_id || 0;
 
-    // Try to insert delivery record (table may already exist without delivery_method column)
+    // Insert delivery record with claimed = 0 (pending delivery)
+    // The Lua script will set claimed = 1 when items are delivered
     try {
       await connection.query(
-        'INSERT INTO item_deliveries (order_id, player_id, account_id, items_json, claimed, claimed_at) VALUES (?, ?, ?, ?, 1, CURRENT_TIMESTAMP)',
+        'INSERT INTO item_deliveries (order_id, player_id, account_id, items_json, claimed) VALUES (?, ?, ?, ?, 0)',
         [orderId, playerId, accountId, itemsJson]
       );
     } catch (insertError: any) {
@@ -212,8 +178,8 @@ export async function deliverItemsToDepot(
             account_id INT NOT NULL,
             items_json TEXT NOT NULL,
             delivered_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            claimed TINYINT(1) DEFAULT 1,
-            claimed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            claimed TINYINT(1) DEFAULT 0,
+            claimed_at TIMESTAMP NULL,
             INDEX idx_player (player_id),
             INDEX idx_order (order_id),
             INDEX idx_claimed (claimed)
@@ -222,7 +188,7 @@ export async function deliverItemsToDepot(
 
         // Retry insert
         await connection.query(
-          'INSERT INTO item_deliveries (order_id, player_id, account_id, items_json, claimed, claimed_at) VALUES (?, ?, ?, ?, 1, CURRENT_TIMESTAMP)',
+          'INSERT INTO item_deliveries (order_id, player_id, account_id, items_json, claimed) VALUES (?, ?, ?, ?, 0)',
           [orderId, playerId, accountId, itemsJson]
         );
       } else {
@@ -232,7 +198,8 @@ export async function deliverItemsToDepot(
 
     await connection.commit();
 
-    console.log(`✅ Successfully delivered ${items.length} items to player ${playerId} depot!`);
+    console.log(`✅ Successfully queued ${items.length} items for delivery to player ${playerId}!`);
+    console.log(`   Items will be delivered automatically when the player logs in to the game.`);
     return true;
   } catch (error) {
     await connection.rollback();
