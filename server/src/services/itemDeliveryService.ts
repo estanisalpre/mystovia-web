@@ -175,24 +175,6 @@ export async function deliverItemsToDepot(
       delivery_method: 'depot'
     });
 
-    // Create delivery log table if not exists
-    await connection.query(`
-      CREATE TABLE IF NOT EXISTS item_deliveries (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        order_id INT NOT NULL,
-        player_id INT NOT NULL,
-        account_id INT NOT NULL,
-        items_json TEXT NOT NULL,
-        delivered_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        claimed TINYINT(1) DEFAULT 1,
-        claimed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        delivery_method VARCHAR(50) DEFAULT 'depot',
-        INDEX idx_player (player_id),
-        INDEX idx_order (order_id),
-        INDEX idx_claimed (claimed)
-      ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-    `);
-
     // Get player's account_id
     const [players] = await connection.query(
       'SELECT account_id FROM players WHERE id = ?',
@@ -201,11 +183,40 @@ export async function deliverItemsToDepot(
 
     const accountId = players[0]?.account_id || 0;
 
-    // Insert delivery record
-    await connection.query(
-      'INSERT INTO item_deliveries (order_id, player_id, account_id, items_json, claimed, claimed_at, delivery_method) VALUES (?, ?, ?, ?, 1, CURRENT_TIMESTAMP, ?)',
-      [orderId, playerId, accountId, itemsJson, 'depot']
-    );
+    // Try to insert delivery record (table may already exist without delivery_method column)
+    try {
+      await connection.query(
+        'INSERT INTO item_deliveries (order_id, player_id, account_id, items_json, claimed, claimed_at) VALUES (?, ?, ?, ?, 1, CURRENT_TIMESTAMP)',
+        [orderId, playerId, accountId, itemsJson]
+      );
+    } catch (insertError: any) {
+      // If table doesn't exist, create it
+      if (insertError.code === 'ER_NO_SUCH_TABLE') {
+        await connection.query(`
+          CREATE TABLE IF NOT EXISTS item_deliveries (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            order_id INT NOT NULL,
+            player_id INT NOT NULL,
+            account_id INT NOT NULL,
+            items_json TEXT NOT NULL,
+            delivered_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            claimed TINYINT(1) DEFAULT 1,
+            claimed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            INDEX idx_player (player_id),
+            INDEX idx_order (order_id),
+            INDEX idx_claimed (claimed)
+          ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+        `);
+
+        // Retry insert
+        await connection.query(
+          'INSERT INTO item_deliveries (order_id, player_id, account_id, items_json, claimed, claimed_at) VALUES (?, ?, ?, ?, 1, CURRENT_TIMESTAMP)',
+          [orderId, playerId, accountId, itemsJson]
+        );
+      } else {
+        throw insertError;
+      }
+    }
 
     await connection.commit();
 
