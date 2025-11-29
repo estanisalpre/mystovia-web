@@ -14,7 +14,7 @@ import {
   WebhookPayload,
   createCardPayment
 } from '../lib/mercadopago.js';
-import { deliverItemsToInbox } from '../services/itemDeliveryService.js';
+import { deliverItemsToInbox, deliverItemsToDepot } from '../services/itemDeliveryService.js';
 
 /**
  * Get all active market items
@@ -870,7 +870,7 @@ export const processCardPayment = async (req: Request, res: Response) => {
           );
         }
 
-        // Deliver items to player
+        // Deliver items to player depot
         try {
           // Prepare items for delivery
           const itemsToDeliver = cartItems.flatMap((cartItem: any) => {
@@ -888,11 +888,12 @@ export const processCardPayment = async (req: Request, res: Response) => {
 
           console.log(`Delivering ${itemsToDeliver.length} items to player ${player_id}:`, itemsToDeliver);
 
-          await deliverItemsToInbox(player_id, itemsToDeliver, orderId);
+          // Use deliverItemsToDepot to add items directly to player_depotitems
+          await deliverItemsToDepot(player_id, itemsToDeliver, orderId);
 
-          console.log(`✅ Items delivered successfully for order ${orderId}`);
+          console.log(`✅ Items delivered successfully to depot for order ${orderId}`);
         } catch (deliveryError) {
-          console.error('❌ Error delivering items:', deliveryError);
+          console.error('❌ Error delivering items to depot:', deliveryError);
           // Don't fail the payment, just log the error
           // Items can be delivered manually later
         }
