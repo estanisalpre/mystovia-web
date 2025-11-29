@@ -10,6 +10,14 @@ import characterRoutes from './routes/characterRoutes.js';
 import serverRoutes from './routes/serverRoutes.js';
 import marketplaceRoutes from './routes/marketplaceRoutes.js';
 import adminMarketplaceRoutes from './routes/adminMarketplaceRoutes.js';
+import forumRoutes from './routes/forumRoutes.js';
+import newsRoutes from './routes/newsRoutes.js';
+import wikiRoutes from './routes/wikiRoutes.js';
+import faqRoutes from './routes/faqRoutes.js';
+import downloadsRoutes from './routes/downloadsRoutes.js';
+import rulesRoutes from './routes/rulesRoutes.js';
+import supportRoutes from './routes/supportRoutes.js';
+import userManagementRoutes from './routes/userManagementRoutes.js';
 
 // Load .env from project root
 const __filename = fileURLToPath(import.meta.url);
@@ -44,6 +52,18 @@ app.use('/api/characters', characterRoutes);
 app.use('/api/server', serverRoutes);
 app.use('/api/marketplace', marketplaceRoutes);
 app.use('/api/admin/marketplace', adminMarketplaceRoutes);
+
+// Community routes
+app.use('/api/forum', forumRoutes);
+app.use('/api/news', newsRoutes);
+app.use('/api/wiki', wikiRoutes);
+app.use('/api/faqs', faqRoutes);
+app.use('/api/downloads', downloadsRoutes);
+app.use('/api/rules', rulesRoutes);
+app.use('/api/support', supportRoutes);
+
+// Admin routes
+app.use('/api/admin/users', userManagementRoutes);
 
 const frontendPath = path.resolve(__dirname, '../../dist');
 app.use(express.static(frontendPath));

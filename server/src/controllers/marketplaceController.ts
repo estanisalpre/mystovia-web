@@ -11,8 +11,10 @@ import {
 import {
   createSingleProductPreference,
   getPaymentById,
-  WebhookPayload
+  WebhookPayload,
+  createCardPayment
 } from '../lib/mercadopago.js';
+import { deliverItemsToInbox } from '../services/itemDeliveryService.js';
 
 /**
  * Get all active market items
@@ -708,5 +710,256 @@ export const getOrder = async (req: Request, res: Response) => {
     res.status(500).json({
       error: 'Failed to fetch order'
     });
+  }
+};
+
+/**
+ * Process payment with card token (Checkout API)
+ * Integrates card form directly in the frontend
+ */
+export const processCardPayment = async (req: Request, res: Response) => {
+  const connection = await db.getConnection();
+
+  try {
+    const userId = (req as any).user.userId;
+    const {
+      token,
+      issuer_id,
+      payment_method_id,
+      transaction_amount,
+      installments,
+      description,
+      payer,
+      player_id
+    } = req.body;
+
+    // Validate required fields
+    if (!token || !issuer_id || !payment_method_id || !transaction_amount || !payer || !player_id) {
+      return res.status(400).json({
+        error: 'Missing required payment information'
+      });
+    }
+
+    await connection.beginTransaction();
+
+    // Get user's cart items
+    const [cartItems] = await connection.query(
+      `SELECT
+        ci.*,
+        mi.name,
+        mi.description,
+        mi.price,
+        mi.stock,
+        mi.items_json,
+        (ci.quantity * mi.price) as subtotal
+      FROM cart_items ci
+      JOIN market_items mi ON ci.market_item_id = mi.id
+      WHERE ci.account_id = ? AND mi.is_active = 1`,
+      [userId]
+    ) as any[];
+
+    if (!cartItems || cartItems.length === 0) {
+      await connection.rollback();
+      return res.status(400).json({
+        error: 'Cart is empty'
+      });
+    }
+
+    // Verify transaction amount matches cart total
+    const cartTotal = cartItems.reduce((sum: number, item: any) => sum + parseFloat(item.subtotal), 0);
+
+    if (Math.abs(cartTotal - transaction_amount) > 0.01) {
+      await connection.rollback();
+      return res.status(400).json({
+        error: 'Transaction amount does not match cart total'
+      });
+    }
+
+    // Check stock for all items
+    for (const item of cartItems) {
+      if (item.stock !== -1 && item.stock < item.quantity) {
+        await connection.rollback();
+        return res.status(400).json({
+          error: `Insufficient stock for ${item.name}`,
+          available: item.stock
+        });
+      }
+    }
+
+    // Verify player belongs to user
+    const [players] = await connection.query(
+      'SELECT * FROM players WHERE id = ? AND account_id = ? AND deleted = 0',
+      [player_id, userId]
+    ) as any[];
+
+    if (!players || players.length === 0) {
+      await connection.rollback();
+      return res.status(404).json({
+        error: 'Character not found or does not belong to your account'
+      });
+    }
+
+    // Create order with pending status
+    const [orderResult] = await connection.query(
+      'INSERT INTO orders (account_id, player_id, total_amount, status, payment_method) VALUES (?, ?, ?, ?, ?)',
+      [userId, player_id, transaction_amount, 'pending', 'mercadopago_card']
+    ) as any;
+
+    const orderId = orderResult.insertId;
+
+    // Create order items
+    for (const cartItem of cartItems) {
+      await connection.query(
+        'INSERT INTO order_items (order_id, market_item_id, quantity, price, item_name, items_json) VALUES (?, ?, ?, ?, ?, ?)',
+        [
+          orderId,
+          cartItem.market_item_id,
+          cartItem.quantity,
+          cartItem.price,
+          cartItem.name,
+          JSON.stringify(typeof cartItem.items_json === 'string' ? JSON.parse(cartItem.items_json) : cartItem.items_json)
+        ]
+      );
+    }
+
+    // Process payment with MercadoPago
+    try {
+      const mpPayment = await createCardPayment({
+        token,
+        issuer_id,
+        payment_method_id,
+        transaction_amount,
+        installments: installments || 1,
+        description: description || `Order #${orderId} - Marketplace Items`,
+        payer,
+        external_reference: orderId.toString(),
+        metadata: {
+          order_id: orderId,
+          user_id: userId
+        }
+      });
+
+      console.log('MercadoPago payment created:', mpPayment);
+
+      // Log the payment
+      await connection.query(
+        'INSERT INTO payment_logs (order_id, payment_provider, payment_id, status, status_detail, transaction_amount, webhook_data) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        [
+          orderId,
+          'mercadopago',
+          mpPayment.id,
+          mpPayment.status,
+          mpPayment.status_detail,
+          mpPayment.transaction_amount,
+          JSON.stringify(mpPayment)
+        ]
+      );
+
+      // Update order with payment info
+      if (mpPayment.status === 'approved') {
+        await connection.query(
+          'UPDATE orders SET status = ?, payment_id = ? WHERE id = ?',
+          ['approved', mpPayment.id?.toString() || null, orderId]
+        );
+
+        // Update stock for each item
+        for (const item of cartItems) {
+          await connection.query(
+            'UPDATE market_items SET stock = stock - ? WHERE id = ? AND stock != -1',
+            [item.quantity, item.market_item_id]
+          );
+        }
+
+        // Deliver items to player
+        try {
+          // Prepare items for delivery
+          const itemsToDeliver = cartItems.flatMap((cartItem: any) => {
+            const itemsJson = typeof cartItem.items_json === 'string'
+              ? JSON.parse(cartItem.items_json)
+              : cartItem.items_json;
+
+            // Each market item contains an array of game items
+            return itemsJson.map((gameItem: any) => ({
+              itemId: gameItem.itemId,
+              count: gameItem.count * cartItem.quantity,
+              name: gameItem.name
+            }));
+          });
+
+          console.log(`Delivering ${itemsToDeliver.length} items to player ${player_id}:`, itemsToDeliver);
+
+          await deliverItemsToInbox(player_id, itemsToDeliver, orderId);
+
+          console.log(`✅ Items delivered successfully for order ${orderId}`);
+        } catch (deliveryError) {
+          console.error('❌ Error delivering items:', deliveryError);
+          // Don't fail the payment, just log the error
+          // Items can be delivered manually later
+        }
+
+        // Clear user's cart
+        await connection.query(
+          'DELETE FROM cart_items WHERE account_id = ?',
+          [userId]
+        );
+
+        await connection.commit();
+
+        return res.json({
+          success: true,
+          payment: mpPayment,
+          order_id: orderId,
+          message: 'Payment approved successfully! Items will be delivered to your character.'
+        });
+      } else if (mpPayment.status === 'pending' || mpPayment.status === 'in_process') {
+        await connection.query(
+          'UPDATE orders SET status = ?, payment_id = ? WHERE id = ?',
+          ['pending', mpPayment.id?.toString() || null, orderId]
+        );
+
+        await connection.commit();
+
+        return res.json({
+          success: true,
+          payment: mpPayment,
+          order_id: orderId,
+          message: 'Payment is pending approval'
+        });
+      } else {
+        // Payment rejected or failed
+        await connection.query(
+          'UPDATE orders SET status = ?, payment_id = ? WHERE id = ?',
+          ['cancelled', mpPayment.id?.toString() || null, orderId]
+        );
+
+        await connection.commit();
+
+        return res.status(400).json({
+          success: false,
+          error: 'Payment was rejected',
+          payment: mpPayment,
+          status_detail: mpPayment.status_detail
+        });
+      }
+    } catch (mpError: any) {
+      await connection.rollback();
+      console.error('MercadoPago payment error:', mpError);
+
+      return res.status(500).json({
+        success: false,
+        error: 'Payment processing failed',
+        details: mpError.message || 'Unknown error'
+      });
+    }
+  } catch (error: any) {
+    await connection.rollback();
+    console.error('Error processing payment:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to process payment',
+      details: error.message
+    });
+  } finally {
+    connection.release();
   }
 };

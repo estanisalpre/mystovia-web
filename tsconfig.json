@@ -10,7 +10,10 @@
       "@hooks/*": ["hooks/*"],
       "@lib/*": ["lib/*"],
       "@components/*": ["lib/components/*"],
-      "@ui/*": ["lib/components/ui/*"]
+      "@c/*": ["components/*"],
+      "@ui/*": ["lib/components/ui/*"],
+      "@layouts/*": ["layouts/*"],
+      "@utils/*": ["utils/*"],
     }
   }
 }

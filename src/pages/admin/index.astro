@@ -1,0 +1,169 @@
+---
+import Layout from "@layouts/Layout.astro";
+import { hasPermission } from "@utils/permissions";
+import {
+  BrickWallShield,
+  Users,
+  Store,
+  Megaphone,
+  Rss,
+  Newspaper,
+  Tickets,
+  FileDown,
+  Gavel,
+  CircleQuestionMark,
+} from "@lucide/astro";
+import StatsCard from "@c/admin/StatsCard.astro";
+import ModalButton from "@c/admin/ModalButton.astro";
+import HeaderComponent from "@components/shared/HeaderComponent.astro";
+
+const API_URL = import.meta.env.PUBLIC_API_URL || "http://localhost:3000";
+
+const accessToken = Astro.cookies.get("accessToken")?.value;
+let user = null;
+
+if (accessToken) {
+  try {
+    const verifyResponse = await fetch(`${API_URL}/api/auth/verify`, {
+      headers: { Cookie: `accessToken=${accessToken}` },
+    });
+    if (verifyResponse.ok) {
+      const data = await verifyResponse.json();
+      user = data.user;
+    }
+  } catch (error) {
+    console.error("Error verifying user:", error);
+  }
+}
+
+if (!hasPermission(user?.groupId, "view_admin_panel")) {
+  return Astro.redirect("/");
+}
+
+let stats = null;
+try {
+  const response = await fetch(`${API_URL}/api/admin/users/stats`, {
+    headers: { Cookie: `accessToken=${accessToken}` },
+  });
+  const data = await response.json();
+  stats = data.stats;
+} catch (error) {
+  console.error("Error fetching stats:", error);
+}
+---
+
+<Layout title="Panel de Administración">
+  <section class="page-container">
+    <HeaderComponent
+      title="Panel de Administración"
+      description="Gestiona y supervisa todos los aspectos de la plataforma desde aquí."
+      icon={BrickWallShield}
+    />
+
+    {
+      stats && (
+        <header class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <StatsCard
+            statsTitle="Total Usuarios"
+            statsValue={stats.totalUsers}
+          />
+          <StatsCard
+            statsTitle="Usuarios Activos"
+            statsValue={stats.activeUsers}
+          />
+          <StatsCard
+            statsTitle="Premium"
+            statsValue={stats.premiumUsers}
+          />
+          <StatsCard
+            statsTitle="Bloqueados"
+            statsValue={stats.blockedUsers}
+          />
+        </header>
+      )
+    }
+
+    <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <ModalButton
+        user={user}
+        permission="manage_users"
+        btnName="Usuarios"
+        btnDescription="Gestionar usuarios y roles"
+        url="/admin/users"
+        icon={Users}
+      />
+
+      <ModalButton
+        user={user}
+        permission="manage_marketplace"
+        btnName="Tienda"
+        btnDescription="Administrar tienda y productos"
+        url="/admin/marketplace"
+        icon={Store}
+      />
+
+      <ModalButton
+        user={user}
+        permission="manage_forum"
+        btnName="Foro"
+        btnDescription="Moderar foro, temas y comentarios"
+        url="/admin/forum"
+        icon={Megaphone}
+      />
+
+      <ModalButton
+        user={user}
+        permission="manage_news"
+        btnName="Noticias"
+        btnDescription="Crear y gestionar noticias"
+        url="/admin/news"
+        icon={Rss}
+      />
+
+      <ModalButton
+        user={user}
+        permission="manage_wiki"
+        btnName="Wiki"
+        btnDescription="Administrar artículos y wikis"
+        url="/admin/wiki"
+        icon={Newspaper}
+      />
+
+      <ModalButton
+        user={user}
+        permission="manage_support"
+        btnName="Soporte"
+        btnDescription="Gestionar tickets"
+        url="/admin/support"
+        icon={Tickets}
+      />
+
+      <ModalButton
+        user={user}
+        permission="manage_downloads"
+        btnName="Descargas"
+        btnDescription="Administrar archivos y descargas"
+        url="/admin/downloads"
+        icon={FileDown}
+      />
+
+      <ModalButton
+        user={user}
+        permission="manage_rules"
+        btnName="Reglas"
+        btnDescription="Gestionar reglas"
+        url="/admin/rules"
+        icon={Gavel}
+      />
+
+      <ModalButton
+        user={user}
+        permission="manage_faqs"
+        btnName="FAQs"
+        btnDescription="Administrar preguntas frecuentes (FAQs)"
+        url="/admin/faqs"
+        icon={CircleQuestionMark}
+      />
+    </section>
+  </section>
+</Layout>

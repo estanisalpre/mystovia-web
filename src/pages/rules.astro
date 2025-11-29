@@ -1,0 +1,77 @@
+---
+import Layout from "@layouts/Layout.astro";
+import HeaderComponent from "@lib/components/shared/HeaderComponent.astro";
+import { BookOpenText } from "@lucide/astro";
+import WarnErrorSuccessMessage from "@lib/components/shared/WarnErrorSuccessMessage.astro";
+
+const API_URL = import.meta.env.PUBLIC_API_URL || "http://localhost:3000";
+
+let rulesData;
+
+try {
+  const response = await fetch(`${API_URL}/api/rules`);
+  rulesData = await response.json();
+} catch (error) {
+  console.error("Error fetching rules:", error);
+  rulesData = { sections: [] };
+}
+
+const { sections } = rulesData; 
+---
+
+<Layout title="Reglas del Servidor">
+  <section class="page-container">
+    <HeaderComponent
+      icon={BookOpenText}
+      title="Reglas del servidor"
+      description="Por favor, lee y respeta las siguientes reglas para asegurar una experiencia agradable para todos los jugadores."
+    />
+
+    <WarnErrorSuccessMessage
+      type="warn"
+      message="El incumplimiento de estas reglas puede resultar en sanciones que van desde advertencias hasta baneos permanentes."
+    />
+
+    {
+      sections.length === 0 ? (
+        <section class="text-center py-12">
+          <p class="text-lg text-base-content/70">
+            No hay reglas publicadas aún.
+          </p>
+        </section>
+      ) : (
+        <section class="space-y-4">
+          {sections.map((section: any) => (
+            <article class="border p-4 border-yellow-400 shadow-xl">
+              <div>
+                <h2 class="text-2xl font-extrabold text-yellow-400 mb-4 pb-2 border-b border-gray-600">{section.name}</h2>
+
+                {section.rules.length === 0 ? (
+                  <p class="italic">
+                    No hay reglas en esta sección.
+                  </p>
+                ) : (
+                  <div class="space-y-4">
+                    {section.rules.map((rule: any, index: number) => (
+                      <div class="border-l-4 border-primary pl-4">
+                        <h3 class="font-semibold text-lg mb-2">
+                          {index + 1}. {rule.title}
+                        </h3>
+                        <p class="text-base-content/80">{rule.content}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </article>
+          ))}
+        </section>
+      )
+    }
+
+    <WarnErrorSuccessMessage
+      type="info"
+      message="Al jugar en este servidor, aceptas cumplir con todas estas reglas."
+    />
+  </section>
+</Layout>

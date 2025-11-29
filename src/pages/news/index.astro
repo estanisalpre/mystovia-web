@@ -1,0 +1,136 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Pagination from '../../components/Pagination.astro';
+
+const page = parseInt(Astro.url.searchParams.get('page') || '1');
+const categoryId = Astro.url.searchParams.get('category');
+
+// Fetch news from API
+const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3000';
+const newsUrl = `${API_URL}/api/news?page=${page}&limit=9${categoryId ? `&categoryId=${categoryId}` : ''}`;
+
+let newsData;
+let categoriesData;
+
+try {
+  const [newsResponse, categoriesResponse] = await Promise.all([
+    fetch(newsUrl),
+    fetch(`${API_URL}/api/news/categories`)
+  ]);
+
+  newsData = await newsResponse.json();
+  categoriesData = await categoriesResponse.json();
+} catch (error) {
+  console.error('Error fetching news:', error);
+  newsData = { news: [], pagination: { page: 1, totalPages: 1, total: 0 } };
+  categoriesData = { categories: [] };
+}
+
+const { news, pagination } = newsData;
+const { categories } = categoriesData;
+---
+
+<Layout title="Noticias">
+  <section class="page-container">
+    <!-- Header -->
+    <header class="mb-8">
+      <h1 class="text-4xl font-bold mb-4">📰 Noticias</h1>
+      <p class="text-lg text-base-content/70">
+        Mantente al día con las últimas novedades del servidor
+      </p>
+    </header>
+
+    <!-- Categorías -->
+    {categories.length > 0 && (
+      <div class="flex flex-wrap gap-2 mb-6">
+        <a
+          href="/news"
+          class:list={[
+            'btn btn-sm',
+            !categoryId ? 'btn-primary' : 'btn-outline'
+          ]}
+        >
+          Todas
+        </a>
+        {categories.map((cat: any) => (
+          <a
+            href={`/news?category=${cat.id}`}
+            class:list={[
+              'btn btn-sm',
+              categoryId === cat.id.toString() ? 'btn-primary' : 'btn-outline'
+            ]}
+          >
+            {cat.name}
+          </a>
+        ))}
+      </div>
+    )}
+
+    <!-- News Grid -->
+    {news.length === 0 ? (
+      <div class="text-center py-12 backdrop-blur-md">
+        <p class="text-lg text-base-content/70">
+          No hay noticias publicadas aún.
+        </p>
+      </div>
+    ) : (
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {news.map((item: any) => (
+          <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow">
+            {item.image_url && (
+              <figure class="h-48 overflow-hidden">
+                <img
+                  src={item.image_url}
+                  alt={item.title}
+                  class="w-full h-full object-cover"
+                />
+              </figure>
+            )}
+            <div class="card-body">
+              {item.category_name && (
+                <div class="badge badge-primary badge-sm mb-2">
+                  {item.category_name}
+                </div>
+              )}
+
+              <h2 class="card-title text-xl">{item.title}</h2>
+
+              <p class="text-base-content/70 line-clamp-3">
+                {item.content.replace(/<[^>]*>/g, '').substring(0, 150)}...
+              </p>
+
+              <div class="flex items-center gap-4 text-sm text-base-content/60 mt-2">
+                <span class="flex items-center gap-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                  {item.views_count}
+                </span>
+                <span class="flex items-center gap-1">
+                  ❤️ {item.likes_count}
+                </span>
+                <span class="text-xs">
+                  {new Date(item.published_at).toLocaleDateString('es-ES')}
+                </span>
+              </div>
+
+              <div class="card-actions justify-end mt-4">
+                <a href={`/news/${item.id}`} class="btn btn-primary btn-sm">
+                  Leer más →
+                </a>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    )}
+
+    <!-- Pagination -->
+    <Pagination
+      currentPage={pagination.page}
+      totalPages={pagination.totalPages}
+      baseUrl={categoryId ? `/news?category=${categoryId}` : '/news'}
+    />
+  </div>
+</Layout>

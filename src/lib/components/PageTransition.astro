@@ -1,0 +1,49 @@
+---
+---
+<section id="page-transition-loader" transition:persist
+     class="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center opacity-0 pointer-events-none transition-all duration-200"
+     style="z-index: 9999;">
+  <div class="flex flex-col items-center gap-4">
+    <div class="w-16 h-16 border-4 border-white/30 border-t-white rounded-full animate-spin"></div>
+    <p class="text-white text-sm font-medium">Cargando...</p>
+  </div>
+</section>
+
+<script>
+  function showLoader() {
+    const loader = document.getElementById('page-transition-loader');
+    if (loader) {
+      loader.style.opacity = '1';
+      loader.style.pointerEvents = 'auto';
+    }
+  }
+
+  function hideLoader() {
+    const loader = document.getElementById('page-transition-loader');
+    if (loader) {
+      setTimeout(() => {
+        loader.style.opacity = '0';
+        loader.style.pointerEvents = 'none';
+      }, 150);
+    }
+  }
+
+  function setupTransitionLoader() {
+    document.addEventListener('astro:before-preparation', showLoader);
+    document.addEventListener('astro:page-load', hideLoader);
+
+    document.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      const link = target.closest('a');
+
+      if (link && link.href && !link.href.startsWith('#') && !link.target) {
+        if (link.host === window.location.host) {
+          showLoader();
+        }
+      }
+    }, true);
+  }
+
+  setupTransitionLoader();
+  document.addEventListener('astro:page-load', setupTransitionLoader);
+</script>

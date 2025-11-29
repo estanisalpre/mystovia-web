@@ -11,7 +11,8 @@ import {
   createOrder,
   getMyOrders,
   getOrder,
-  handleMercadoPagoWebhook
+  handleMercadoPagoWebhook,
+  processCardPayment
 } from '../controllers/marketplaceController.js';
 import { authenticateToken } from '../middleware/authMiddleware.js';
 
@@ -33,6 +34,9 @@ router.delete('/cart', authenticateToken, clearCart);
 
 // New checkout endpoint with MercadoPago
 router.post('/checkout', authenticateToken, createCheckout);
+
+// Process payment with card token (Checkout API)
+router.post('/process-payment', authenticateToken, processCardPayment);
 
 // DEVELOPMENT ONLY: Simulate payment approval for testing
 if (process.env.NODE_ENV === 'development') {

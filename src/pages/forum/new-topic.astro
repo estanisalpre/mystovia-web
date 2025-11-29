@@ -1,0 +1,170 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { hasPermission } from '../../utils/permissions';
+
+const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3000';
+
+// Get user
+const accessToken = Astro.cookies.get('accessToken')?.value;
+let user = null;
+
+if (accessToken) {
+  try {
+    const verifyResponse = await fetch(`${API_URL}/api/auth/verify`, {
+      headers: { Cookie: `accessToken=${accessToken}` }
+    });
+    if (verifyResponse.ok) {
+      const data = await verifyResponse.json();
+      user = data.user;
+    }
+  } catch (error) {
+    console.error('Error verifying user:', error);
+  }
+}
+
+// Check permission
+if (!hasPermission(user?.groupId, 'write_forum')) {
+  return Astro.redirect('/login');
+}
+
+// Fetch categories
+let categoriesData;
+
+try {
+  const response = await fetch(`${API_URL}/api/forum/categories`);
+  categoriesData = await response.json();
+} catch (error) {
+  console.error('Error fetching categories:', error);
+  categoriesData = { categories: [] };
+}
+
+const { categories } = categoriesData;
+const selectedCategory = Astro.url.searchParams.get('category');
+---
+
+<Layout title="Crear Nuevo Tema">
+  <div class="container mx-auto px-4 py-8 max-w-3xl">
+    <h1 class="text-3xl font-bold mb-6">✏️ Crear Nuevo Tema</h1>
+
+    <div class="card bg-base-100 shadow-xl" x-data="topicForm()">
+      <div class="card-body">
+        <form @submit.prevent="submitTopic">
+          <!-- Category -->
+          <div class="form-control mb-4">
+            <label class="label">
+              <span class="label-text font-semibold">Categoría</span>
+            </label>
+            <select
+              x-model="categoryId"
+              class="select select-bordered w-full"
+              required
+            >
+              <option value="">Selecciona una categoría</option>
+              {categories.map((cat: any) => (
+                <option
+                  value={cat.id}
+                  selected={selectedCategory === cat.id.toString()}
+                >
+                  {cat.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <!-- Title -->
+          <div class="form-control mb-4">
+            <label class="label">
+              <span class="label-text font-semibold">Título</span>
+            </label>
+            <input
+              type="text"
+              x-model="title"
+              class="input input-bordered w-full"
+              placeholder="Escribe un título descriptivo..."
+              maxlength="255"
+              required
+            />
+          </div>
+
+          <!-- Content -->
+          <div class="form-control mb-6">
+            <label class="label">
+              <span class="label-text font-semibold">Contenido</span>
+            </label>
+            <textarea
+              x-model="content"
+              class="textarea textarea-bordered w-full h-64"
+              placeholder="Escribe el contenido de tu tema..."
+              required
+            ></textarea>
+            <label class="label">
+              <span class="label-text-alt">Puedes usar Markdown para formato</span>
+            </label>
+          </div>
+
+          <!-- Buttons -->
+          <div class="flex gap-4">
+            <button
+              type="submit"
+              class="btn btn-primary"
+              :disabled="loading"
+            >
+              <span x-show="!loading">Crear Tema</span>
+              <span x-show="loading" class="loading loading-spinner"></span>
+            </button>
+
+            <a href="/forum" class="btn btn-ghost">
+              Cancelar
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  function topicForm() {
+    return {
+      categoryId: '',
+      title: '',
+      content: '',
+      loading: false,
+
+      async submitTopic() {
+        if (!this.categoryId || !this.title || !this.content) {
+          alert('Por favor completa todos los campos');
+          return;
+        }
+
+        this.loading = true;
+
+        try {
+          const response = await fetch('/api/forum/topics', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({
+              categoryId: parseInt(this.categoryId),
+              title: this.title,
+              content: this.content
+            })
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            window.location.href = `/forum/topic/${data.topicId}`;
+          } else {
+            alert(data.error || 'Error al crear el tema');
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          alert('Error al crear el tema');
+        } finally {
+          this.loading = false;
+        }
+      }
+    };
+  }
+</script>

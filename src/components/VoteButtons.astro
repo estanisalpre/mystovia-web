@@ -1,0 +1,79 @@
+---
+interface Props {
+  topicId: number;
+  totalVotes: number;
+  userVote: number | null;
+  isAuthenticated: boolean;
+}
+
+const { topicId, totalVotes, userVote, isAuthenticated } = Astro.props;
+---
+
+<div
+  x-data={`{
+    votes: ${totalVotes},
+    userVote: ${userVote || 0},
+    loading: false,
+    async vote(voteValue) {
+      if (!${isAuthenticated}) {
+        window.location.href = '/login';
+        return;
+      }
+
+      this.loading = true;
+      try {
+        const response = await fetch('/api/forum/topics/${topicId}/vote', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ vote: voteValue })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          const oldVote = this.userVote;
+          const newVote = data.userVote || 0;
+          this.votes = this.votes - oldVote + newVote;
+          this.userVote = newVote;
+        } else {
+          alert(data.error || 'Error al votar');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error al votar');
+      } finally {
+        this.loading = false;
+      }
+    }
+  }`}
+  class="flex flex-col items-center gap-1"
+>
+  <button
+    @click="vote(1)"
+    :disabled="loading"
+    class="btn btn-xs btn-circle hover:btn-success"
+    :class="userVote === 1 ? 'btn-success' : 'btn-ghost'"
+  >
+    ▲
+  </button>
+
+  <span
+    class="font-bold text-sm"
+    :class="{
+      'text-success': votes > 0,
+      'text-error': votes < 0,
+      'text-base-content': votes === 0
+    }"
+    x-text="votes"
+  ></span>
+
+  <button
+    @click="vote(-1)"
+    :disabled="loading"
+    class="btn btn-xs btn-circle hover:btn-error"
+    :class="userVote === -1 ? 'btn-error' : 'btn-ghost'"
+  >
+    ▼
+  </button>
+</div>

@@ -1,10 +1,12 @@
 ---
 import '../styles/global.css';
+import { ViewTransitions } from 'astro:transitions';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import bg5 from "../assets/backgrounds/bg-5.jpg";
 import MusicPlayer from '@lib/components/MusicPlayer.astro';
 import Particles from '@lib/components/Particles.astro';
+import PageTransition from '@lib/components/PageTransition.astro';
 
 interface Props {
   title: string;
@@ -27,6 +29,7 @@ const { title, description = "Tibia Private Server" } = Astro.props;
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+  <ViewTransitions/>
 </head>
 <body class="min-h-screen text-white flex flex-col">
   <Header />
@@ -38,6 +41,7 @@ const { title, description = "Tibia Private Server" } = Astro.props;
     <slot />
   </main>
   <MusicPlayer client:load />
+  <PageTransition />
   <Footer />
 </body>
 </html>

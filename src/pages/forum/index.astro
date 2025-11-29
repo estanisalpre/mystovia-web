@@ -1,0 +1,84 @@
+---
+import Layout from "@layouts/Layout.astro";
+import { Megaphone, MegaphoneOff } from "@lucide/astro";
+import HeaderComponent from "@lib/components/shared/HeaderComponent.astro";
+import TopicCards from "@c/forum/TopicCards.astro";
+
+const API_URL = import.meta.env.PUBLIC_API_URL || "http://localhost:3000";
+
+// Fetch forum categories
+let categoriesData;
+
+try {
+  const response = await fetch(`${API_URL}/api/forum/categories`);
+  categoriesData = await response.json();
+} catch (error) {
+  console.error("Error fetching categories:", error);
+  categoriesData = { categories: [] };
+}
+
+const { categories } = categoriesData;
+
+// Get user
+const accessToken = Astro.cookies.get("accessToken")?.value;
+let user = null;
+
+if (accessToken) {
+  try {
+    const verifyResponse = await fetch(`${API_URL}/api/auth/verify`, {
+      headers: { Cookie: `accessToken=${accessToken}` },
+    });
+    if (verifyResponse.ok) {
+      const data = await verifyResponse.json();
+      user = data.user;
+    }
+  } catch (error) {
+    console.error("Error verifying user:", error);
+  }
+}
+---
+
+<Layout title="Foro de la Comunidad | Mystovia">
+  <section class="page-container">
+    <HeaderComponent
+      title="Foro de la Comunidad"
+      description="Únete a las discusiones, comparte tus ideas y conecta con otros miembros de la comunidad."
+      icon={Megaphone}
+    />
+
+    <!-- Categories -->
+    {
+      categories.length === 0 ? (
+        <section class="text-center py-12">
+          <p class="text-lg text-base-content/70">
+            No hay categorías disponibles.
+          </p>
+        </section>
+      ) : (
+        <section class="space-y-4">
+          {categories.map((category: any) => (
+            <TopicCards category={category}/>
+          ))}
+        </section>
+      )
+    }
+
+    <!-- Info -->
+    {
+      !user && (
+        <p class="alert flex items-center justify-start gap-4 alert-info mt-8">
+          <MegaphoneOff size={32} />
+          <span>
+            <a
+              href="/login"
+              class="font-extrabold underline"
+            >
+              Inicia sesión
+            </a>{" "}
+            para crear temas y participar en las discusiones
+          </span>
+        </p>
+      )
+    }
+  </section>
+</Layout>
