@@ -1,0 +1,53 @@
+---
+import Input from "@ui/Input.astro";
+import SubmitBtn from "@lib/components/ui/SubmitBtn.astro";
+---
+
+<section class="relative p-5 pt-10 border border-white/30 w-full h-full shadow-md rounded-lg backdrop-blur-md bg-black/30">
+  <h2 id="searchTitle">Encuentra otros jugadores</h2>
+  <form id="searchCharacterForm" class="form-group">
+    <Input
+      id="characterName"
+      label="Nombre del personaje"
+      type="text"
+      placeholder="Ingresa el nombre del personaje"
+      required
+    />
+    <SubmitBtn label="BUSCAR" id="searchBtn" />
+  </form>
+</section>
+
+<script>
+    import { t, getStoredLanguage } from '../../../i18n/translations';
+
+    const lang = getStoredLanguage();
+
+    const titleEl = document.getElementById('searchTitle');
+    if (titleEl) titleEl.textContent = t('character.searchTitle', lang);
+
+    const searchBtn = document.getElementById('searchBtn');
+    if (searchBtn) searchBtn.textContent = t('character.searchButton', lang);
+
+    const charNameInput = document.getElementById('characterName') as HTMLInputElement;
+    if (charNameInput) {
+        charNameInput.placeholder = t('character.searchPlaceholder', lang);
+        const label = charNameInput.parentElement?.querySelector('label');
+        if (label) label.textContent = t('character.searchLabel', lang);
+    }
+
+    const form = document.getElementById("searchCharacterForm") as HTMLFormElement & {
+        characterName: HTMLInputElement;
+    };
+
+    form?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const characterName = form.characterName.value.trim();
+
+        if (!characterName) {
+            alert(t('character.searchEmpty', lang));
+            return;
+        }
+
+        window.location.href = `/character-information?name=${encodeURIComponent(characterName)}`;
+    });
+</script>

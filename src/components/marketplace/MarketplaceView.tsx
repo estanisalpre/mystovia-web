@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Package, Coins, Shield, Search } from 'lucide-react';
 import ItemCard from './ItemCard';
 import WeaponSelectionModal from './WeaponSelectionModal';
+import '../../i18n';
 
 const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3001';
 
@@ -33,14 +35,15 @@ interface MarketItem {
   updated_at: string;
 }
 
-const CATEGORIES = [
-  { id: 'all', label: 'Todos', icon: Package },
-  { id: 'set_with_weapon', label: 'Sets con Arma', icon: Shield },
-  { id: 'set_without_weapon', label: 'Sets sin Arma', icon: Package },
-  { id: 'item', label: 'Items', icon: Coins }
+const CATEGORY_KEYS = [
+  { id: 'all', labelKey: 'marketplace.all', icon: Package },
+  { id: 'set_with_weapon', labelKey: 'marketplace.setsWithWeapon', icon: Shield },
+  { id: 'set_without_weapon', labelKey: 'marketplace.setsWithoutWeapon', icon: Package },
+  { id: 'item', labelKey: 'marketplace.items', icon: Coins }
 ];
 
 export default function MarketplaceView() {
+  const { t } = useTranslation();
   const [items, setItems] = useState<MarketItem[]>([]);
   const [filteredItems, setFilteredItems] = useState<MarketItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -146,11 +149,11 @@ export default function MarketplaceView() {
   };
 
   return (
-    <div className="container rounded-2xl bg-gray-800 top-20 relative z-10 mx-auto px-4 py-8 mb-32">
+    <div className="rounded-xl md:rounded-2xl bg-gray-800 top-16 md:top-20 relative z-10 mx-4 sm:mx-8 md:mx-16 lg:mx-auto lg:max-w-6xl px-4 sm:px-6 md:px-8 py-6 md:py-8 mb-16 md:mb-32">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold text-white mb-2">Marketplace</h1>
-        <p className="text-gray-400">Explora y compra items, sets y equipamiento</p>
+      <div className="mb-6 md:mb-8">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2">{t('marketplace.title')}</h1>
+        <p className="text-sm md:text-base text-gray-400">{t('marketplace.subtitle')}</p>
       </div>
 
       {/* Search Bar */}
@@ -159,7 +162,7 @@ export default function MarketplaceView() {
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
           <input
             type="text"
-            placeholder="Buscar items, sets o equipamiento..."
+            placeholder={t('marketplace.searchPlaceholder')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full bg-gray-800 text-white border border-gray-700 rounded-lg pl-12 pr-4 py-3 focus:outline-none focus:border-blue-500 transition-colors"
@@ -176,35 +179,37 @@ export default function MarketplaceView() {
       </div>
 
       {/* Filters */}
-      <div className="mb-8">
-        <div className="flex flex-wrap gap-3 mb-4">
-          {CATEGORIES.map(category => {
+      <div className="mb-6 md:mb-8">
+        <div className="flex flex-wrap gap-2 md:gap-3 mb-4">
+          {CATEGORY_KEYS.map(category => {
             const Icon = category.icon;
+            const label = t(category.labelKey);
             return (
               <button
                 key={category.id}
                 onClick={() => setSelectedCategory(category.id)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+                className={`flex items-center gap-1 md:gap-2 px-3 md:px-4 py-2 text-sm md:text-base rounded-lg transition-all ${
                   selectedCategory === category.id
                     ? 'bg-linear-to-r from-blue-600 to-purple-600 text-white'
                     : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
                 }`}
               >
-                <Icon size={18} />
-                {category.label}
+                <Icon size={16} className="md:w-[18px] md:h-[18px]" />
+                <span className="hidden sm:inline">{label}</span>
+                <span className="sm:hidden">{category.id === 'all' ? t('marketplace.all') : label.split(' ')[0]}</span>
               </button>
             );
           })}
         </div>
 
-        <label className="flex items-center gap-2 text-gray-300 cursor-pointer w-fit">
+        <label className="flex items-center gap-2 text-sm md:text-base text-gray-300 cursor-pointer w-fit">
           <input
             type="checkbox"
             checked={showFeaturedOnly}
             onChange={(e) => setShowFeaturedOnly(e.target.checked)}
             className="w-4 h-4 rounded bg-gray-700 border-gray-600"
           />
-          <span>Mostrar solo destacados</span>
+          <span>{t('marketplace.showFeaturedOnly')}</span>
         </label>
       </div>
 
@@ -212,12 +217,12 @@ export default function MarketplaceView() {
       {loading ? (
         <div className="text-center py-20">
           <div className="inline-block w-12 h-12 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-gray-400 mt-4">Loading marketplace...</p>
+          <p className="text-gray-400 mt-4">{t('marketplace.loading')}</p>
         </div>
       ) : filteredItems.length === 0 ? (
         <div className="text-center py-20">
           <Package size={64} className="mx-auto text-gray-600 mb-4" />
-          <p className="text-gray-400 text-xl">No items found</p>
+          <p className="text-gray-400 text-xl">{t('marketplace.noItems')}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">

@@ -12,31 +12,33 @@ import Layout from '../layouts/Layout.astro';
         <div class="w-32 h-1 bg-yellow-600 mx-auto mb-8"></div>
       </div>
 
-      <h2 class="text-4xl font-bold text-white mb-6">
+      <h2 id="notFoundTitle" class="text-4xl font-bold text-white mb-6">
         Página No Encontrada
       </h2>
 
-      <p class="text-xl text-gray-300 mb-8">
+      <p id="notFoundMessage" class="text-xl text-gray-300 mb-8">
         Lo sentimos. La página que buscas no está disponible.
       </p>
 
       <div class="bg-gray-800 border border-gray-700 rounded-xl p-8 mb-8">
-        <p class="text-lg text-gray-400 mb-4">
+        <p id="notFoundExplanation" class="text-lg text-gray-400 mb-4">
           Es posible que la página haya sido movida, eliminada o que la URL sea incorrecta.
         </p>
-        <p class="text-yellow-500 font-semibold text-lg">
+        <p id="notFoundThanks" class="text-yellow-500 font-semibold text-lg">
           ¡Gracias por jugar en Mystovia!
         </p>
       </div>
 
       <div class="flex gap-4 justify-center flex-wrap">
         <a
+          id="backHomeBtn"
           href="/"
           class="px-6 py-3 bg-yellow-600 hover:bg-yellow-700 text-white font-semibold rounded-lg transition"
         >
           Volver al Inicio
         </a>
         <a
+          id="goMarketplaceBtn"
           href="/marketplace"
           class="px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition"
         >
@@ -46,3 +48,27 @@ import Layout from '../layouts/Layout.astro';
     </div>
   </div>
 </Layout>
+
+<script>
+  import { t, getStoredLanguage } from '../i18n/translations';
+
+  const lang = getStoredLanguage();
+
+  const title = document.getElementById('notFoundTitle');
+  if (title) title.textContent = t('notFound.title', lang);
+
+  const message = document.getElementById('notFoundMessage');
+  if (message) message.textContent = t('notFound.message', lang);
+
+  const explanation = document.getElementById('notFoundExplanation');
+  if (explanation) explanation.textContent = t('notFound.explanation', lang);
+
+  const thanks = document.getElementById('notFoundThanks');
+  if (thanks) thanks.textContent = t('notFound.thanks', lang);
+
+  const backHome = document.getElementById('backHomeBtn');
+  if (backHome) backHome.textContent = t('common.backHome', lang);
+
+  const goMarketplace = document.getElementById('goMarketplaceBtn');
+  if (goMarketplace) goMarketplace.textContent = t('notFound.goToMarketplace', lang);
+</script>

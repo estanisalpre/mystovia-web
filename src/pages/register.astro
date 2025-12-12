@@ -16,7 +16,7 @@ let error = "";
       id="registerForm"
       class="max-w-md w-full backdrop-blur-md border border-white/30 bg-black/30 rounded-lg shadow-xl p-8 space-y-6"
     >
-      <h2 class="text-3xl font-bold text-center mb-8">Crear cuenta</h2>
+      <h2 id="registerTitle" class="text-3xl font-bold text-center mb-8">Crear cuenta</h2>
 
       <Input
         id="username"
@@ -38,7 +38,7 @@ let error = "";
         id="password"
         label="Password"
         type="password"
-        placeholder="Nueva contraseña"
+        placeholder="••••••••"
         required
       />
 
@@ -46,7 +46,7 @@ let error = "";
         id="confirmPassword"
         label="Confirmar contraseña"
         type="password"
-        placeholder="Confirmar contraseña"
+        placeholder="••••••••"
         required
       />
 
@@ -55,12 +55,13 @@ let error = "";
         visible={!!error}
       />
 
-      <SubmitBtn label="REGISTRARSE" />
+      <SubmitBtn label="REGISTRARSE" id="registerBtn" />
 
-      <p class="mt-6 text-center text-sm text-gray-400">
+      <p id="hasAccountText" class="mt-6 text-center text-sm text-gray-400">
         ¿Ya tenes una cuenta?
         <a
           href="/login"
+          id="loginLink"
           class="text-yellow-500 hover:text-yellow-400 font-medium"
           >Ingresar</a
         >
@@ -70,6 +71,23 @@ let error = "";
 
   <script>
     import { useAuth } from "@hooks/useAuth";
+    import { t, getStoredLanguage } from "../i18n/translations";
+
+    const lang = getStoredLanguage();
+
+    // Apply translations
+    const registerTitle = document.getElementById("registerTitle");
+    if (registerTitle) registerTitle.textContent = t("auth.createAccount", lang);
+
+    const registerBtn = document.getElementById("registerBtn");
+    if (registerBtn) registerBtn.textContent = t("auth.registerButton", lang);
+
+    const hasAccountText = document.getElementById("hasAccountText");
+    const loginLink = document.getElementById("loginLink");
+    if (hasAccountText && loginLink) {
+      hasAccountText.childNodes[0].textContent = t("auth.hasAccount", lang) + " ";
+      loginLink.textContent = t("auth.login", lang);
+    }
 
     const form = document.getElementById("registerForm") as HTMLFormElement & {
       username: HTMLInputElement;
@@ -88,5 +106,5 @@ let error = "";
       if (res.success) window.location.href = "/create-character";
       else alert(res.error);
     });
-  </script></Layout
->
+  </script>
+</Layout>

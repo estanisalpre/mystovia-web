@@ -6,7 +6,6 @@ import { RegisterRequest, LoginRequest } from '../types/index.js';
 
 // 🔧 Configuración global
 const isProduction = process.env.NODE_ENV === 'production';
-const cookieDomain = isProduction ? new URL(process.env.FRONTEND_URL || '').hostname : undefined;
 const sameSiteMode: 'none' | 'lax' = isProduction ? 'none' : 'lax';
 
 /* ⏸️ JWT DESACTIVADO TEMPORALMENTE
@@ -159,19 +158,16 @@ export const login = async (req: Request<{}, {}, LoginRequest>, res: Response) =
 /** 🚪 Logout */
 export const logout = async (_req: Request, res: Response) => {
   try {
-    /* ⏸️ JWT DESACTIVADO TEMPORALMENTE
-    const refreshToken = req.cookies.refreshToken;
-    if (refreshToken) {
-      await db.query('DELETE FROM refresh_tokens WHERE token = ?', [refreshToken]);
-    }
+    // 🍪 Limpiar cookies con las mismas opciones que se usaron al crearlas
+    const clearCookieOptions = {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: sameSiteMode,
+      path: '/'
+    };
 
-    res.clearCookie('accessToken', { domain: cookieDomain });
-    res.clearCookie('refreshToken', { domain: cookieDomain });
-    */
-
-    // 🍪 Limpiar cookies simples (sin JWT)
-    res.clearCookie('userId', { domain: cookieDomain });
-    res.clearCookie('userEmail', { domain: cookieDomain });
+    res.clearCookie('userId', clearCookieOptions);
+    res.clearCookie('userEmail', clearCookieOptions);
 
     res.json({ success: true, message: 'Sesión cerrada con éxito.' });
   } catch (error) {

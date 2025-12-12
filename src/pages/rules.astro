@@ -25,17 +25,20 @@ const { sections } = rulesData;
       icon={BookOpenText}
       title="Reglas del servidor"
       description="Por favor, lee y respeta las siguientes reglas para asegurar una experiencia agradable para todos los jugadores."
+      titleId="rulesTitle"
+      descriptionId="rulesDesc"
     />
 
     <WarnErrorSuccessMessage
       type="warn"
       message="El incumplimiento de estas reglas puede resultar en sanciones que van desde advertencias hasta baneos permanentes."
+      id="rulesWarning"
     />
 
     {
       sections.length === 0 ? (
         <section class="text-center py-12">
-          <p class="text-lg text-base-content/70">
+          <p id="noRules" class="text-lg text-base-content/70">
             No hay reglas publicadas aún.
           </p>
         </section>
@@ -47,7 +50,7 @@ const { sections } = rulesData;
                 <h2 class="text-2xl font-extrabold text-yellow-400 mb-4 pb-2 border-b border-gray-600">{section.name}</h2>
 
                 {section.rules.length === 0 ? (
-                  <p class="italic">
+                  <p class="italic no-rules-section">
                     No hay reglas en esta sección.
                   </p>
                 ) : (
@@ -72,6 +75,41 @@ const { sections } = rulesData;
     <WarnErrorSuccessMessage
       type="info"
       message="Al jugar en este servidor, aceptas cumplir con todas estas reglas."
+      id="rulesAcceptance"
     />
   </section>
 </Layout>
+
+<script>
+  import { t, getStoredLanguage } from '../i18n/translations';
+
+  const lang = getStoredLanguage();
+
+  const title = document.getElementById('rulesTitle');
+  if (title) {
+    const span = title.querySelector('span');
+    if (span) span.textContent = t('rules.title', lang);
+  }
+
+  const desc = document.getElementById('rulesDesc');
+  if (desc) desc.textContent = t('rules.description', lang);
+
+  const warning = document.getElementById('rulesWarning');
+  if (warning) {
+    const msgSpan = warning.querySelector('.message-text');
+    if (msgSpan) msgSpan.textContent = t('rules.warning', lang);
+  }
+
+  const noRules = document.getElementById('noRules');
+  if (noRules) noRules.textContent = t('rules.noRules', lang);
+
+  document.querySelectorAll('.no-rules-section').forEach(el => {
+    el.textContent = t('rules.noRulesInSection', lang);
+  });
+
+  const acceptance = document.getElementById('rulesAcceptance');
+  if (acceptance) {
+    const msgSpan = acceptance.querySelector('.message-text');
+    if (msgSpan) msgSpan.textContent = t('rules.acceptance', lang);
+  }
+</script>

@@ -3,17 +3,19 @@ interface Props {
   title: string;
   description: string;
   icon?: any;
+  titleId?: string;
+  descriptionId?: string;
 };
 
-const { title, description, icon: Icon } = Astro.props;
+const { title, description, icon: Icon, titleId, descriptionId } = Astro.props;
 ---
 
 <header class="mb-4 pb-5 border-b border-gray-600">
-  <h1 class="text-4xl flex justify-start items-center gap-4 font-bold mb-4">
+  <h1 id={titleId} class="text-4xl flex justify-start items-center gap-4 font-bold mb-4">
     {Icon && <Icon size={32} />}
-    {title}
+    <span>{title}</span>
   </h1>
-  <p class="text-base-content/70">
+  <p id={descriptionId} class="text-base-content/70">
     {description}
   </p>
 </header>

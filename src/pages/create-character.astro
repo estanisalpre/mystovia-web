@@ -1,15 +1,10 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import Input from "@ui/Input.astro";
-import ErrorMessage from "@ui/ErrorMessage.astro";
-import SubmitBtn from "@ui/SubmitBtn.astro";
-
-let error = "";
 ---
 
-<Layout title="Create Character - TibiaPS">
+<Layout title="Create Character - Mystovia">
   <section class="grow z-100 flex-col pt-20 flex items-center justify-center min-h-screen py-12 px-4">
-    <h2 class="text-3xl font-bold text-center mb-8 z-100">Crea tu personaje</h2>
+    <h2 id="createCharTitle" class="text-3xl font-bold text-center mb-8 z-100">Crea tu personaje</h2>
 
     <div class="grid md:grid-cols-2 gap-8">
       <!-- Formulario -->
@@ -21,6 +16,7 @@ let error = "";
           <div>
             <label
               for="characterName"
+              id="charNameLabel"
               class="block text-sm font-medium mb-2"
               >Nombre del personaje</label
             >
@@ -35,13 +31,13 @@ let error = "";
               class="w-full px-4 py-3 bg-gray-900 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500"
               placeholder="Ingresa el nombre del personaje"
             />
-            <p class="text-xs text-gray-400 mt-1">
+            <p id="charNameHint" class="text-xs text-gray-400 mt-1">
               Solo letras y espacios. Primer letra en mayúscula.
             </p>
           </div>
 
           <div>
-            <label class="block text-sm font-medium mb-3">Selecciona la vocación</label
+            <label id="vocationLabel" class="block text-sm font-medium mb-3">Selecciona la vocación</label
             >
             <div class="space-y-3">
               <label
@@ -127,6 +123,7 @@ let error = "";
 
           <button
             type="submit"
+            id="createCharBtn"
             class="w-full bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-3 rounded-lg transition transform hover:scale-105"
           >
             CREAR PERSONAJE
@@ -136,12 +133,12 @@ let error = "";
 
       <!-- Personajes existentes -->
       <div class="bg-black/30 border border-white/30 backdrop-blur-md rounded-lg shadow-xl p-8">
-        <h3 class="text-xl font-bold mb-4">Tus personajes</h3>
+        <h3 id="yourCharsTitle" class="text-xl font-bold mb-4">Tus personajes</h3>
         <div
           id="charactersList"
           class="space-y-3"
         >
-          <div class="text-gray-400 text-center py-8">
+          <div id="loadingChars" class="text-gray-400 text-center py-8">
             Cargando personajes...
           </div>
         </div>
@@ -151,6 +148,35 @@ let error = "";
 </Layout>
 
 <script>
+  import { t, getStoredLanguage } from '../i18n/translations';
+
+  const lang = getStoredLanguage();
+
+  // Apply translations
+  const createCharTitle = document.getElementById("createCharTitle");
+  if (createCharTitle) createCharTitle.textContent = t("character.createCharacter", lang);
+
+  const charNameLabel = document.getElementById("charNameLabel");
+  if (charNameLabel) charNameLabel.textContent = t("character.characterName", lang);
+
+  const charNameInput = document.getElementById("characterName") as HTMLInputElement;
+  if (charNameInput) charNameInput.placeholder = t("character.characterNamePlaceholder", lang);
+
+  const charNameHint = document.getElementById("charNameHint");
+  if (charNameHint) charNameHint.textContent = t("character.characterNameHint", lang);
+
+  const vocationLabel = document.getElementById("vocationLabel");
+  if (vocationLabel) vocationLabel.textContent = t("character.selectVocation", lang);
+
+  const createCharBtn = document.getElementById("createCharBtn");
+  if (createCharBtn) createCharBtn.textContent = t("character.createButton", lang);
+
+  const yourCharsTitle = document.getElementById("yourCharsTitle");
+  if (yourCharsTitle) yourCharsTitle.textContent = t("character.yourCharacters", lang);
+
+  const loadingChars = document.getElementById("loadingChars");
+  if (loadingChars) loadingChars.textContent = t("character.loadingCharacters", lang);
+
   const characterForm = document.getElementById(
     "characterForm"
   ) as HTMLFormElement;
@@ -193,7 +219,7 @@ let error = "";
 
       if (data.characters.length === 0) {
         charactersList.innerHTML =
-          '<div class="text-gray-400 text-center py-8">No characters yet. Create your first one!</div>';
+          `<div class="text-gray-400 text-center py-8">${t("character.noCharactersYet", lang)}</div>`;
       } else {
         charactersList.innerHTML = data.characters
           .map(
@@ -218,7 +244,7 @@ let error = "";
       }
     } catch (error) {
       charactersList.innerHTML =
-        '<div class="text-red-400 text-center py-8">Failed to load characters</div>';
+        `<div class="text-red-400 text-center py-8">${t("character.failedToLoadCharacters", lang)}</div>`;
     }
   }
 
@@ -248,7 +274,7 @@ let error = "";
         throw new Error(data.error || "Character creation failed");
       }
 
-      successDiv.textContent = `Character "${name}" created successfully!`;
+      successDiv.textContent = t("character.characterCreated", lang);
       successDiv.classList.remove("hidden");
 
       characterForm.reset();

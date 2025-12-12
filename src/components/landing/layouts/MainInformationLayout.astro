@@ -2,10 +2,30 @@
 import LoginComponent from "../store/LoginComponent.astro"
 import FeaturesSection from "../store/FeaturesSection.astro"
 import ServerStats from "../store/ServerStats.tsx"
+import SearchCharacter from "../store/SearchCharacter.astro";
 ---
 
-<section class="min-h-screen grid place-items-center grid-cols-4 grid-rows-10 w-full max-w-[1150px] gap-2 mx-auto bg-transparent rounded-4xl">
-    <LoginComponent />
-    <FeaturesSection />
-    <ServerStats client:load />
+<section class="min-h-screen w-full max-w-[1150px] mx-auto px-4 py-8 bg-transparent">
+    <!-- Mobile: Stack vertically, Desktop: Grid layout -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 auto-rows-auto">
+        <!-- Login Component -->
+        <div class="md:col-span-1 lg:col-span-1 min-h-[280px]">
+            <LoginComponent />
+        </div>
+
+        <!-- Features Section -->
+        <div class="md:col-span-1 lg:col-span-2 min-h-[280px]">
+            <FeaturesSection />
+        </div>
+
+        <!-- Server Stats -->
+        <div class="md:col-span-1 lg:col-span-1 min-h-[280px]">
+            <ServerStats client:load />
+        </div>
+
+        <!-- Search Character -->
+        <div class="md:col-span-2 lg:col-span-4 min-h-[200px]">
+            <SearchCharacter />
+        </div>
+    </div>
 </section>

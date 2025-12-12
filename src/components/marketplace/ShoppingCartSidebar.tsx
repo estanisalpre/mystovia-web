@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { X, ShoppingCart, Trash2, Plus, Minus, CreditCard } from 'lucide-react';
 import CheckoutModal from './CheckoutModal';
+import '../../i18n';
 
 const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3001';
 
@@ -31,6 +33,7 @@ export default function ShoppingCartSidebar({
   total,
   onCartUpdate
 }: ShoppingCartSidebarProps) {
+  const { t } = useTranslation();
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [updating, setUpdating] = useState<number | null>(null);
 
@@ -111,7 +114,7 @@ export default function ShoppingCartSidebar({
         <div className="flex items-center justify-between p-6 border-b border-gray-800">
           <div className="flex items-center gap-3">
             <ShoppingCart size={24} className="text-blue-500" />
-            <h2 className="text-2xl font-bold text-white">Carrito de compras</h2>
+            <h2 className="text-2xl font-bold text-white">{t('cart.title')}</h2>
           </div>
           <button
             onClick={onClose}
@@ -126,7 +129,7 @@ export default function ShoppingCartSidebar({
           {cart.length === 0 ? (
             <div className="text-center py-20">
               <ShoppingCart size={64} className="mx-auto text-gray-700 mb-4" />
-              <p className="text-gray-500 text-lg">Your cart is empty</p>
+              <p className="text-gray-500 text-lg">{t('cart.empty')}</p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -155,7 +158,7 @@ export default function ShoppingCartSidebar({
                     <div className="flex-1">
                       <h3 className="text-white font-semibold mb-1">{item.name}</h3>
                       <p className="text-gray-400 text-sm mb-2">
-                        ${item.price.toFixed(2)} each
+                        ${item.price.toFixed(2)} {t('cart.each')}
                       </p>
 
                       {/* Quantity controls */}
@@ -209,11 +212,11 @@ export default function ShoppingCartSidebar({
               onClick={clearCart}
               className="w-full text-red-500 hover:text-red-400 text-sm transition-colors"
             >
-              Clear Cart
+              {t('cart.clearCart')}
             </button>
 
             <div className="flex items-center justify-between text-lg">
-              <span className="text-gray-400">Total:</span>
+              <span className="text-gray-400">{t('common.total')}:</span>
               <span className="text-white font-bold text-2xl">
                 ${total.toFixed(2)}
               </span>
@@ -224,7 +227,7 @@ export default function ShoppingCartSidebar({
               className="w-full bg-linear-to-r from-blue-600 to-purple-600 text-white py-4 rounded-lg font-bold hover:from-blue-700 hover:to-purple-700 transition-all flex items-center justify-center gap-2"
             >
               <CreditCard size={20} />
-              Proceed to Checkout
+              {t('cart.proceedToCheckout')}
             </button>
           </div>
         )}

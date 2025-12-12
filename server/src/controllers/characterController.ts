@@ -78,9 +78,9 @@ export const getCharacters = async (req: Request, res: Response) => {
     const userId = (req as any).user.userId;
 
     const [characters] = await db.query(
-      `SELECT id, name, level, vocation, health, healthmax, mana, manamax, 
+      `SELECT id, name, level, vocation, health, healthmax, mana, manamax,
               soul, cap, experience, maglevel, town_id, sex, lastlogin
-       FROM players 
+       FROM players
        WHERE account_id = ? AND deleted = 0`,
       [userId]
     );
@@ -97,6 +97,93 @@ export const getCharacters = async (req: Request, res: Response) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 };
+
+export const searchCharacter = async (req: Request, res: Response) => {
+  try {
+    const { name } = req.query;
+
+    if (!name || typeof name !== 'string') {
+      return res.status(400).json({ error: 'El nombre del personaje es requerido' });
+    }
+
+    const [characters] = await db.query(
+      `SELECT p.id, p.name, p.level, p.vocation, p.town_id, p.sex, p.group_id
+       FROM players p
+       WHERE p.name = ? AND p.deleted = 0`,
+      [name]
+    );
+
+    if (!Array.isArray(characters) || characters.length === 0) {
+      return res.status(404).json({ error: 'Personaje no encontrado' });
+    }
+
+    const character = characters[0] as any;
+
+    // Obtener las ultimas 6 muertes
+    let deaths: any[] = [];
+    try {
+      const [deathsResult] = await db.query(
+        `SELECT pd.time, pd.level, pd.killed_by, pd.is_player
+         FROM player_deaths pd
+         WHERE pd.player_id = ?
+         ORDER BY pd.time DESC
+         LIMIT 6`,
+        [character.id]
+      );
+      deaths = deathsResult as any[];
+    } catch (deathError) {
+      // Si la tabla no existe o hay error, continuar sin muertes
+      console.log('No se pudieron obtener las muertes:', deathError);
+    }
+
+    res.json({
+      success: true,
+      character: {
+        id: character.id,
+        name: character.name,
+        level: character.level,
+        vocation: character.vocation,
+        vocationName: getVocationName(character.vocation),
+        sex: character.sex,
+        sexName: getSexName(character.sex),
+        townId: character.town_id,
+        townName: getTownName(character.town_id),
+        isGameMaster: character.group_id === 6,
+        deaths: deaths.map(d => ({
+          time: d.time,
+          level: d.level,
+          killedBy: d.killed_by,
+          isPlayer: d.is_player === 1
+        }))
+      }
+    });
+  } catch (error) {
+    console.error('Search character error:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+};
+
+function getSexName(sex: number): string {
+  return sex === 1 ? 'Masculino' : 'Femenino';
+}
+
+function getTownName(townId: number): string {
+  const towns: { [key: number]: string } = {
+    1: 'Thais',
+    2: 'Carlin',
+    3: 'Kazordoon',
+    4: 'Ab\'Dendriel',
+    5: 'Venore',
+    6: 'Edron',
+    7: 'Darashia',
+    8: 'Ankrahmun',
+    9: 'Port Hope',
+    10: 'Liberty Bay',
+    11: 'Svargrond',
+    12: 'Yalahar'
+  };
+  return towns[townId] || 'Desconocida';
+}
 
 // Helper para convertir vocation string a datos completos
 function getVocationData(vocation: string) {

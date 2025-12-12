@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { X, AlertCircle, Check } from 'lucide-react';
 import { getCharacters } from '../../utils/api';
 import MercadoPagoCardForm from './MercadoPagoCardForm';
+import '../../i18n';
 
 interface Character {
   id: number;
@@ -23,6 +25,7 @@ export default function CheckoutModal({
   total,
   onSuccess
 }: CheckoutModalProps) {
+  const { t } = useTranslation();
   const [characters, setCharacters] = useState<Character[]>([]);
   const [selectedCharacter, setSelectedCharacter] = useState<number | null>(null);
   const [error, setError] = useState('');
@@ -57,7 +60,7 @@ export default function CheckoutModal({
 
   const handleProceedToPayment = () => {
     if (!selectedCharacter) {
-      setError('Please select a character to receive the items');
+      setError(t('cart.pleaseSelectCharacter'));
       return;
     }
 
@@ -109,7 +112,7 @@ export default function CheckoutModal({
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-800 sticky top-0 bg-gray-900 z-10">
           <h2 className="text-2xl font-bold text-white">
-            {showPaymentForm ? 'Complete Payment' : 'Checkout'}
+            {showPaymentForm ? t('cart.completePayment') : t('cart.checkout')}
           </h2>
           <button
             onClick={handleCancel}
@@ -126,9 +129,9 @@ export default function CheckoutModal({
               <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Check size={32} className="text-white" />
               </div>
-              <h3 className="text-xl font-bold text-white mb-2">Payment Successful!</h3>
+              <h3 className="text-xl font-bold text-white mb-2">{t('cart.paymentSuccessful')}</h3>
               <p className="text-gray-400">
-                Your payment has been processed successfully. Items will be delivered to your character shortly.
+                {t('cart.paymentSuccessMessage')}
               </p>
             </div>
           ) : showPaymentForm ? (
@@ -143,13 +146,13 @@ export default function CheckoutModal({
             <>
               <div className="mb-6">
                 <label className="block text-white font-semibold mb-3">
-                  Select Character to Receive Items
+                  {t('cart.selectCharacter')}
                 </label>
 
                 {characters.length === 0 ? (
                   <div className="bg-yellow-500/10 border border-yellow-500/50 rounded-lg p-4 text-yellow-500">
                     <p className="text-sm">
-                      You don't have any characters. Please create a character first.
+                      {t('cart.noCharacters')}
                     </p>
                   </div>
                 ) : (
@@ -169,11 +172,11 @@ export default function CheckoutModal({
 
               <div className="bg-gray-800 rounded-lg p-4 mb-6">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-gray-400">Total Amount:</span>
+                  <span className="text-gray-400">{t('cart.totalAmount')}</span>
                   <span className="text-white text-2xl font-bold">${total.toFixed(2)}</span>
                 </div>
                 <p className="text-gray-500 text-sm">
-                  Items will be delivered to your character's depot/mailbox after payment confirmation.
+                  {t('cart.itemsDeliveryNote')}
                 </p>
               </div>
 
@@ -186,7 +189,7 @@ export default function CheckoutModal({
 
               <div className="bg-blue-500/10 border border-blue-500/50 rounded-lg p-4 mb-6">
                 <p className="text-blue-400 text-sm">
-                  <strong>Note:</strong> Payment form will be shown in the next step. Your card data is handled securely by MercadoPago.
+                  {t('cart.paymentNote')}
                 </p>
               </div>
 
@@ -195,7 +198,7 @@ export default function CheckoutModal({
                 disabled={characters.length === 0}
                 className="w-full bg-linear-to-r from-blue-600 to-purple-600 text-white py-4 rounded-lg font-bold hover:from-blue-700 hover:to-purple-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Proceed to Payment
+                {t('cart.proceedToPayment')}
               </button>
             </>
           )}

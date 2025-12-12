@@ -13,7 +13,7 @@ let error = "";
       id="loginForm"
       class="max-w-md w-full backdrop-blur-md border border-white/30 bg-black/30 rounded-lg shadow-xl p-8 space-y-6"
     >
-      <h2 class="text-3xl font-bold text-center mb-6">Login</h2>
+      <h2 id="loginTitle" class="text-3xl font-bold text-center mb-6">Iniciar sesión</h2>
 
       <Input
         id="email"
@@ -35,11 +35,12 @@ let error = "";
         visible={!!error}
       />
 
-      <SubmitBtn label="Login" />
+      <SubmitBtn label="INICIAR SESIÓN" id="loginBtn" />
 
-      <p class="text-center text-sm text-gray-400">
+      <p id="noAccountText" class="text-center text-sm text-gray-400">
         ¿No tenes cuenta aún? <a
           href="/register"
+          id="registerLink"
           class="text-yellow-500 hover:text-yellow-400 font-medium"
           >Registrate</a
         >
@@ -49,6 +50,23 @@ let error = "";
 
   <script>
     import { useAuth } from "@hooks/useAuth";
+    import { t, getStoredLanguage } from "../i18n/translations";
+
+    const lang = getStoredLanguage();
+
+    // Apply translations
+    const loginTitle = document.getElementById("loginTitle");
+    if (loginTitle) loginTitle.textContent = t("auth.login", lang);
+
+    const loginBtn = document.getElementById("loginBtn");
+    if (loginBtn) loginBtn.textContent = t("auth.loginButton", lang);
+
+    const noAccountText = document.getElementById("noAccountText");
+    const registerLink = document.getElementById("registerLink");
+    if (noAccountText && registerLink) {
+      noAccountText.childNodes[0].textContent = t("auth.noAccount", lang) + " ";
+      registerLink.textContent = t("auth.register", lang);
+    }
 
     const form = document.getElementById("loginForm") as HTMLFormElement & {
       email: HTMLInputElement;
