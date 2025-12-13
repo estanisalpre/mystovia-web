@@ -1,0 +1,124 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Input from "@ui/Input.astro";
+import ErrorMessage from "@ui/ErrorMessage.astro";
+import SubmitBtn from "@ui/SubmitBtn.astro";
+---
+
+<Layout title="Lost Account | Mystovia">
+  <section class="grow z-100 flex items-center justify-center min-h-screen py-12 px-4">
+    <form
+      id="lostAccountForm"
+      class="max-w-md w-full backdrop-blur-md border border-white/30 bg-black/30 rounded-lg shadow-xl p-8 space-y-6"
+    >
+      <h2 id="lostAccountTitle" class="text-3xl font-bold text-center mb-2">Lost Account</h2>
+      <p id="lostAccountDescription" class="text-center text-sm text-gray-400 mb-6">
+        Ingresa tu email o account name para encontrar tu cuenta.
+      </p>
+
+      <Input
+        id="accountIdentifier"
+        label="Email o Account Name"
+        type="text"
+        placeholder="you@email.com o account name"
+        required
+      />
+
+      <div id="errorContainer" class="hidden">
+        <ErrorMessage message="" visible={false} />
+      </div>
+
+      <SubmitBtn label="BUSCAR CUENTA" id="searchBtn" />
+
+      <p class="text-center text-sm text-gray-400">
+        <a
+          href="/login"
+          id="backToLoginLink"
+          class="text-yellow-500 hover:text-yellow-400 font-medium"
+        >
+          Volver al inicio de sesión
+        </a>
+      </p>
+    </form>
+  </section>
+
+  <script>
+    import { t, getStoredLanguage } from "../i18n/translations";
+
+    const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3001';
+    const lang = getStoredLanguage();
+
+    // Apply translations
+    const lostAccountTitle = document.getElementById("lostAccountTitle");
+    if (lostAccountTitle) lostAccountTitle.textContent = t("lostAccount.title", lang);
+
+    const lostAccountDescription = document.getElementById("lostAccountDescription");
+    if (lostAccountDescription) lostAccountDescription.textContent = t("lostAccount.description", lang);
+
+    const searchBtn = document.getElementById("searchBtn");
+    if (searchBtn) searchBtn.textContent = t("lostAccount.searchButton", lang);
+
+    const backToLoginLink = document.getElementById("backToLoginLink");
+    if (backToLoginLink) backToLoginLink.textContent = t("auth.backToLogin", lang);
+
+    const form = document.getElementById("lostAccountForm") as HTMLFormElement & {
+      accountIdentifier: HTMLInputElement;
+    };
+
+    const errorContainer = document.getElementById("errorContainer");
+
+    function showError(message: string) {
+      if (errorContainer) {
+        errorContainer.classList.remove("hidden");
+        const errorEl = errorContainer.querySelector("p");
+        if (errorEl) errorEl.textContent = message;
+      }
+    }
+
+    function hideError() {
+      errorContainer?.classList.add("hidden");
+    }
+
+    form?.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      hideError();
+
+      const accountIdentifier = form.accountIdentifier.value.trim();
+      const submitButton = document.getElementById("searchBtn") as HTMLButtonElement;
+
+      if (!accountIdentifier) {
+        showError(t("lostAccount.identifierRequired", lang));
+        return;
+      }
+
+      submitButton.disabled = true;
+      submitButton.textContent = t("common.loading", lang) || "Buscando...";
+
+      try {
+        const response = await fetch(`${API_URL}/api/auth/find-account`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ identifier: accountIdentifier }),
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          // Store account info in sessionStorage and redirect to problem selection
+          sessionStorage.setItem('lostAccountId', result.accountId);
+          sessionStorage.setItem('lostAccountName', result.accountName);
+          sessionStorage.setItem('lostAccountEmail', result.maskedEmail);
+          window.location.href = '/account-recovery';
+        } else {
+          showError(result.error || t("lostAccount.accountNotFound", lang));
+        }
+      } catch (error) {
+        console.error("Find account error:", error);
+        showError(t("common.error", lang));
+      } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = t("lostAccount.searchButton", lang);
+      }
+    });
+  </script>
+</Layout>

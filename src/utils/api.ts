@@ -269,4 +269,68 @@ export async function getOrder(orderId: number) {
   });
 }
 
+/**
+ * Get account details for account management
+ */
+export async function getAccountDetails() {
+  return apiRequest('/api/account/details', {
+    method: 'GET',
+    credentials: 'include',
+  });
+}
+
+/**
+ * Change account password
+ */
+export async function changePassword(currentPassword: string, newPassword: string) {
+  return apiRequest('/api/account/change-password', {
+    method: 'POST',
+    credentials: 'include',
+    body: JSON.stringify({ currentPassword, newPassword }),
+  });
+}
+
+/**
+ * Change account email
+ */
+export async function changeEmail(newEmail: string, currentPassword: string) {
+  return apiRequest('/api/account/change-email', {
+    method: 'POST',
+    credentials: 'include',
+    body: JSON.stringify({ newEmail, currentPassword }),
+  });
+}
+
+/**
+ * Request password reset email
+ */
+export async function forgotPassword(email: string) {
+  return apiRequest('/api/auth/forgot-password', {
+    method: 'POST',
+    body: JSON.stringify({ email }),
+    skipRefresh: true,
+  });
+}
+
+/**
+ * Reset password with token
+ */
+export async function resetPassword(token: string, newPassword: string) {
+  return apiRequest('/api/auth/reset-password', {
+    method: 'POST',
+    body: JSON.stringify({ token, newPassword }),
+    skipRefresh: true,
+  });
+}
+
+/**
+ * Verify if reset token is valid
+ */
+export async function verifyResetToken(token: string) {
+  return apiRequest(`/api/auth/verify-reset-token?token=${token}`, {
+    method: 'GET',
+    skipRefresh: true,
+  });
+}
+
 export { API_URL };

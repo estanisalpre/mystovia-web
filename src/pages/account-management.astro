@@ -1,0 +1,47 @@
+---
+import Layout from '../layouts/Layout.astro';
+import AccountManagement from '../components/account/AccountManagement';
+---
+
+<Layout title="Account Management | Mystovia">
+  <section class="page-container pt-24 pb-12">
+    <div class="text-center mb-8">
+      <h1 id="accountTitle" class="text-4xl font-bold mb-4">Account Management</h1>
+      <p id="accountDesc" class="text-lg text-gray-400">
+        Administra la configuración de tu cuenta
+      </p>
+    </div>
+
+    <AccountManagement client:load />
+  </section>
+</Layout>
+
+<script>
+  import { t, getStoredLanguage } from '../i18n/translations';
+
+  const lang = getStoredLanguage();
+
+  const title = document.getElementById('accountTitle');
+  if (title) title.textContent = t('account.title', lang);
+
+  const desc = document.getElementById('accountDesc');
+  if (desc) desc.textContent = t('account.description', lang);
+
+  const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3001';
+
+  async function checkAuth() {
+    try {
+      const response = await fetch(`${API_URL}/api/auth/verify`, {
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        window.location.href = '/login';
+      }
+    } catch (error) {
+      window.location.href = '/login';
+    }
+  }
+
+  checkAuth();
+</script>

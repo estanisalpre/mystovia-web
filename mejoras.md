@@ -7,7 +7,7 @@
 # 5. idiomas: español - ingles - portugues
 # 6. Responsive
 # 7. Conectar con informacion de personaje
-8. ¿Que vamos a mostrar en el perfil de usuario?
+# 8. ¿Que vamos a mostrar en el perfil de usuario?
 9. Probar todos las paginas: descargas, wiki, foro, que todo funcione
 10. sacar el "agregar o quitar productos" del carrito de compra
 11. musica no se reproduce en onrender

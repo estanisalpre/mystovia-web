@@ -2,6 +2,48 @@ import { Request, Response } from 'express';
 import db from '../config/database.js';
 import { CreateCharacterRequest } from '../types';
 
+// Lista de palabras/patrones prohibidos en nombres de personajes
+const FORBIDDEN_NAME_PATTERNS = [
+  // Staff roles
+  'admin', 'administrator', 'gm', 'gamemaster', 'game master', 'cm', 'community',
+  'god', 'goddess', 'owner', 'staff', 'mod', 'moderator', 'tutor', 'support',
+  'helper', 'dev', 'developer', 'ceo', 'founder', 'creator',
+  // Server-related
+  'mystovia', 'server', 'official', 'system', 'npc', 'monster',
+  // Fraud/impersonation
+  'cipsoft', 'tibia', 'realtibia', 'tibiacoins', 'coins seller',
+  // Offensive variations
+  'adm', 'administrador', 'moderador', 'soporte', 'ayudante',
+  // Common scam patterns
+  'bank', 'banker', 'trade', 'trader', 'exchange', 'sell', 'seller', 'buy', 'buyer',
+  'free items', 'free coins', 'giveaway',
+];
+
+// Función para verificar si el nombre contiene palabras prohibidas
+function containsForbiddenWord(name: string): boolean {
+  const lowerName = name.toLowerCase().replace(/\s+/g, ' ');
+
+  for (const pattern of FORBIDDEN_NAME_PATTERNS) {
+    // Verifica si el nombre contiene la palabra prohibida
+    if (lowerName.includes(pattern.toLowerCase())) {
+      return true;
+    }
+    // Verifica variaciones con números (ej: adm1n, g0d)
+    const leetPattern = pattern
+      .replace(/a/gi, '[a4@]')
+      .replace(/e/gi, '[e3]')
+      .replace(/i/gi, '[i1!]')
+      .replace(/o/gi, '[o0]')
+      .replace(/s/gi, '[s5$]')
+      .replace(/t/gi, '[t7]');
+    const regex = new RegExp(leetPattern, 'i');
+    if (regex.test(lowerName)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 export const createCharacter = async (req: Request<{}, {}, CreateCharacterRequest>, res: Response) => {
   try {
     const { name, vocation } = req.body;
@@ -15,8 +57,15 @@ export const createCharacter = async (req: Request<{}, {}, CreateCharacterReques
     // Validar nombre de personaje
     const nameRegex = /^[A-Z][a-z]+(?: [A-Z][a-z]+)*$/;
     if (!nameRegex.test(name)) {
-      return res.status(400).json({ 
-        error: 'Character name must start with capital letter and contain only letters and spaces' 
+      return res.status(400).json({
+        error: 'Character name must start with capital letter and contain only letters and spaces'
+      });
+    }
+
+    // Verificar nombres prohibidos (staff, fraudes, etc.)
+    if (containsForbiddenWord(name)) {
+      return res.status(400).json({
+        error: 'El nombre infringe normas de seguridad'
       });
     }
 

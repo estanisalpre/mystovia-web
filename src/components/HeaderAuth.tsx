@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { LogOut, User, Users, ChevronDown, Shield } from 'lucide-react';
+import { LogOut, User, Users, ChevronDown, Shield, Settings } from 'lucide-react';
 import { verifyAuth, logout as apiLogout } from '../utils/api';
 import { hasPermission } from '../utils/permissions';
 import '../i18n';
@@ -24,7 +24,6 @@ export default function HeaderAuth() {
     checkAuth();
   }, []);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -43,7 +42,6 @@ export default function HeaderAuth() {
 
   const checkAuth = async () => {
     try {
-      // Verify authentication using cookie-based auth with auto-refresh
       const result = await verifyAuth();
 
       if (result.success && result.data?.user) {
@@ -55,7 +53,6 @@ export default function HeaderAuth() {
         });
         setIsLoggedIn(true);
       } else {
-        // Not authenticated
         setIsLoggedIn(false);
         setUser(null);
       }
@@ -79,16 +76,13 @@ export default function HeaderAuth() {
   const handleLogout = async () => {
     try {
       await apiLogout();
-      // apiLogout already handles redirect to '/'
     } catch (error) {
       console.error('Logout failed:', error);
-      // Force redirect anyway
       window.location.href = '/';
     }
   };
 
   if (isLoading) {
-    // Optional: Show a loading state
     return (
       <div className="flex items-center gap-2 md:gap-4">
         <div className="w-16 md:w-24 h-10 bg-gray-700/50 animate-pulse rounded"></div>
@@ -130,12 +124,22 @@ export default function HeaderAuth() {
 
               {/* Mis personajes */}
               <a
-                href="/characters"
+                href="/create-character"
                 className="flex items-center gap-3 px-4 py-3 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition-colors"
                 onClick={() => setIsDropdownOpen(false)}
               >
                 <Users size={18} />
                 <span>{t('auth.myCharacters')}</span>
+              </a>
+
+              {/* Account Management */}
+              <a
+                href="/account-management"
+                className="flex items-center gap-3 px-4 py-3 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition-colors"
+                onClick={() => setIsDropdownOpen(false)}
+              >
+                <Settings size={18} />
+                <span>{t('auth.accountManagement')}</span>
               </a>
 
               {/* Panel Admin - Solo para usuarios con permisos */}
