@@ -2,6 +2,7 @@
 import { Music } from "@lucide/astro";
 ---
 <aside
+  id="musicPlayerContainer"
   class="fixed bottom-4 right-4 z-50 group flex items-center gap-2 bg-black/40 border border-yellow-500 rounded-lg p-3 cursor-pointer backdrop-blur-md transition-all hover:pr-4"
 >
   <Music class="text-yellow-400 w-6 h-6 group-hover:text-yellow-300 transition" />
@@ -16,22 +17,89 @@ import { Music } from "@lucide/astro";
   />
 </aside>
 
-<script type="module">
-  if (typeof window !== "undefined") {
-    const volumeControl = document.getElementById("volumeControl");
-    const audio = new Audio("/assets/music/bg-music.mp3");
-    audio.loop = true;
-    audio.volume = 0.05;
+<script>
+  declare global {
+    interface Window {
+      __musicPlayer?: {
+        audio: HTMLAudioElement;
+        initialized: boolean;
+        userInteracted: boolean;
+      };
+    }
+  }
 
-    audio.play().catch(() => {
-      console.warn("Autoplay bloqueado. Esperando interacción del usuario...");
-      document.addEventListener("click", () => audio.play(), { once: true });
+  function initMusicPlayer() {
+    if (!window.__musicPlayer) {
+      const audio = new Audio("/assets/music/bg-music.mp3");
+      audio.loop = true;
+      audio.volume = 0.05;
+      audio.preload = "auto";
+
+      window.__musicPlayer = {
+        audio,
+        initialized: false,
+        userInteracted: false
+      };
+    }
+
+    const { audio } = window.__musicPlayer;
+    const volumeControl = document.getElementById("volumeControl") as HTMLInputElement | null;
+
+    if (volumeControl) {
+      volumeControl.value = String(audio.volume);
+
+      volumeControl.addEventListener("input", (e) => {
+        if (e.target instanceof HTMLInputElement) {
+          audio.volume = parseFloat(e.target.value);
+        }
+      });
+    }
+
+    function tryPlayAudio() {
+      if (audio.paused) {
+        audio.play().then(() => {
+          window.__musicPlayer!.initialized = true;
+          console.log("Music started playing");
+        }).catch((err) => {
+          console.warn("Autoplay blocked, waiting for user interaction...", err.message);
+        });
+      }
+    }
+
+    if (window.__musicPlayer.userInteracted) {
+      tryPlayAudio();
+    } else {
+      tryPlayAudio();
+    }
+
+    function handleUserInteraction() {
+      if (!window.__musicPlayer!.userInteracted) {
+        window.__musicPlayer!.userInteracted = true;
+        tryPlayAudio();
+      }
+    }
+
+    const interactionEvents = ["click", "touchstart", "keydown", "scroll"];
+    interactionEvents.forEach((event) => {
+      document.addEventListener(event, handleUserInteraction, { once: false, passive: true });
     });
 
-    volumeControl?.addEventListener("input", (e) => {
-      if (e.target instanceof HTMLInputElement) {
-        audio.volume = parseFloat(e.target.value);
+    const container = document.getElementById("musicPlayerContainer");
+    container?.addEventListener("click", (e) => {
+      if ((e.target as HTMLElement).id === "volumeControl") return;
+
+      if (audio.paused) {
+        window.__musicPlayer!.userInteracted = true;
+        tryPlayAudio();
       }
     });
   }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initMusicPlayer);
+  } else {
+    initMusicPlayer();
+  }
+
+  document.addEventListener("astro:page-load", initMusicPlayer);
 </script>
