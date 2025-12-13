@@ -1,10 +1,27 @@
 ---
 import Layout from "@layouts/Layout.astro";
+import Input from "@ui/Input.astro";
+import SubmitBtn from "@lib/components/ui/SubmitBtn.astro";
 ---
 
 <Layout title="Informacion del personaje">
   <section class="page-container flex justify-center">
-    <div class="max-w-2xl w-full mx-auto">
+    <div class="max-w-2xl w-full mx-auto space-y-6">
+      <!-- Search Bar - Always visible -->
+      <div class="bg-black/30 border border-white/30 backdrop-blur-md rounded-lg shadow-xl p-4 sm:p-6">
+        <h2 id="searchTitle" class="text-lg font-bold text-yellow-500 mb-4">Encuentra otros jugadores</h2>
+        <form id="searchCharacterForm" class="flex flex-col gap-3">
+          <Input
+            id="characterName"
+            label=""
+            type="text"
+            placeholder="Ingresa el nombre del personaje"
+            required
+          />
+          <SubmitBtn label="BUSCAR" id="searchBtn" />
+        </form>
+      </div>
+
       <!-- Loading State -->
       <div id="loadingState" class="text-center py-12">
         <div class="text-gray-400" data-i18n="character.loadingInfo">Cargando informacion del personaje...</div>
@@ -13,10 +30,7 @@ import Layout from "@layouts/Layout.astro";
       <!-- Error State -->
       <div id="errorState" class="hidden bg-black/30 border border-red-500/50 backdrop-blur-md rounded-lg shadow-xl p-4 sm:p-6 md:p-8 text-center">
         <h3 id="errorTitle" class="text-lg sm:text-xl font-bold text-red-400 mb-2">Personaje no encontrado</h3>
-        <p id="errorMessage" class="text-sm sm:text-base text-gray-400 mb-6">No se encontro ningun personaje con ese nombre.</p>
-        <a href="/" class="inline-block px-4 sm:px-6 py-2 sm:py-3 bg-yellow-600 hover:bg-yellow-700 text-white font-semibold rounded-lg transition text-sm sm:text-base" data-i18n="common.backHome">
-          Volver al inicio
-        </a>
+        <p id="errorMessage" class="text-sm sm:text-base text-gray-400">No se encontro ningun personaje con ese nombre.</p>
       </div>
 
       <!-- Character Info -->
@@ -26,7 +40,7 @@ import Layout from "@layouts/Layout.astro";
           <!-- Header -->
           <div class="text-center mb-4 sm:mb-6 pb-4 sm:pb-6 border-b border-white/10">
             <h1 id="charName" class="text-2xl sm:text-3xl font-bold text-yellow-500"></h1>
-            <span id="charGM" class="hidden inline-block mt-2 px-3 py-1 bg-purple-600 text-white text-sm font-bold rounded-full" data-i18n="character.gameMaster">GameMaster</span>
+            <span id="charRole" class="hidden inline-block mt-2 px-3 py-1 text-white text-sm font-bold rounded-full"></span>
           </div>
 
           <!-- Info Table -->
@@ -65,118 +79,176 @@ import Layout from "@layouts/Layout.astro";
   import { t, getStoredLanguage } from '../i18n/translations';
 
   const API_URL = import.meta.env.PUBLIC_API_URL;
-  const lang = getStoredLanguage();
 
-  const loadingState = document.getElementById("loadingState")!;
-  const errorState = document.getElementById("errorState")!;
-  const characterInfo = document.getElementById("characterInfo")!;
-  const errorTitle = document.getElementById("errorTitle")!;
-  const errorMessage = document.getElementById("errorMessage")!;
-  const deathsCard = document.getElementById("deathsCard")!;
-  const deathsList = document.getElementById("deathsList")!;
+  function initCharacterPage() {
+    const lang = getStoredLanguage();
 
-  // Apply translations to static elements
-  function applyTranslations() {
-    document.querySelectorAll('[data-i18n]').forEach(el => {
-      const key = el.getAttribute('data-i18n');
-      if (key) {
-        el.textContent = t(key, lang);
-      }
-    });
-  }
+    const loadingState = document.getElementById("loadingState");
+    const errorState = document.getElementById("errorState");
+    const characterInfo = document.getElementById("characterInfo");
+    const errorTitle = document.getElementById("errorTitle");
+    const errorMessage = document.getElementById("errorMessage");
+    const deathsList = document.getElementById("deathsList");
 
-  applyTranslations();
+    if (!loadingState || !errorState || !characterInfo) return;
 
-  function formatDeathTime(timestamp: number): string {
-    const date = new Date(timestamp * 1000);
-    const localeMap: Record<string, string> = { es: 'es-ES', en: 'en-US', pt: 'pt-BR' };
-    return date.toLocaleDateString(localeMap[lang] || 'es-ES', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  }
-
-  function showError(title: string, message: string) {
-    loadingState.classList.add("hidden");
-    characterInfo.classList.add("hidden");
-    errorState.classList.remove("hidden");
-    errorTitle.textContent = title;
-    errorMessage.textContent = message;
-  }
-
-  function showCharacter(character: any) {
-    loadingState.classList.add("hidden");
+    // Reset states
+    loadingState.classList.remove("hidden");
     errorState.classList.add("hidden");
-    characterInfo.classList.remove("hidden");
+    characterInfo.classList.add("hidden");
 
-    document.getElementById("charName")!.textContent = character.name;
-    document.getElementById("charSex")!.textContent = character.sexName;
-    document.getElementById("charVocation")!.textContent = character.vocationName;
-    document.getElementById("charLevel")!.textContent = character.level.toString();
-    document.getElementById("charTown")!.textContent = character.townName;
-
-    // Show Game Master badge
-    if (character.isGameMaster) {
-      document.getElementById("charGM")!.classList.remove("hidden");
-    }
-
-    // Show deaths
-    if (character.deaths && character.deaths.length > 0) {
-      const diedAtLevel = t('character.diedAtLevel', lang);
-      const byText = t('character.by', lang);
-
-      deathsList.innerHTML = character.deaths.map((death: any) => `
-        <div class="bg-black/20 rounded-lg p-4 border-l-4 border-red-500">
-          <div class="flex justify-between items-start">
-            <div>
-              <p class="text-white">
-                ${diedAtLevel} <span class="font-bold text-yellow-400">${death.level}</span>
-                ${byText} <span class="font-bold ${death.isPlayer ? 'text-red-400' : 'text-orange-400'}">${death.killedBy}</span>
-              </p>
-              <p class="text-gray-500 text-sm mt-1">${formatDeathTime(death.time)}</p>
-            </div>
-          </div>
-        </div>
-      `).join('');
-    } else {
-      deathsList.innerHTML = `<p class="text-gray-400 text-center py-4">${t('character.noDeaths', lang)}</p>`;
-    }
-  }
-
-  async function loadCharacter() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const name = urlParams.get('name');
-
-    if (!name) {
-      showError(t('character.noNameSpecified', lang), t('character.noNameMessage', lang));
-      return;
-    }
-
-    try {
-      const response = await fetch(`${API_URL}/api/characters/search?name=${encodeURIComponent(name)}`, {
-        credentials: 'include'
+    // Apply translations to static elements
+    function applyTranslations() {
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (key) {
+          el.textContent = t(key, lang);
+        }
       });
 
-      const data = await response.json();
+      const searchTitle = document.getElementById('searchTitle');
+      if (searchTitle) searchTitle.textContent = t('character.searchTitle', lang);
 
-      if (!response.ok) {
-        showError(t('character.notFound', lang), data.error || t('character.notFoundMessage', lang));
+      const searchBtn = document.getElementById('searchBtn');
+      if (searchBtn) searchBtn.textContent = t('character.searchButton', lang);
+
+      const charNameInput = document.getElementById('characterName') as HTMLInputElement;
+      if (charNameInput) {
+        charNameInput.placeholder = t('character.searchPlaceholder', lang);
+      }
+    }
+
+    applyTranslations();
+
+    // Search form handler
+    const searchForm = document.getElementById("searchCharacterForm") as HTMLFormElement;
+    searchForm?.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const input = document.getElementById('characterName') as HTMLInputElement;
+      const characterName = input?.value.trim();
+
+      if (!characterName) {
+        alert(t('character.searchEmpty', lang));
         return;
       }
 
-      if (data.success && data.character) {
-        showCharacter(data.character);
-      } else {
-        showError(t('common.error', lang), t('character.unexpectedError', lang));
-      }
-    } catch (error) {
-      console.error("Error loading character:", error);
-      showError(t('character.connectionError', lang), t('character.connectionErrorMessage', lang));
+      window.location.href = `/character-information?name=${encodeURIComponent(characterName)}`;
+    });
+
+    function formatDeathTime(timestamp: number): string {
+      const date = new Date(timestamp * 1000);
+      const localeMap: Record<string, string> = { es: 'es-ES', en: 'en-US', pt: 'pt-BR' };
+      return date.toLocaleDateString(localeMap[lang] || 'es-ES', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
     }
+
+    function showError(title: string, message: string) {
+      loadingState.classList.add("hidden");
+      characterInfo.classList.add("hidden");
+      errorState.classList.remove("hidden");
+      if (errorTitle) errorTitle.textContent = title;
+      if (errorMessage) errorMessage.textContent = message;
+    }
+
+    function showCharacter(character: any) {
+      loadingState.classList.add("hidden");
+      errorState.classList.add("hidden");
+      characterInfo.classList.remove("hidden");
+
+      document.getElementById("charName")!.textContent = character.name;
+      document.getElementById("charSex")!.textContent = character.sexName;
+      document.getElementById("charVocation")!.textContent = character.vocationName;
+      document.getElementById("charLevel")!.textContent = character.level.toString();
+      document.getElementById("charTown")!.textContent = character.townName;
+
+      // Show role badge (GameMaster or Community Manager)
+      const roleEl = document.getElementById("charRole")!;
+      // Reset role classes
+      roleEl.classList.add("hidden");
+      roleEl.classList.remove("bg-purple-600", "bg-blue-600");
+
+      if (character.role) {
+        roleEl.textContent = character.role;
+        roleEl.classList.remove("hidden");
+        if (character.role === 'GameMaster') {
+          roleEl.classList.add("bg-purple-600");
+        } else if (character.role === 'Community Manager') {
+          roleEl.classList.add("bg-blue-600");
+        }
+      }
+
+      // Show deaths
+      if (deathsList) {
+        if (character.deaths && character.deaths.length > 0) {
+          const diedAtLevel = t('character.diedAtLevel', lang);
+          const byText = t('character.by', lang);
+
+          deathsList.innerHTML = character.deaths.map((death: any) => {
+            const killerElement = death.isPlayer
+              ? `<a href="/character-information?name=${encodeURIComponent(death.killedBy)}" class="font-bold text-red-400 hover:text-red-300 underline cursor-pointer transition">${death.killedBy}</a>`
+              : `<span class="font-bold text-orange-400">${death.killedBy}</span>`;
+
+            return `
+              <div class="bg-black/20 rounded-lg p-4 border-l-4 border-red-500">
+                <div class="flex flex-col gap-1">
+                  <p class="text-white">
+                    ${diedAtLevel} <span class="font-bold text-yellow-400">${death.level}</span>
+                    ${byText} ${killerElement}
+                  </p>
+                  <p class="text-gray-500 text-sm">${formatDeathTime(death.time)}</p>
+                </div>
+              </div>
+            `;
+          }).join('');
+        } else {
+          deathsList.innerHTML = `<p class="text-gray-400 text-center py-4">${t('character.noDeaths', lang)}</p>`;
+        }
+      }
+    }
+
+    async function loadCharacter() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const name = urlParams.get('name');
+
+      if (!name) {
+        loadingState.classList.add("hidden");
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_URL}/api/characters/search?name=${encodeURIComponent(name)}`, {
+          credentials: 'include'
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          showError(t('character.notFound', lang), data.error || t('character.notFoundMessage', lang));
+          return;
+        }
+
+        if (data.success && data.character) {
+          showCharacter(data.character);
+        } else {
+          showError(t('common.error', lang), t('character.unexpectedError', lang));
+        }
+      } catch (error) {
+        console.error("Error loading character:", error);
+        showError(t('character.connectionError', lang), t('character.connectionErrorMessage', lang));
+      }
+    }
+
+    loadCharacter();
   }
 
-  loadCharacter();
+  // Run on initial load
+  initCharacterPage();
+
+  // Re-run when navigating with View Transitions
+  document.addEventListener('astro:page-load', initCharacterPage);
 </script>

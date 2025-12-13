@@ -38,10 +38,10 @@ const { title, description = "Tibia Private Server" } = Astro.props;
     style={{ backgroundImage: `url(${bg5.src})` }}
   >
     <div class="absolute inset-0 bg-black/50 pointer-events-none z-0"></div>
-    <Particles client:load />
+    <Particles />
     <slot />
   </main>
-  <MusicPlayer client:load />
+  <MusicPlayer />
   <LanguageSelector client:load />
   <PageTransition />
   <Footer />

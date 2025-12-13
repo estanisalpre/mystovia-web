@@ -158,7 +158,7 @@ export const searchCharacter = async (req: Request, res: Response) => {
     const [characters] = await db.query(
       `SELECT p.id, p.name, p.level, p.vocation, p.town_id, p.sex, p.group_id
        FROM players p
-       WHERE p.name = ? AND p.deleted = 0`,
+       WHERE LOWER(p.name) = LOWER(?) AND p.deleted = 0`,
       [name]
     );
 
@@ -168,21 +168,33 @@ export const searchCharacter = async (req: Request, res: Response) => {
 
     const character = characters[0] as any;
 
-    // Obtener las ultimas 6 muertes
     let deaths: any[] = [];
     try {
       const [deathsResult] = await db.query(
-        `SELECT pd.time, pd.level, pd.killed_by, pd.is_player
+        `SELECT
+           pd.id, pd.date, pd.level,
+           COALESCE(p.name, ek.name) AS killed_by,
+           CASE WHEN pk.player_id IS NOT NULL THEN 1 ELSE 0 END AS is_player
          FROM player_deaths pd
+         LEFT JOIN killers k ON k.death_id = pd.id
+         LEFT JOIN player_killers pk ON pk.kill_id = k.id
+         LEFT JOIN players p ON p.id = pk.player_id
+         LEFT JOIN environment_killers ek ON ek.kill_id = k.id
          WHERE pd.player_id = ?
-         ORDER BY pd.time DESC
-         LIMIT 6`,
+         ORDER BY pd.date DESC
+         LIMIT 10`,
         [character.id]
       );
       deaths = deathsResult as any[];
     } catch (deathError) {
-      // Si la tabla no existe o hay error, continuar sin muertes
       console.log('No se pudieron obtener las muertes:', deathError);
+    }
+
+    let role: string | null = null;
+    if (character.group_id === 6) {
+      role = 'GameMaster';
+    } else if (character.group_id === 5) {
+      role = 'Community Manager';
     }
 
     res.json({
@@ -197,11 +209,11 @@ export const searchCharacter = async (req: Request, res: Response) => {
         sexName: getSexName(character.sex),
         townId: character.town_id,
         townName: getTownName(character.town_id),
-        isGameMaster: character.group_id === 6,
+        role: role,
         deaths: deaths.map(d => ({
-          time: d.time,
+          time: d.date,
           level: d.level,
-          killedBy: d.killed_by,
+          killedBy: d.killed_by || 'Unknown',
           isPlayer: d.is_player === 1
         }))
       }
@@ -234,7 +246,6 @@ function getTownName(townId: number): string {
   return towns[townId] || 'Desconocida';
 }
 
-// Helper para convertir vocation string a datos completos
 function getVocationData(vocation: string) {
   const vocations: { [key: string]: any } = {
     'knight': { id: 4, level: 8, health: 185, healthmax: 185, mana: 90, manamax: 90, cap: 470 },
