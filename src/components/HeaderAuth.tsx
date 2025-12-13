@@ -1,7 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
-import { LogOut, User, Users, ChevronDown, Shield } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { LogOut, User, Users, ChevronDown, Shield, Settings } from 'lucide-react';
 import { verifyAuth, logout as apiLogout } from '../utils/api';
 import { hasPermission } from '../utils/permissions';
+import '../i18n';
 
 interface UserData {
   id: number;
@@ -11,6 +13,7 @@ interface UserData {
 }
 
 export default function HeaderAuth() {
+  const { t } = useTranslation();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState<UserData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -21,7 +24,6 @@ export default function HeaderAuth() {
     checkAuth();
   }, []);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -40,7 +42,6 @@ export default function HeaderAuth() {
 
   const checkAuth = async () => {
     try {
-      // Verify authentication using cookie-based auth with auto-refresh
       const result = await verifyAuth();
 
       if (result.success && result.data?.user) {
@@ -52,7 +53,6 @@ export default function HeaderAuth() {
         });
         setIsLoggedIn(true);
       } else {
-        // Not authenticated
         setIsLoggedIn(false);
         setUser(null);
       }
@@ -76,19 +76,16 @@ export default function HeaderAuth() {
   const handleLogout = async () => {
     try {
       await apiLogout();
-      // apiLogout already handles redirect to '/'
     } catch (error) {
       console.error('Logout failed:', error);
-      // Force redirect anyway
       window.location.href = '/';
     }
   };
 
   if (isLoading) {
-    // Optional: Show a loading state
     return (
-      <div className="flex items-center gap-4">
-        <div className="w-24 h-10 bg-gray-700/50 animate-pulse rounded"></div>
+      <div className="flex items-center gap-2 md:gap-4">
+        <div className="w-16 md:w-24 h-10 bg-gray-700/50 animate-pulse rounded"></div>
       </div>
     );
   }
@@ -122,17 +119,27 @@ export default function HeaderAuth() {
                 onClick={() => setIsDropdownOpen(false)}
               >
                 <User size={18} />
-                <span>Mi perfil</span>
+                <span>{t('auth.myProfile')}</span>
               </a>
 
               {/* Mis personajes */}
               <a
-                href="/characters"
+                href="/create-character"
                 className="flex items-center gap-3 px-4 py-3 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition-colors"
                 onClick={() => setIsDropdownOpen(false)}
               >
                 <Users size={18} />
-                <span>Mis personajes</span>
+                <span>{t('auth.myCharacters')}</span>
+              </a>
+
+              {/* Account Management */}
+              <a
+                href="/account-management"
+                className="flex items-center gap-3 px-4 py-3 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition-colors"
+                onClick={() => setIsDropdownOpen(false)}
+              >
+                <Settings size={18} />
+                <span>{t('auth.accountManagement')}</span>
               </a>
 
               {/* Panel Admin - Solo para usuarios con permisos */}
@@ -143,7 +150,7 @@ export default function HeaderAuth() {
                   onClick={() => setIsDropdownOpen(false)}
                 >
                   <Shield size={18} />
-                  <span className="font-semibold">Panel Admin</span>
+                  <span className="font-semibold">{t('auth.adminPanel')}</span>
                 </a>
               )}
 
@@ -159,7 +166,7 @@ export default function HeaderAuth() {
                 className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-400 hover:bg-gray-700 hover:text-red-300 transition-colors"
               >
                 <LogOut size={18} />
-                <span>Salir</span>
+                <span>{t('auth.logout')}</span>
               </button>
             </div>
           </div>
@@ -169,18 +176,18 @@ export default function HeaderAuth() {
   }
 
   return (
-    <div className="flex text-md items-center gap-4 medieval-font font-bold">
+    <div className="flex text-sm md:text-md items-center gap-2 md:gap-4 medieval-font font-bold">
       <a
         href="/login"
-        className="px-4 py-2 border backdrop-blur-md transform hover:mb-2 transition-all"
+        className="px-3 md:px-4 py-2 border backdrop-blur-md transform hover:mb-2 transition-all whitespace-nowrap"
       >
-        Ingresar
+        {t('auth.login')}
       </a>
       <a
         href="/register"
-        className="px-4 py-2 bg-yellow-500 text-black transform hover:mb-2 transition-all"
+        className="px-3 md:px-4 py-2 bg-yellow-500 text-black transform hover:mb-2 transition-all whitespace-nowrap"
       >
-        Registrarme
+        {t('auth.register')}
       </a>
     </div>
   );

@@ -5,33 +5,57 @@
   <div class="container mx-auto px-4 py-8">
     <div class="grid md:grid-cols-3 gap-8">
       <div>
-        <h3 class="text-xl font-bold text-yellow-500 mb-4">TibiaPS</h3>
-        <p class="text-gray-400 text-sm">
-          The best Tibia private server experience. Join thousands of players in epic adventures!
+        <h3 class="text-xl font-bold text-yellow-500 mb-4">Mystovia</h3>
+        <p id="footerDescription" class="text-gray-400 text-sm">
+          La mejor experiencia de servidor privado de Tibia. ¡Únete a miles de jugadores en épicas aventuras!
         </p>
       </div>
-      
+
       <div>
-        <h4 class="font-semibold mb-4">Quick Links</h4>
+        <h4 id="quickLinksTitle" class="font-semibold mb-4">Enlaces Rápidos</h4>
         <ul class="space-y-2 text-sm">
-          <li><a href="/downloads" class="text-gray-400 hover:text-yellow-500 transition">Download Client</a></li>
-          <li><a href="/rules" class="text-gray-400 hover:text-yellow-500 transition">Server Rules</a></li>
-          <li><a href="/faq" class="text-gray-400 hover:text-yellow-500 transition">FAQ</a></li>
+          <li><a href="/downloads" id="downloadClientLink" class="text-gray-400 hover:text-yellow-500 transition">Descargar Cliente</a></li>
+          <li><a href="/rules" id="serverRulesLink" class="text-gray-400 hover:text-yellow-500 transition">Reglas del Servidor</a></li>
+          <li><a href="/faqs" class="text-gray-400 hover:text-yellow-500 transition">FAQs</a></li>
         </ul>
       </div>
-      
+
       <div>
-        <h4 class="font-semibold mb-4">Community</h4>
+        <h4 id="communityTitle" class="font-semibold mb-4">Comunidad</h4>
         <ul class="space-y-2 text-sm">
           <li><a href="#" class="text-gray-400 hover:text-yellow-500 transition">Discord</a></li>
-          <li><a href="#" class="text-gray-400 hover:text-yellow-500 transition">Forum</a></li>
-          <li><a href="#" class="text-gray-400 hover:text-yellow-500 transition">Wiki</a></li>
+          <li><a href="/forum" class="text-gray-400 hover:text-yellow-500 transition">Foro</a></li>
+          <li><a href="/wiki" class="text-gray-400 hover:text-yellow-500 transition">Wiki</a></li>
         </ul>
       </div>
     </div>
-    
+
     <div class="mt-8 pt-8 border-t border-gray-700 text-center text-sm text-gray-400">
-      <p>&copy; 2025 TibiaPS. All rights reserved. Not affiliated with CipSoft GmbH.</p>
+      <p id="footerCopyright">&copy; 2025 Mystovia. Todos los derechos reservados. No afiliado con CipSoft GmbH.</p>
     </div>
   </div>
 </footer>
+
+<script>
+  import { t, getStoredLanguage } from '../i18n/translations';
+
+  const lang = getStoredLanguage();
+
+  const footerDesc = document.getElementById('footerDescription');
+  if (footerDesc) footerDesc.textContent = t('footer.description', lang);
+
+  const quickLinks = document.getElementById('quickLinksTitle');
+  if (quickLinks) quickLinks.textContent = t('footer.quickLinks', lang);
+
+  const downloadClient = document.getElementById('downloadClientLink');
+  if (downloadClient) downloadClient.textContent = t('footer.downloadClient', lang);
+
+  const serverRules = document.getElementById('serverRulesLink');
+  if (serverRules) serverRules.textContent = t('footer.serverRules', lang);
+
+  const community = document.getElementById('communityTitle');
+  if (community) community.textContent = t('footer.community', lang);
+
+  const copyright = document.getElementById('footerCopyright');
+  if (copyright) copyright.textContent = `© 2025 Mystovia. ${t('footer.allRightsReserved', lang)}`;
+</script>

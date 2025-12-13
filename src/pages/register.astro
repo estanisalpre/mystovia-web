@@ -16,7 +16,7 @@ let error = "";
       id="registerForm"
       class="max-w-md w-full backdrop-blur-md border border-white/30 bg-black/30 rounded-lg shadow-xl p-8 space-y-6"
     >
-      <h2 class="text-3xl font-bold text-center mb-8">Crear cuenta</h2>
+      <h2 id="registerTitle" class="text-3xl font-bold text-center mb-8">Crear cuenta</h2>
 
       <Input
         id="username"
@@ -38,7 +38,7 @@ let error = "";
         id="password"
         label="Password"
         type="password"
-        placeholder="Nueva contraseña"
+        placeholder="••••••••"
         required
       />
 
@@ -46,7 +46,7 @@ let error = "";
         id="confirmPassword"
         label="Confirmar contraseña"
         type="password"
-        placeholder="Confirmar contraseña"
+        placeholder="••••••••"
         required
       />
 
@@ -55,12 +55,13 @@ let error = "";
         visible={!!error}
       />
 
-      <SubmitBtn label="REGISTRARSE" />
+      <SubmitBtn label="REGISTRARSE" id="registerBtn" />
 
-      <p class="mt-6 text-center text-sm text-gray-400">
+      <p id="hasAccountText" class="mt-6 text-center text-sm text-gray-400">
         ¿Ya tenes una cuenta?
         <a
           href="/login"
+          id="loginLink"
           class="text-yellow-500 hover:text-yellow-400 font-medium"
           >Ingresar</a
         >
@@ -68,14 +69,148 @@ let error = "";
     </form>
   </section>
 
+  <!-- Recovery Key Modal -->
+  <div id="recoveryKeyModal" class="hidden fixed inset-0 z-50 flex items-center justify-center">
+    <!-- Backdrop -->
+    <div class="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
+
+    <!-- Modal Content -->
+    <div class="relative max-w-md w-full mx-4 backdrop-blur-md border border-yellow-500/50 bg-gray-900/95 rounded-lg shadow-2xl p-8">
+      <!-- Warning Icon -->
+      <div class="flex justify-center mb-4">
+        <div class="w-16 h-16 bg-yellow-500/20 rounded-full flex items-center justify-center">
+          <svg class="w-8 h-8 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+          </svg>
+        </div>
+      </div>
+
+      <h3 id="modalTitle" class="text-2xl font-bold text-center text-white mb-2">Recovery Key</h3>
+      <p id="modalSubtitle" class="text-center text-gray-400 text-sm mb-6">
+        Guarda esta clave en un lugar seguro. La necesitarás para recuperar tu cuenta.
+      </p>
+
+      <!-- Recovery Key Display -->
+      <div class="bg-black/50 border border-gray-700 rounded-lg p-4 mb-4">
+        <p id="recoveryKeyDisplay" class="text-center text-2xl font-mono font-bold text-yellow-500 tracking-widest select-all">
+          XXXX-XXXX-XXXX-XXXX
+        </p>
+      </div>
+
+      <!-- Copy Button -->
+      <button
+        id="copyKeyBtn"
+        type="button"
+        class="w-full py-2 mb-4 text-sm bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition flex items-center justify-center gap-2"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+        </svg>
+        <span id="copyBtnText">Copiar clave</span>
+      </button>
+
+      <!-- Warning Message -->
+      <div class="bg-red-500/10 border border-red-500/30 rounded-lg p-3 mb-6">
+        <p id="warningText" class="text-red-400 text-sm text-center font-medium">
+          No cierres esta pestaña hasta que hayas guardado el código.
+        </p>
+      </div>
+
+      <!-- Finish Button -->
+      <button
+        id="finishBtn"
+        type="button"
+        class="w-full py-3 bg-yellow-500 hover:bg-yellow-400 text-black font-bold rounded-lg transition"
+      >
+        Finalizar
+      </button>
+    </div>
+  </div>
+
   <script>
     import { useAuth } from "@hooks/useAuth";
+    import { t, getStoredLanguage } from "../i18n/translations";
+
+    const lang = getStoredLanguage();
+
+    // Apply translations
+    const registerTitle = document.getElementById("registerTitle");
+    if (registerTitle) registerTitle.textContent = t("auth.createAccount", lang);
+
+    const registerBtn = document.getElementById("registerBtn");
+    if (registerBtn) registerBtn.textContent = t("auth.registerButton", lang);
+
+    const hasAccountText = document.getElementById("hasAccountText");
+    const loginLink = document.getElementById("loginLink");
+    if (hasAccountText && loginLink) {
+      hasAccountText.childNodes[0].textContent = t("auth.hasAccount", lang) + " ";
+      loginLink.textContent = t("auth.login", lang);
+    }
+
+    // Modal translations
+    const modalTitle = document.getElementById("modalTitle");
+    if (modalTitle) modalTitle.textContent = t("auth.recoveryKeyTitle", lang);
+
+    const modalSubtitle = document.getElementById("modalSubtitle");
+    if (modalSubtitle) modalSubtitle.textContent = t("auth.recoveryKeySubtitle", lang);
+
+    const copyBtnText = document.getElementById("copyBtnText");
+    if (copyBtnText) copyBtnText.textContent = t("auth.copyKey", lang);
+
+    const warningText = document.getElementById("warningText");
+    if (warningText) warningText.textContent = t("auth.recoveryKeyWarning", lang);
+
+    const finishBtn = document.getElementById("finishBtn");
+    if (finishBtn) finishBtn.textContent = t("auth.finish", lang);
 
     const form = document.getElementById("registerForm") as HTMLFormElement & {
       username: HTMLInputElement;
       email: HTMLInputElement;
       password: HTMLInputElement;
     };
+
+    const modal = document.getElementById("recoveryKeyModal");
+    const recoveryKeyDisplay = document.getElementById("recoveryKeyDisplay");
+    const copyKeyBtn = document.getElementById("copyKeyBtn");
+
+    // Format recovery key with dashes for display
+    function formatRecoveryKey(key: string): string {
+      return key.match(/.{1,4}/g)?.join("-") || key;
+    }
+
+    // Show modal with recovery key
+    function showRecoveryKeyModal(recoveryKey: string) {
+      if (modal && recoveryKeyDisplay) {
+        recoveryKeyDisplay.textContent = formatRecoveryKey(recoveryKey);
+        modal.classList.remove("hidden");
+        document.body.style.overflow = "hidden";
+      }
+    }
+
+    // Copy to clipboard
+    copyKeyBtn?.addEventListener("click", async () => {
+      const key = recoveryKeyDisplay?.textContent?.replace(/-/g, "") || "";
+      try {
+        await navigator.clipboard.writeText(key);
+        if (copyBtnText) {
+          copyBtnText.textContent = t("auth.keyCopied", lang);
+          setTimeout(() => {
+            copyBtnText.textContent = t("auth.copyKey", lang);
+          }, 2000);
+        }
+      } catch (err) {
+        console.error("Failed to copy:", err);
+      }
+    });
+
+    // Finish button - close modal and redirect
+    finishBtn?.addEventListener("click", () => {
+      if (modal) {
+        modal.classList.add("hidden");
+        document.body.style.overflow = "";
+      }
+      window.location.href = "/create-character";
+    });
 
     form?.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -85,8 +220,16 @@ let error = "";
       const password = form.password.value;
 
       const res = await useAuth("register", { username, email, password });
-      if (res.success) window.location.href = "/create-character";
-      else alert(res.error);
+      if (res.success) {
+        // Show recovery key modal instead of redirecting immediately
+        if (res.recoveryKey) {
+          showRecoveryKeyModal(res.recoveryKey);
+        } else {
+          window.location.href = "/create-character";
+        }
+      } else {
+        alert(res.error);
+      }
     });
-  </script></Layout
->
+  </script>
+</Layout>

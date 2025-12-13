@@ -1,0 +1,180 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Account Recovery | Mystovia">
+  <section class="grow z-100 flex items-center justify-center min-h-screen py-12 px-4">
+    <div class="max-w-2xl w-full backdrop-blur-md border border-white/30 bg-black/30 rounded-lg shadow-xl overflow-hidden">
+      <!-- Header -->
+      <div class="bg-gradient-to-r from-amber-900/80 to-amber-800/80 px-6 py-4 border-b border-amber-700/50">
+        <h2 id="pageTitle" class="text-xl font-bold text-amber-100">Specify Your Problem</h2>
+      </div>
+
+      <!-- Content -->
+      <div class="p-6 space-y-6">
+        <!-- Account Info -->
+        <div id="accountInfo" class="bg-gray-800/50 rounded-lg p-4 border border-gray-700">
+          <p class="text-sm text-gray-400">
+            <span id="accountLabel">Account:</span>
+            <span id="accountName" class="text-yellow-500 font-medium">Loading...</span>
+          </p>
+        </div>
+
+        <!-- Password Section -->
+        <div class="border border-amber-700/30 rounded-lg overflow-hidden">
+          <div class="bg-amber-900/40 px-4 py-2 border-b border-amber-700/30">
+            <h3 class="font-bold text-amber-100" id="passwordSectionTitle">Password</h3>
+          </div>
+          <div class="p-4 space-y-3">
+            <label class="flex items-start gap-3 cursor-pointer group">
+              <input type="radio" name="problem" value="forgot_password" class="mt-1 accent-yellow-500" />
+              <span id="forgotPasswordOption" class="text-gray-300 group-hover:text-white transition">I have forgotten my password.</span>
+            </label>
+            <label class="flex items-start gap-3 cursor-pointer group">
+              <input type="radio" name="problem" value="hacked" class="mt-1 accent-yellow-500" />
+              <span id="hackedOption" class="text-gray-300 group-hover:text-white transition">My account has been hacked.</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Email Section -->
+        <div class="border border-amber-700/30 rounded-lg overflow-hidden">
+          <div class="bg-amber-900/40 px-4 py-2 border-b border-amber-700/30">
+            <h3 class="font-bold text-amber-100" id="emailSectionTitle">E-Mail</h3>
+          </div>
+          <div class="p-4 space-y-1">
+            <p id="emailDescription" class="text-gray-400 text-sm mb-3">I want to change the email address of my account instantly:</p>
+            <label class="flex items-start gap-3 cursor-pointer group">
+              <input type="radio" name="problem" value="change_email_recovery" class="mt-1 accent-yellow-500" />
+              <span id="recoveryKeyOption" class="text-gray-300 group-hover:text-white transition">I have a recovery key.</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Recovery Key Section -->
+        <div class="border border-amber-700/30 rounded-lg overflow-hidden">
+          <div class="bg-amber-900/40 px-4 py-2 border-b border-amber-700/30">
+            <h3 class="font-bold text-amber-100" id="recoveryKeySectionTitle">Recovery Key</h3>
+          </div>
+          <div class="p-4 space-y-3">
+            <label class="flex items-start gap-3 cursor-pointer group">
+              <input type="radio" name="problem" value="new_recovery_key" class="mt-1 accent-yellow-500" />
+              <span id="newRecoveryKeyOption" class="text-gray-300 group-hover:text-white transition">I need a new recovery key.</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex gap-4 pt-4">
+          <a
+            href="/lost-account"
+            id="backBtn"
+            class="flex-1 py-3 text-center bg-gray-700 hover:bg-gray-600 text-white font-medium rounded-lg transition"
+          >
+            Volver
+          </a>
+          <button
+            type="button"
+            id="continueBtn"
+            disabled
+            class="flex-1 py-3 bg-yellow-500 hover:bg-yellow-400 disabled:bg-gray-600 disabled:cursor-not-allowed text-black font-bold rounded-lg transition"
+          >
+            Continuar
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    import { t, getStoredLanguage } from "../i18n/translations";
+
+    const lang = getStoredLanguage();
+
+    // Check if we have account info
+    const accountId = sessionStorage.getItem('lostAccountId');
+    const accountName = sessionStorage.getItem('lostAccountName');
+    const maskedEmail = sessionStorage.getItem('lostAccountEmail');
+
+    if (!accountId || !accountName) {
+      window.location.href = '/lost-account';
+    }
+
+    // Display account info
+    const accountNameEl = document.getElementById('accountName');
+    if (accountNameEl) accountNameEl.textContent = `${accountName} (${maskedEmail})`;
+
+    // Apply translations
+    const pageTitle = document.getElementById("pageTitle");
+    if (pageTitle) pageTitle.textContent = t("recovery.specifyProblem", lang);
+
+    const accountLabel = document.getElementById("accountLabel");
+    if (accountLabel) accountLabel.textContent = t("recovery.account", lang) + ":";
+
+    const passwordSectionTitle = document.getElementById("passwordSectionTitle");
+    if (passwordSectionTitle) passwordSectionTitle.textContent = t("recovery.password", lang);
+
+    const forgotPasswordOption = document.getElementById("forgotPasswordOption");
+    if (forgotPasswordOption) forgotPasswordOption.textContent = t("recovery.forgotPassword", lang);
+
+    const hackedOption = document.getElementById("hackedOption");
+    if (hackedOption) hackedOption.textContent = t("recovery.accountHacked", lang);
+
+    const emailSectionTitle = document.getElementById("emailSectionTitle");
+    if (emailSectionTitle) emailSectionTitle.textContent = t("recovery.email", lang);
+
+    const emailDescription = document.getElementById("emailDescription");
+    if (emailDescription) emailDescription.textContent = t("recovery.changeEmailInstantly", lang);
+
+    const recoveryKeyOption = document.getElementById("recoveryKeyOption");
+    if (recoveryKeyOption) recoveryKeyOption.textContent = t("recovery.haveRecoveryKey", lang);
+
+    const recoveryKeySectionTitle = document.getElementById("recoveryKeySectionTitle");
+    if (recoveryKeySectionTitle) recoveryKeySectionTitle.textContent = t("recovery.recoveryKey", lang);
+
+    const newRecoveryKeyOption = document.getElementById("newRecoveryKeyOption");
+    if (newRecoveryKeyOption) newRecoveryKeyOption.textContent = t("recovery.needNewRecoveryKey", lang);
+
+    const backBtn = document.getElementById("backBtn");
+    if (backBtn) backBtn.textContent = t("common.back", lang);
+
+    const continueBtn = document.getElementById("continueBtn");
+    if (continueBtn) continueBtn.textContent = t("recovery.continue", lang);
+
+    // Enable continue button when a radio is selected
+    const radios = document.querySelectorAll('input[name="problem"]');
+    radios.forEach(radio => {
+      radio.addEventListener('change', () => {
+        if (continueBtn) (continueBtn as HTMLButtonElement).disabled = false;
+      });
+    });
+
+    // Handle continue button click
+    continueBtn?.addEventListener('click', () => {
+      const selectedOption = document.querySelector('input[name="problem"]:checked') as HTMLInputElement;
+      if (!selectedOption) return;
+
+      const problem = selectedOption.value;
+      sessionStorage.setItem('recoveryProblem', problem);
+
+      // Redirect based on problem type
+      switch (problem) {
+        case 'forgot_password':
+        case 'hacked':
+          // For password issues, go to recovery key verification
+          window.location.href = '/recovery-verify';
+          break;
+        case 'change_email_recovery':
+          // For email change with recovery key
+          window.location.href = '/recovery-verify?type=email';
+          break;
+        case 'new_recovery_key':
+          // For getting new recovery key (requires email verification)
+          window.location.href = '/recovery-new-key';
+          break;
+        default:
+          window.location.href = '/recovery-verify';
+      }
+    });
+  </script>
+</Layout>

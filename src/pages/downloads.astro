@@ -31,11 +31,13 @@ function formatFileSize(bytes: number): string {
       title="Descargas"
       description="Descarga los archivos más recientes y esenciales para tu experiencia en Mystovia."
       icon={Download}
+      titleId="downloadsTitle"
+      descriptionId="downloadsDesc"
     />
 
     {categories.length === 0 ? (
       <section class="text-center py-12">
-        <p class="text-lg text-base-content/70">No hay descargas disponibles aún.</p>
+        <p id="noDownloads" class="text-lg text-base-content/70">No hay descargas disponibles aún.</p>
       </section>
     ) : (
       <section class="space-y-8">
@@ -62,9 +64,9 @@ function formatFileSize(bytes: number): string {
 
                     <div class="text-xs text-base-content/60 space-y-1 mt-2">
                       {download.file_size && (
-                        <div>📦 Tamaño: {formatFileSize(download.file_size)}</div>
+                        <div>📦 <span class="size-label">Tamaño</span>: {formatFileSize(download.file_size)}</div>
                       )}
-                      <div>⬇️ {download.download_count} descargas</div>
+                      <div>⬇️ {download.download_count} <span class="downloads-label">descargas</span></div>
                       <div>📅 {new Date(download.created_at).toLocaleDateString('es-ES')}</div>
                     </div>
 
@@ -74,7 +76,7 @@ function formatFileSize(bytes: number): string {
                         target="_blank"
                         rel="noopener noreferrer"
                         onclick={`fetch('/api/downloads/${download.id}/register', { method: 'POST' })`}
-                        class="btn btn-primary btn-sm"
+                        class="btn btn-primary btn-sm download-btn"
                       >
                         Descargar
                       </a>
@@ -89,3 +91,33 @@ function formatFileSize(bytes: number): string {
     )}
   </section>
 </Layout>
+
+<script>
+  import { t, getStoredLanguage } from '../i18n/translations';
+
+  const lang = getStoredLanguage();
+
+  const title = document.getElementById('downloadsTitle');
+  if (title) {
+    const span = title.querySelector('span');
+    if (span) span.textContent = t('downloads.title', lang);
+  }
+
+  const desc = document.getElementById('downloadsDesc');
+  if (desc) desc.textContent = t('downloads.description', lang);
+
+  const noDownloads = document.getElementById('noDownloads');
+  if (noDownloads) noDownloads.textContent = t('downloads.noDownloads', lang);
+
+  document.querySelectorAll('.size-label').forEach(el => {
+    el.textContent = t('downloads.size', lang);
+  });
+
+  document.querySelectorAll('.downloads-label').forEach(el => {
+    el.textContent = t('downloads.downloadCount', lang);
+  });
+
+  document.querySelectorAll('.download-btn').forEach(el => {
+    el.textContent = t('downloads.download', lang);
+  });
+</script>

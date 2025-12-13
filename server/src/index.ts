@@ -6,6 +6,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 import authRoutes from './routes/authRoutes.js';
+import accountRoutes from './routes/accountRoutes.js';
 import characterRoutes from './routes/characterRoutes.js';
 import serverRoutes from './routes/serverRoutes.js';
 import marketplaceRoutes from './routes/marketplaceRoutes.js';
@@ -48,6 +49,7 @@ app.use(express.json());
 app.use(cookieParser()); 
 // API routes
 app.use('/api/auth', authRoutes);
+app.use('/api/account', accountRoutes);
 app.use('/api/characters', characterRoutes);
 app.use('/api/server', serverRoutes);
 app.use('/api/marketplace', marketplaceRoutes);

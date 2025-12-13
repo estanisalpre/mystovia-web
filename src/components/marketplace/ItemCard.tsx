@@ -1,4 +1,6 @@
 import { ShoppingCart, Package, Crown, Star } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import '../../i18n';
 
 interface GameItem {
   itemId: number | string;
@@ -30,15 +32,20 @@ const CATEGORY_COLORS = {
   item: 'from-green-500 to-green-700'
 };
 
-const CATEGORY_LABELS = {
-  set_with_weapon: 'Set + Arma',
-  set_without_weapon: 'Set',
-  item: 'Item'
-};
-
 export default function ItemCard({ item, onAddToCart }: ItemCardProps) {
+  const { t } = useTranslation();
   const categoryColor = CATEGORY_COLORS[item.category] || 'from-gray-500 to-gray-700';
-  const categoryLabel = CATEGORY_LABELS[item.category] || item.category;
+
+  const getCategoryLabel = (category: string) => {
+    switch (category) {
+      case 'set_with_weapon': return t('marketplace.setWithWeapon');
+      case 'set_without_weapon': return t('marketplace.set');
+      case 'item': return t('marketplace.item');
+      default: return category;
+    }
+  };
+
+  const categoryLabel = getCategoryLabel(item.category);
 
   const isOutOfStock = item.stock !== -1 && item.stock <= 0;
 
@@ -64,7 +71,7 @@ export default function ItemCard({ item, onAddToCart }: ItemCardProps) {
           {item.featured && (
             <span className="px-2 py-1 bg-yellow-500/90 text-black text-xs font-semibold rounded flex items-center gap-1">
               <Star size={12} fill="currentColor" />
-              Featured
+              {t('marketplace.featured')}
             </span>
           )}
         </div>
@@ -79,7 +86,7 @@ export default function ItemCard({ item, onAddToCart }: ItemCardProps) {
                 ? 'bg-orange-500/90 text-white'
                 : 'bg-green-500/90 text-white'
             }`}>
-              {isOutOfStock ? 'Out of stock' : `${item.stock} left`}
+              {isOutOfStock ? t('marketplace.outOfStock') : `${item.stock} ${t('marketplace.left')}`}
             </span>
           </div>
         )}
@@ -97,7 +104,7 @@ export default function ItemCard({ item, onAddToCart }: ItemCardProps) {
 
         {/* Items included */}
         <div className="mb-4 flex-1">
-          <p className="text-xs text-gray-500 uppercase font-semibold mb-2">Includes:</p>
+          <p className="text-xs text-gray-500 uppercase font-semibold mb-2">{t('marketplace.includes')}</p>
           <ul className="space-y-1">
             {item.items_json.slice(0, 4).map((gameItem, index) => (
               <li key={index} className="text-sm text-gray-300 flex items-center gap-2">
@@ -109,7 +116,7 @@ export default function ItemCard({ item, onAddToCart }: ItemCardProps) {
             ))}
             {item.items_json.length > 4 && (
               <li className="text-sm text-gray-500 italic">
-                +{item.items_json.length - 4} more items...
+                +{item.items_json.length - 4} {t('marketplace.moreItems')}
               </li>
             )}
           </ul>
@@ -118,7 +125,7 @@ export default function ItemCard({ item, onAddToCart }: ItemCardProps) {
         {/* Price and action */}
         <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-700">
           <div>
-            <p className="text-xs text-gray-500">Price</p>
+            <p className="text-xs text-gray-500">{t('common.price')}</p>
             <p className="text-2xl font-bold text-white">
               ${Number(item.price).toFixed(2)}
             </p>
@@ -134,7 +141,7 @@ export default function ItemCard({ item, onAddToCart }: ItemCardProps) {
             }`}
           >
             <ShoppingCart size={18} />
-            {isOutOfStock ? 'Out of stock' : 'Add to Cart'}
+            {isOutOfStock ? t('marketplace.outOfStock') : t('marketplace.addToCart')}
           </button>
         </div>
       </div>

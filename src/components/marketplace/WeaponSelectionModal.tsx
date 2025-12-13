@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { X, Check } from 'lucide-react';
+import '../../i18n';
 
 interface Weapon {
   itemId: number;
@@ -22,6 +24,7 @@ export default function WeaponSelectionModal({
   onSelect,
   itemName
 }: WeaponSelectionModalProps) {
+  const { t } = useTranslation();
   const [selectedWeapon, setSelectedWeapon] = useState<number | null>(null);
 
   if (!isOpen) return null;
@@ -46,8 +49,8 @@ export default function WeaponSelectionModal({
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-800">
           <div>
-            <h2 className="text-2xl font-bold text-white">Selecciona tu Arma</h2>
-            <p className="text-gray-400 text-sm mt-1">Elige el arma para tu {itemName}</p>
+            <h2 className="text-2xl font-bold text-white">{t('weaponModal.title')}</h2>
+            <p className="text-gray-400 text-sm mt-1">{t('weaponModal.subtitle')} {itemName}</p>
           </div>
           <button
             onClick={onClose}
@@ -107,14 +110,14 @@ export default function WeaponSelectionModal({
             onClick={onClose}
             className="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-3 rounded-lg font-semibold transition-colors"
           >
-            Cancelar
+            {t('common.cancel')}
           </button>
           <button
             onClick={handleConfirm}
             disabled={selectedWeapon === null}
             className="flex-1 bg-linear-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Confirmar Selección
+            {t('weaponModal.confirmSelection')}
           </button>
         </div>
       </div>

@@ -78,7 +78,7 @@
 
 /* container for page content */
 .page-container {
-  @apply relative bg-gray-800 z-80 my-20 rounded-2xl mx-32 grow min-h-screen p-10;
+  @apply relative bg-gray-800 z-80 my-16 md:my-20 rounded-xl md:rounded-2xl mx-4 sm:mx-8 md:mx-16 lg:mx-32 grow min-h-screen p-4 sm:p-6 md:p-10;
 }
 
 /* stats cards */
@@ -86,10 +86,10 @@
   @apply bg-white p-2 text-black rounded-lg;
 }
 .stat-title{
-  @apply text-sm font-semibold;
+  @apply text-xs sm:text-sm font-semibold;
 }
 .stat-value {
-  @apply text-4xl font-bold;
+  @apply text-2xl sm:text-3xl md:text-4xl font-bold;
 }
 
 /* admin modal button */

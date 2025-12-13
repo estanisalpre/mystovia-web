@@ -2,13 +2,15 @@
 interface Props {
   label: string;
   loading?: boolean;
+  id?: string;
 }
 
-const { label, loading = false } = Astro.props;
+const { label, loading = false, id } = Astro.props;
 ---
 
 <button
   type="submit"
+  id={id}
   class={`w-full h-[35px] medieval-font cursor-pointer bg-yellow-600 hover:bg-yellow-700 text-white font-semibold py-3 rounded-lg transition flex items-center justify-center gap-2 ${
     loading ? "opacity-75 cursor-not-allowed" : ""
   }`}

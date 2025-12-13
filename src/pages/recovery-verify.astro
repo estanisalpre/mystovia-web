@@ -1,0 +1,385 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Input from "@ui/Input.astro";
+import ErrorMessage from "@ui/ErrorMessage.astro";
+import SubmitBtn from "@ui/SubmitBtn.astro";
+---
+
+<Layout title="Verify Recovery Key | Mystovia">
+  <section class="grow z-100 flex items-center justify-center min-h-screen py-12 px-4">
+    <form
+      id="verifyForm"
+      class="max-w-md w-full backdrop-blur-md border border-white/30 bg-black/30 rounded-lg shadow-xl p-8 space-y-6"
+    >
+      <h2 id="verifyTitle" class="text-3xl font-bold text-center mb-2">Verify Recovery Key</h2>
+      <p id="verifyDescription" class="text-center text-sm text-gray-400 mb-6">
+        Ingresa tu Recovery Key de 16 caracteres para verificar tu identidad.
+      </p>
+
+      <!-- Account Info -->
+      <div class="bg-gray-800/50 rounded-lg p-4 border border-gray-700 mb-4">
+        <p class="text-sm text-gray-400">
+          <span id="accountLabel">Account:</span>
+          <span id="accountName" class="text-yellow-500 font-medium">Loading...</span>
+        </p>
+      </div>
+
+      <div>
+        <label for="recoveryKey" class="block text-sm font-medium text-gray-300 mb-2" id="recoveryKeyLabel">
+          Recovery Key
+        </label>
+        <input
+          type="text"
+          id="recoveryKey"
+          name="recoveryKey"
+          maxlength="19"
+          placeholder="XXXX-XXXX-XXXX-XXXX"
+          class="w-full px-4 py-3 bg-gray-800/50 border border-gray-600 rounded-lg text-white text-center text-xl font-mono tracking-widest uppercase placeholder-gray-500 focus:outline-none focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500"
+          required
+        />
+      </div>
+
+      <div id="errorContainer" class="hidden">
+        <ErrorMessage message="" visible={false} />
+      </div>
+
+      <SubmitBtn label="VERIFICAR" id="verifyBtn" />
+
+      <p class="text-center text-sm text-gray-400">
+        <a
+          href="/account-recovery"
+          id="backLink"
+          class="text-yellow-500 hover:text-yellow-400 font-medium"
+        >
+          Volver
+        </a>
+      </p>
+    </form>
+  </section>
+
+  <!-- Success Modal - For password reset -->
+  <div id="passwordResetModal" class="hidden fixed inset-0 z-50 flex items-center justify-center">
+    <div class="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
+    <div class="relative max-w-md w-full mx-4 backdrop-blur-md border border-green-500/50 bg-gray-900/95 rounded-lg shadow-2xl p-8">
+      <div class="flex justify-center mb-4">
+        <div class="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center">
+          <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+        </div>
+      </div>
+      <h3 id="modalTitle" class="text-2xl font-bold text-center text-white mb-4">Set New Password</h3>
+
+      <form id="newPasswordForm" class="space-y-4">
+        <div>
+          <label for="newPassword" class="block text-sm font-medium text-gray-300 mb-2" id="newPasswordLabel">
+            New Password
+          </label>
+          <input
+            type="password"
+            id="newPassword"
+            name="newPassword"
+            minlength="8"
+            placeholder="••••••••"
+            class="w-full px-4 py-3 bg-gray-800/50 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-yellow-500"
+            required
+          />
+        </div>
+        <div>
+          <label for="confirmNewPassword" class="block text-sm font-medium text-gray-300 mb-2" id="confirmPasswordLabel">
+            Confirm Password
+          </label>
+          <input
+            type="password"
+            id="confirmNewPassword"
+            name="confirmNewPassword"
+            minlength="8"
+            placeholder="••••••••"
+            class="w-full px-4 py-3 bg-gray-800/50 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-yellow-500"
+            required
+          />
+        </div>
+        <div id="passwordError" class="hidden text-red-400 text-sm text-center"></div>
+        <button
+          type="submit"
+          id="savePasswordBtn"
+          class="w-full py-3 bg-yellow-500 hover:bg-yellow-400 text-black font-bold rounded-lg transition"
+        >
+          Save Password
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Success Modal - For email change -->
+  <div id="emailChangeModal" class="hidden fixed inset-0 z-50 flex items-center justify-center">
+    <div class="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
+    <div class="relative max-w-md w-full mx-4 backdrop-blur-md border border-green-500/50 bg-gray-900/95 rounded-lg shadow-2xl p-8">
+      <div class="flex justify-center mb-4">
+        <div class="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center">
+          <svg class="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+        </div>
+      </div>
+      <h3 class="text-2xl font-bold text-center text-white mb-4" id="emailModalTitle">Change Email</h3>
+
+      <form id="newEmailForm" class="space-y-4">
+        <div>
+          <label for="newEmail" class="block text-sm font-medium text-gray-300 mb-2" id="newEmailLabel">
+            New Email
+          </label>
+          <input
+            type="email"
+            id="newEmail"
+            name="newEmail"
+            placeholder="newemail@example.com"
+            class="w-full px-4 py-3 bg-gray-800/50 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-yellow-500"
+            required
+          />
+        </div>
+        <div id="emailError" class="hidden text-red-400 text-sm text-center"></div>
+        <button
+          type="submit"
+          id="saveEmailBtn"
+          class="w-full py-3 bg-yellow-500 hover:bg-yellow-400 text-black font-bold rounded-lg transition"
+        >
+          Save Email
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    import { t, getStoredLanguage } from "../i18n/translations";
+
+    const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3001';
+    const lang = getStoredLanguage();
+
+    // Check if we have account info
+    const accountId = sessionStorage.getItem('lostAccountId');
+    const accountName = sessionStorage.getItem('lostAccountName');
+    const maskedEmail = sessionStorage.getItem('lostAccountEmail');
+    const recoveryProblem = sessionStorage.getItem('recoveryProblem');
+
+    // Get recovery type from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const recoveryType = urlParams.get('type') || 'password';
+
+    if (!accountId || !accountName) {
+      window.location.href = '/lost-account';
+    }
+
+    // Display account info
+    const accountNameEl = document.getElementById('accountName');
+    if (accountNameEl) accountNameEl.textContent = `${accountName} (${maskedEmail})`;
+
+    // Apply translations
+    const verifyTitle = document.getElementById("verifyTitle");
+    if (verifyTitle) verifyTitle.textContent = t("recovery.verifyRecoveryKey", lang);
+
+    const verifyDescription = document.getElementById("verifyDescription");
+    if (verifyDescription) verifyDescription.textContent = t("recovery.enterRecoveryKey", lang);
+
+    const verifyBtn = document.getElementById("verifyBtn");
+    if (verifyBtn) verifyBtn.textContent = t("recovery.verify", lang);
+
+    const backLink = document.getElementById("backLink");
+    if (backLink) backLink.textContent = t("common.back", lang);
+
+    // Format recovery key input as user types
+    const recoveryKeyInput = document.getElementById('recoveryKey') as HTMLInputElement;
+    recoveryKeyInput?.addEventListener('input', (e) => {
+      let value = (e.target as HTMLInputElement).value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+      // Add dashes every 4 characters
+      value = value.match(/.{1,4}/g)?.join('-') || value;
+      (e.target as HTMLInputElement).value = value.substring(0, 19); // 16 chars + 3 dashes
+    });
+
+    const form = document.getElementById('verifyForm') as HTMLFormElement;
+    const errorContainer = document.getElementById('errorContainer');
+    const passwordResetModal = document.getElementById('passwordResetModal');
+    const emailChangeModal = document.getElementById('emailChangeModal');
+
+    function showError(message: string) {
+      if (errorContainer) {
+        errorContainer.classList.remove("hidden");
+        const errorEl = errorContainer.querySelector("p");
+        if (errorEl) errorEl.textContent = message;
+      }
+    }
+
+    function hideError() {
+      errorContainer?.classList.add("hidden");
+    }
+
+    // Handle recovery key verification
+    form?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hideError();
+
+      const recoveryKey = recoveryKeyInput.value.replace(/-/g, '');
+      const submitButton = document.getElementById('verifyBtn') as HTMLButtonElement;
+
+      if (recoveryKey.length !== 16) {
+        showError(t("recovery.invalidRecoveryKey", lang));
+        return;
+      }
+
+      submitButton.disabled = true;
+      submitButton.textContent = t("common.loading", lang) || "Verificando...";
+
+      try {
+        const response = await fetch(`${API_URL}/api/auth/verify-recovery-key`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            accountId,
+            recoveryKey
+          }),
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          // Store verification token
+          sessionStorage.setItem('recoveryToken', result.token);
+
+          // Show appropriate modal based on recovery type
+          if (recoveryType === 'email') {
+            emailChangeModal?.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+          } else {
+            passwordResetModal?.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+          }
+        } else {
+          showError(result.error || t("recovery.invalidRecoveryKey", lang));
+        }
+      } catch (error) {
+        console.error("Verify recovery key error:", error);
+        showError(t("common.error", lang));
+      } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = t("recovery.verify", lang);
+      }
+    });
+
+    // Handle new password form
+    const newPasswordForm = document.getElementById('newPasswordForm') as HTMLFormElement;
+    const passwordError = document.getElementById('passwordError');
+
+    newPasswordForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const newPassword = (document.getElementById('newPassword') as HTMLInputElement).value;
+      const confirmPassword = (document.getElementById('confirmNewPassword') as HTMLInputElement).value;
+      const recoveryToken = sessionStorage.getItem('recoveryToken');
+
+      if (newPassword !== confirmPassword) {
+        if (passwordError) {
+          passwordError.textContent = t("account.passwordsDontMatch", lang);
+          passwordError.classList.remove('hidden');
+        }
+        return;
+      }
+
+      if (newPassword.length < 8) {
+        if (passwordError) {
+          passwordError.textContent = t("account.passwordTooShort", lang);
+          passwordError.classList.remove('hidden');
+        }
+        return;
+      }
+
+      const saveBtn = document.getElementById('savePasswordBtn') as HTMLButtonElement;
+      saveBtn.disabled = true;
+      saveBtn.textContent = t("common.loading", lang) || "Guardando...";
+
+      try {
+        const response = await fetch(`${API_URL}/api/auth/recovery-reset-password`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            accountId,
+            token: recoveryToken,
+            newPassword
+          }),
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          // Clear session storage and redirect to login
+          sessionStorage.clear();
+          alert(t("recovery.passwordResetSuccess", lang) || "Password reset successfully!");
+          window.location.href = '/login';
+        } else {
+          if (passwordError) {
+            passwordError.textContent = result.error || t("common.error", lang);
+            passwordError.classList.remove('hidden');
+          }
+        }
+      } catch (error) {
+        console.error("Reset password error:", error);
+        if (passwordError) {
+          passwordError.textContent = t("common.error", lang);
+          passwordError.classList.remove('hidden');
+        }
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = t("recovery.savePassword", lang) || "Save Password";
+      }
+    });
+
+    // Handle new email form
+    const newEmailForm = document.getElementById('newEmailForm') as HTMLFormElement;
+    const emailError = document.getElementById('emailError');
+
+    newEmailForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const newEmail = (document.getElementById('newEmail') as HTMLInputElement).value;
+      const recoveryToken = sessionStorage.getItem('recoveryToken');
+
+      const saveBtn = document.getElementById('saveEmailBtn') as HTMLButtonElement;
+      saveBtn.disabled = true;
+      saveBtn.textContent = t("common.loading", lang) || "Guardando...";
+
+      try {
+        const response = await fetch(`${API_URL}/api/auth/recovery-change-email`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            accountId,
+            token: recoveryToken,
+            newEmail
+          }),
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          // Clear session storage and redirect to login
+          sessionStorage.clear();
+          alert(t("recovery.emailChangeSuccess", lang) || "Email changed successfully!");
+          window.location.href = '/login';
+        } else {
+          if (emailError) {
+            emailError.textContent = result.error || t("common.error", lang);
+            emailError.classList.remove('hidden');
+          }
+        }
+      } catch (error) {
+        console.error("Change email error:", error);
+        if (emailError) {
+          emailError.textContent = t("common.error", lang);
+          emailError.classList.remove('hidden');
+        }
+      } finally {
+        saveBtn.disabled = false;
+        saveBtn.textContent = t("recovery.saveEmail", lang) || "Save Email";
+      }
+    });
+  </script>
+</Layout>
