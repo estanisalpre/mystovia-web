@@ -26,17 +26,17 @@ const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
 // Log environment variables for debugging
-console.log('📍 Environment variables loaded:');
-console.log('  FRONTEND_URL:', process.env.FRONTEND_URL);
-console.log('  BACKEND_URL:', process.env.BACKEND_URL);
-console.log('  MP_ACCESS_TOKEN:', process.env.MP_ACCESS_TOKEN ? '✓ Set' : '✗ Not set');
+// console.log('📍 Environment variables loaded:');
+// console.log('  FRONTEND_URL:', process.env.FRONTEND_URL);
+// console.log('  BACKEND_URL:', process.env.BACKEND_URL);
+// console.log('  MP_ACCESS_TOKEN:', process.env.MP_ACCESS_TOKEN ? '✓ Set' : '✗ Not set');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 const allowedOrigins = [
   process.env.FRONTEND_URL || 'http://localhost:4321',
-  'https://otserver-monorepo.onrender.com'
+  'https://otserver-monorepo.onrender.com', 'https://mystovia.online'
 ];
 
 // Middleware
