@@ -155,12 +155,15 @@
     "showFeaturedOnly": "Show featured only",
     "loading": "Loading marketplace...",
     "noItems": "No items found",
-    "addToCart": "Add to Cart",
+    "addToCart": "",
     "outOfStock": "Out of stock",
     "left": "left",
     "featured": "Featured",
     "includes": "Includes:",
-    "moreItems": "more items..."
+    "moreItems": "more items...",
+    "seeMore": "See more",
+    "goBack": "Go back",
+    "viewAttributes": "View attributes"
   },
   "cart": {
     "title": "Shopping Cart",

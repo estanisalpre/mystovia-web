@@ -52,10 +52,27 @@ export default function MarketplaceView() {
   const [searchQuery, setSearchQuery] = useState('');
   const [weaponModalOpen, setWeaponModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<MarketItem | null>(null);
+  const [flippedCardId, setFlippedCardId] = useState<number | null>(null);
 
   useEffect(() => {
     loadMarketItems();
   }, []);
+
+  // Handle click outside to unflip card
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (flippedCardId !== null) {
+        const target = e.target as HTMLElement;
+        // Check if click is outside any card
+        if (!target.closest('[data-card-id]')) {
+          setFlippedCardId(null);
+        }
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [flippedCardId]);
 
   useEffect(() => {
     filterItems();
@@ -227,11 +244,15 @@ export default function MarketplaceView() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredItems.map(item => (
-            <ItemCard
-              key={item.id}
-              item={item}
-              onAddToCart={() => handleAddToCart(item)}
-            />
+            <div key={item.id} data-card-id={item.id}>
+              <ItemCard
+                item={item}
+                onAddToCart={() => handleAddToCart(item)}
+                isFlipped={flippedCardId === item.id}
+                onFlip={() => setFlippedCardId(item.id)}
+                onUnflip={() => setFlippedCardId(null)}
+              />
+            </div>
           ))}
         </div>
       )}

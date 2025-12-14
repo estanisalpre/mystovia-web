@@ -155,12 +155,15 @@
     "showFeaturedOnly": "Mostrar apenas destaques",
     "loading": "Carregando marketplace...",
     "noItems": "Nenhum item encontrado",
-    "addToCart": "Adicionar ao carrinho",
+    "addToCart": "",
     "outOfStock": "Esgotado",
     "left": "restantes",
     "featured": "Destaque",
     "includes": "Inclui:",
-    "moreItems": "mais itens..."
+    "moreItems": "mais itens...",
+    "seeMore": "Ver mais",
+    "goBack": "Voltar",
+    "viewAttributes": "Ver atributos"
   },
   "cart": {
     "title": "Carrinho de compras",

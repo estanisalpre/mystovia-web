@@ -58,6 +58,9 @@ export const getAllMarketItems = async (req: Request, res: Response) => {
  */
 export const createMarketItem = async (req: Request, res: Response) => {
   try {
+    // Debug: Log the incoming request body
+    console.log('📦 Creating market item - Request body:', JSON.stringify(req.body, null, 2));
+
     const {
       name,
       description,
@@ -68,6 +71,9 @@ export const createMarketItem = async (req: Request, res: Response) => {
       featured = false,
       items_json
     } = req.body as CreateMarketItemRequest;
+
+    // Debug: Log extracted image_url
+    console.log('🖼️ Extracted image_url:', image_url);
 
     // Validation
     if (!name || !price || !category || !items_json) {
