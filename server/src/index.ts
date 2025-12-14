@@ -36,7 +36,7 @@ const PORT = process.env.PORT || 3000;
 
 const allowedOrigins = [
   process.env.FRONTEND_URL || 'http://localhost:4321',
-  'https://otserver-monorepo.onrender.com', 'https://mystovia.online'
+  'https://otserver-monorepo.onrender.com', 'https://mystovia.online', 'https://www.mystovia.online'
 ];
 
 // Middleware
