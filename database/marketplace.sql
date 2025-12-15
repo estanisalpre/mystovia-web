@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS `market_items` (
   `description` TEXT,
   `price` DECIMAL(10, 2) NOT NULL,
   `image_url` VARCHAR(255),
-  `category` ENUM('set_with_weapon', 'set_without_weapon', 'item') DEFAULT 'item',
+  `category` ENUM('knight', 'paladin', 'sorcerer', 'druid', 'item') DEFAULT 'item',
   `is_active` TINYINT(1) DEFAULT 1,
   `stock` INT DEFAULT -1 COMMENT '-1 means unlimited stock',
   `featured` TINYINT(1) DEFAULT 0,

@@ -40,7 +40,7 @@ export interface MarketItem {
   description: string | null;
   price: number;
   image_url: string | null;
-  category: 'set_with_weapon' | 'set_without_weapon' | 'item';
+  category: 'knight' | 'paladin' | 'sorcerer' | 'druid' | 'item';
   is_active: boolean;
   stock: number;
   featured: boolean;
@@ -113,7 +113,7 @@ export interface CreateMarketItemRequest {
   description?: string;
   price: number;
   image_url?: string;
-  category: 'set_with_weapon' | 'set_without_weapon' | 'item';
+  category: 'knight' | 'paladin' | 'sorcerer' | 'druid' | 'item';
   stock?: number;
   featured?: boolean;
   items_json: GameItem[];

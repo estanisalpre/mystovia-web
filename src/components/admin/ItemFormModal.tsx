@@ -15,7 +15,7 @@ interface MarketItem {
   description: string | null;
   price: number;
   image_url: string | null;
-  category: 'set_with_weapon' | 'set_without_weapon' | 'item';
+  category: 'knight' | 'paladin' | 'sorcerer' | 'druid' | 'item';
   is_active: boolean;
   stock: number;
   featured: boolean;
@@ -40,7 +40,7 @@ export default function ItemFormModal({
     description: '',
     price: '',
     image_url: '',
-    category: 'item' as 'set_with_weapon' | 'set_without_weapon' | 'item',
+    category: 'item' as 'knight' | 'paladin' | 'sorcerer' | 'druid' | 'item',
     stock: '-1',
     featured: false,
     is_active: true
@@ -277,8 +277,10 @@ export default function ItemFormModal({
                   onChange={(e) => setFormData({ ...formData, category: e.target.value as any })}
                   className="w-full bg-gray-800 text-white border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500"
                 >
-                  <option value="set_with_weapon">Set con Arma</option>
-                  <option value="set_without_weapon">Set sin Arma</option>
+                  <option value="knight">Knight</option>
+                  <option value="paladin">Paladin</option>
+                  <option value="sorcerer">Sorcerer</option>
+                  <option value="druid">Druid</option>
                   <option value="item">Item</option>
                 </select>
               </div>

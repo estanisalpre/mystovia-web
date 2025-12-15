@@ -14,7 +14,7 @@ interface MarketItem {
   description: string | null;
   price: number;
   image_url: string | null;
-  category: 'set_with_weapon' | 'set_without_weapon' | 'item';
+  category: 'knight' | 'paladin' | 'sorcerer' | 'druid' | 'item';
   is_active: boolean;
   stock: number;
   featured: boolean;
@@ -30,9 +30,11 @@ interface ItemCardProps {
 }
 
 const CATEGORY_COLORS = {
-  set_with_weapon: 'from-blue-500 to-blue-700',
-  set_without_weapon: 'from-purple-500 to-purple-700',
-  item: 'from-green-500 to-green-700'
+  knight: 'from-red-500 to-red-700',
+  paladin: 'from-yellow-500 to-yellow-700',
+  sorcerer: 'from-blue-500 to-blue-700',
+  druid: 'from-green-500 to-green-700',
+  item: 'from-purple-500 to-purple-700'
 };
 
 export default function ItemCard({ item, onAddToCart, isFlipped, onFlip, onUnflip }: ItemCardProps) {
@@ -41,8 +43,10 @@ export default function ItemCard({ item, onAddToCart, isFlipped, onFlip, onUnfli
 
   const getCategoryLabel = (category: string) => {
     switch (category) {
-      case 'set_with_weapon': return t('marketplace.setWithWeapon');
-      case 'set_without_weapon': return t('marketplace.set');
+      case 'knight': return t('marketplace.knight');
+      case 'paladin': return t('marketplace.paladin');
+      case 'sorcerer': return t('marketplace.sorcerer');
+      case 'druid': return t('marketplace.druid');
       case 'item': return t('marketplace.item');
       default: return category;
     }
