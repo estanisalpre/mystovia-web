@@ -46,11 +46,8 @@ export default function AdminMarketplace() {
 
   const loadItems = async () => {
     try {
-      const token = localStorage.getItem('token');
       const response = await fetch(`${API_URL}/api/admin/marketplace/items`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+        credentials: 'include'
       });
 
       const data = await response.json();
@@ -94,12 +91,9 @@ export default function AdminMarketplace() {
 
   const toggleItemStatus = async (itemId: number) => {
     try {
-      const token = localStorage.getItem('token');
       const response = await fetch(`${API_URL}/api/admin/marketplace/items/${itemId}/toggle`, {
         method: 'PATCH',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+        credentials: 'include'
       });
 
       const data = await response.json();
@@ -121,12 +115,9 @@ export default function AdminMarketplace() {
     }
 
     try {
-      const token = localStorage.getItem('token');
       const response = await fetch(`${API_URL}/api/admin/marketplace/items/${itemId}`, {
         method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
+        credentials: 'include'
       });
 
       const data = await response.json();

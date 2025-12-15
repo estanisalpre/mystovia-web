@@ -15,7 +15,7 @@ interface MarketItem {
   description: string | null;
   price: number;
   image_url: string | null;
-  category: 'set_with_weapon' | 'set_without_weapon' | 'item';
+  category: 'knight' | 'paladin' | 'sorcerer' | 'druid' | 'item';
   is_active: boolean;
   stock: number;
   featured: boolean;
@@ -40,7 +40,7 @@ export default function ItemFormModal({
     description: '',
     price: '',
     image_url: '',
-    category: 'item' as 'set_with_weapon' | 'set_without_weapon' | 'item',
+    category: 'item' as 'knight' | 'paladin' | 'sorcerer' | 'druid' | 'item',
     stock: '-1',
     featured: false,
     is_active: true
@@ -127,11 +127,27 @@ export default function ItemFormModal({
       return;
     }
 
+    // Convert Imgur page URLs to direct image URLs
+    let imageUrl = formData.image_url || null;
+    if (imageUrl) {
+      // Convert https://imgur.com/XXXXX to https://i.imgur.com/XXXXX.png
+      const imgurPageMatch = imageUrl.match(/^https?:\/\/imgur\.com\/(\w+)$/);
+      if (imgurPageMatch) {
+        imageUrl = `https://i.imgur.com/${imgurPageMatch[1]}.png`;
+      }
+      // Also handle https://imgur.com/a/XXXXX (album links - take first image)
+      const imgurAlbumMatch = imageUrl.match(/^https?:\/\/imgur\.com\/a\/(\w+)$/);
+      if (imgurAlbumMatch) {
+        // For albums, we can't auto-convert, so leave as is (will show warning)
+        console.warn('Imgur album links are not supported. Please use direct image link.');
+      }
+    }
+
     const payload: any = {
       name: formData.name,
       description: formData.description || null,
       price: price,
-      image_url: formData.image_url || null,
+      image_url: imageUrl,
       category: formData.category,
       stock: stock,
       featured: formData.featured,
@@ -145,16 +161,15 @@ export default function ItemFormModal({
     setLoading(true);
 
     try {
-      const token = localStorage.getItem('token');
       const url = item
         ? `${API_URL}/api/admin/marketplace/items/${item.id}`
         : `${API_URL}/api/admin/marketplace/items`;
 
       const response = await fetch(url, {
         method: item ? 'PUT' : 'POST',
+        credentials: 'include',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify(payload)
       });
@@ -262,8 +277,10 @@ export default function ItemFormModal({
                   onChange={(e) => setFormData({ ...formData, category: e.target.value as any })}
                   className="w-full bg-gray-800 text-white border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500"
                 >
-                  <option value="set_with_weapon">Set con Arma</option>
-                  <option value="set_without_weapon">Set sin Arma</option>
+                  <option value="knight">Knight</option>
+                  <option value="paladin">Paladin</option>
+                  <option value="sorcerer">Sorcerer</option>
+                  <option value="druid">Druid</option>
                   <option value="item">Item</option>
                 </select>
               </div>
@@ -290,8 +307,32 @@ export default function ItemFormModal({
                   value={formData.image_url}
                   onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
                   className="w-full bg-gray-800 text-white border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500"
-                  placeholder="https://..."
+                  placeholder="https://i.imgur.com/XXXXX.png"
                 />
+                <p className="text-gray-500 text-xs mt-1">
+                  Tip: Usa el link directo de Imgur (i.imgur.com). Links de página se convierten automáticamente.
+                </p>
+                {/* Image Preview */}
+                {formData.image_url && (
+                  <div className="mt-3">
+                    <p className="text-gray-400 text-xs mb-2">Vista previa:</p>
+                    <div className="w-24 h-24 bg-gray-700 rounded-lg overflow-hidden">
+                      <img
+                        src={formData.image_url.match(/^https?:\/\/imgur\.com\/(\w+)$/)
+                          ? `https://i.imgur.com/${formData.image_url.match(/^https?:\/\/imgur\.com\/(\w+)$/)?.[1]}.png`
+                          : formData.image_url}
+                        alt="Preview"
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = 'none';
+                        }}
+                        onLoad={(e) => {
+                          (e.target as HTMLImageElement).style.display = 'block';
+                        }}
+                      />
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="col-span-2 flex gap-4">

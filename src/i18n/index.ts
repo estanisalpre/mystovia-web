@@ -1,6 +1,5 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import LanguageDetector from 'i18next-browser-languagedetector';
 
 import es from './locales/es.json';
 import en from './locales/en.json';
@@ -12,20 +11,29 @@ const resources = {
   pt: { translation: pt }
 };
 
+// Check if we're in browser environment
+const isClient = typeof window !== 'undefined';
+
+// Get initial language from localStorage if available (client-side only)
+const getInitialLanguage = (): string => {
+  if (isClient) {
+    const stored = localStorage.getItem('mystovia-language');
+    if (stored && ['es', 'en', 'pt'].includes(stored)) {
+      return stored;
+    }
+  }
+  return 'es'; // Default to Spanish for SSR and fallback
+};
+
 i18n
-  .use(LanguageDetector)
   .use(initReactI18next)
   .init({
     resources,
+    lng: getInitialLanguage(), // Set initial language explicitly
     fallbackLng: 'es',
     supportedLngs: ['es', 'en', 'pt'],
     interpolation: {
       escapeValue: false
-    },
-    detection: {
-      order: ['localStorage', 'navigator'],
-      caches: ['localStorage'],
-      lookupLocalStorage: 'mystovia-language'
     }
   });
 

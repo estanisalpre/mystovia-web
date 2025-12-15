@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Package, Coins, Shield, Search } from 'lucide-react';
+import { Package, Coins, Shield, Search, Sword, Wand2, Sparkles, Heart } from 'lucide-react';
 import ItemCard from './ItemCard';
 import WeaponSelectionModal from './WeaponSelectionModal';
 import '../../i18n';
@@ -25,7 +25,7 @@ interface MarketItem {
   description: string | null;
   price: number;
   image_url: string | null;
-  category: 'set_with_weapon' | 'set_without_weapon' | 'item';
+  category: 'knight' | 'paladin' | 'sorcerer' | 'druid' | 'item';
   is_active: boolean;
   stock: number;
   featured: boolean;
@@ -37,8 +37,10 @@ interface MarketItem {
 
 const CATEGORY_KEYS = [
   { id: 'all', labelKey: 'marketplace.all', icon: Package },
-  { id: 'set_with_weapon', labelKey: 'marketplace.setsWithWeapon', icon: Shield },
-  { id: 'set_without_weapon', labelKey: 'marketplace.setsWithoutWeapon', icon: Package },
+  { id: 'knight', labelKey: 'marketplace.knight', icon: Shield },
+  { id: 'paladin', labelKey: 'marketplace.paladin', icon: Sword },
+  { id: 'sorcerer', labelKey: 'marketplace.sorcerer', icon: Wand2 },
+  { id: 'druid', labelKey: 'marketplace.druid', icon: Heart },
   { id: 'item', labelKey: 'marketplace.items', icon: Coins }
 ];
 
@@ -52,10 +54,27 @@ export default function MarketplaceView() {
   const [searchQuery, setSearchQuery] = useState('');
   const [weaponModalOpen, setWeaponModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<MarketItem | null>(null);
+  const [flippedCardId, setFlippedCardId] = useState<number | null>(null);
 
   useEffect(() => {
     loadMarketItems();
   }, []);
+
+  // Handle click outside to unflip card
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (flippedCardId !== null) {
+        const target = e.target as HTMLElement;
+        // Check if click is outside any card
+        if (!target.closest('[data-card-id]')) {
+          setFlippedCardId(null);
+        }
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [flippedCardId]);
 
   useEffect(() => {
     filterItems();
@@ -227,11 +246,15 @@ export default function MarketplaceView() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredItems.map(item => (
-            <ItemCard
-              key={item.id}
-              item={item}
-              onAddToCart={() => handleAddToCart(item)}
-            />
+            <div key={item.id} data-card-id={item.id}>
+              <ItemCard
+                item={item}
+                onAddToCart={() => handleAddToCart(item)}
+                isFlipped={flippedCardId === item.id}
+                onFlip={() => setFlippedCardId(item.id)}
+                onUnflip={() => setFlippedCardId(null)}
+              />
+            </div>
           ))}
         </div>
       )}
