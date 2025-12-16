@@ -28,7 +28,10 @@
     "downloads": "Descargas",
     "rules": "Reglas",
     "faqs": "FAQs",
-    "support": "Soporte"
+    "support": "Soporte",
+    "game": "Juego",
+    "community": "Comunidad",
+    "supportSection": "Soporte"
   },
   "auth": {
     "login": "Ingresar",

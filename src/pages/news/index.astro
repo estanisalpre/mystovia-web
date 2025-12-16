@@ -1,6 +1,7 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import Pagination from '../../components/Pagination.astro';
+import { Newspaper, Eye, Heart, Calendar } from '@lucide/astro';
 
 const page = parseInt(Astro.url.searchParams.get('page') || '1');
 const categoryId = Astro.url.searchParams.get('category');
@@ -26,28 +27,41 @@ try {
   categoriesData = { categories: [] };
 }
 
-const { news, pagination } = newsData;
-const { categories } = categoriesData;
+const news = newsData?.news || [];
+const pagination = newsData?.pagination || { page: 1, totalPages: 1, total: 0 };
+const categories = categoriesData?.categories || [];
 ---
 
 <Layout title="Noticias">
   <section class="page-container">
-    <!-- Header -->
-    <header class="mb-8">
-      <h1 class="text-4xl font-bold mb-4">📰 Noticias</h1>
-      <p class="text-lg text-base-content/70">
+    <!-- Header with medieval style -->
+    <header class="mb-6 sm:mb-8 text-center">
+      <div class="flex items-center justify-center gap-3 mb-3">
+        <div class="h-px w-8 sm:w-12 bg-gradient-to-r from-transparent to-yellow-500/50"></div>
+        <svg class="w-4 h-4 text-yellow-500/70" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M10 0L20 10L10 20L0 10z"/>
+        </svg>
+        <div class="h-px w-8 sm:w-12 bg-gradient-to-l from-transparent to-yellow-500/50"></div>
+      </div>
+      <div class="flex items-center justify-center gap-3 mb-3 sm:mb-4">
+        <Newspaper class="w-6 h-6 sm:w-8 sm:h-8 text-yellow-500" />
+        <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-yellow-500 medieval-font">Noticias</h1>
+      </div>
+      <p class="text-sm sm:text-base md:text-lg text-gray-400">
         Mantente al día con las últimas novedades del servidor
       </p>
     </header>
 
     <!-- Categorías -->
     {categories.length > 0 && (
-      <div class="flex flex-wrap gap-2 mb-6">
+      <div class="flex flex-wrap gap-2 mb-6 justify-center">
         <a
           href="/news"
           class:list={[
-            'btn btn-sm',
-            !categoryId ? 'btn-primary' : 'btn-outline'
+            'px-3 py-1.5 text-xs sm:text-sm font-medium rounded-lg border transition-all',
+            !categoryId
+              ? 'bg-yellow-500/20 text-yellow-500 border-yellow-500/50'
+              : 'border-yellow-600/30 text-gray-400 hover:text-yellow-500 hover:border-yellow-500/50'
           ]}
         >
           Todas
@@ -56,8 +70,10 @@ const { categories } = categoriesData;
           <a
             href={`/news?category=${cat.id}`}
             class:list={[
-              'btn btn-sm',
-              categoryId === cat.id.toString() ? 'btn-primary' : 'btn-outline'
+              'px-3 py-1.5 text-xs sm:text-sm font-medium rounded-lg border transition-all',
+              categoryId === cat.id.toString()
+                ? 'bg-yellow-500/20 text-yellow-500 border-yellow-500/50'
+                : 'border-yellow-600/30 text-gray-400 hover:text-yellow-500 hover:border-yellow-500/50'
             ]}
           >
             {cat.name}
@@ -68,60 +84,68 @@ const { categories } = categoriesData;
 
     <!-- News Grid -->
     {news.length === 0 ? (
-      <div class="text-center py-12 backdrop-blur-md">
-        <p class="text-lg text-base-content/70">
+      <div class="text-center py-8 sm:py-12">
+        <p class="text-sm sm:text-base text-gray-400">
           No hay noticias publicadas aún.
         </p>
       </div>
     ) : (
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {news.map((item: any) => (
-          <div class="card bg-base-100 shadow-xl hover:shadow-2xl transition-shadow">
+          <article class="relative rounded-xl overflow-hidden border border-yellow-600/20 hover:border-yellow-500/40 transition-all group"
+                   style="background: linear-gradient(to bottom, rgb(17 24 39 / 0.9), rgb(0 0 0 / 0.85));">
+            <!-- Diamond pattern overlay -->
+            <div class="absolute inset-0 opacity-[0.03] pointer-events-none" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M30 0L60 30L30 60L0 30z\' fill=\'%23d4af37\' fill-opacity=\'0.4\'/%3E%3C/svg%3E'); background-size: 30px 30px;"></div>
+            <!-- Top golden line -->
+            <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-yellow-500/40 to-transparent group-hover:via-yellow-500/60 transition-all"></div>
+
             {item.image_url && (
-              <figure class="h-48 overflow-hidden">
+              <figure class="h-40 sm:h-48 overflow-hidden">
                 <img
                   src={item.image_url}
                   alt={item.title}
-                  class="w-full h-full object-cover"
+                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
               </figure>
             )}
-            <div class="card-body">
+
+            <div class="p-4 sm:p-5 relative z-10">
               {item.category_name && (
-                <div class="badge badge-primary badge-sm mb-2">
+                <span class="inline-block text-xs bg-yellow-500/20 text-yellow-500 px-2 py-0.5 rounded border border-yellow-500/30 mb-2">
                   {item.category_name}
-                </div>
+                </span>
               )}
 
-              <h2 class="card-title text-xl">{item.title}</h2>
+              <h2 class="text-base sm:text-lg font-bold text-white mb-2 line-clamp-2">{item.title}</h2>
 
-              <p class="text-base-content/70 line-clamp-3">
+              <p class="text-xs sm:text-sm text-gray-400 line-clamp-3 mb-3">
                 {item.content.replace(/<[^>]*>/g, '').substring(0, 150)}...
               </p>
 
-              <div class="flex items-center gap-4 text-sm text-base-content/60 mt-2">
+              <div class="flex items-center gap-3 sm:gap-4 text-xs text-gray-500 mb-4">
                 <span class="flex items-center gap-1">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                  </svg>
+                  <Eye class="w-3 h-3 text-yellow-500/70" />
                   {item.views_count}
                 </span>
                 <span class="flex items-center gap-1">
-                  ❤️ {item.likes_count}
+                  <Heart class="w-3 h-3 text-yellow-500/70" />
+                  {item.likes_count}
                 </span>
-                <span class="text-xs">
+                <span class="flex items-center gap-1">
+                  <Calendar class="w-3 h-3 text-yellow-500/70" />
                   {new Date(item.published_at).toLocaleDateString('es-ES')}
                 </span>
               </div>
 
-              <div class="card-actions justify-end mt-4">
-                <a href={`/news/${item.id}`} class="btn btn-primary btn-sm">
-                  Leer más →
-                </a>
-              </div>
+              <a href={`/news/${item.id}`}
+                 class="inline-flex items-center gap-2 px-3 py-1.5 text-xs sm:text-sm font-semibold text-black bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-lg hover:from-yellow-400 hover:to-yellow-500 transition-all">
+                Leer más
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
+              </a>
             </div>
-          </div>
+          </article>
         ))}
       </div>
     )}
@@ -132,5 +156,5 @@ const { categories } = categoriesData;
       totalPages={pagination.totalPages}
       baseUrl={categoryId ? `/news?category=${categoryId}` : '/news'}
     />
-  </div>
+  </section>
 </Layout>

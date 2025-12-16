@@ -4,6 +4,7 @@ export const prerender = false;
 import Layout from '../../../layouts/Layout.astro';
 import Pagination from '../../../components/Pagination.astro';
 import { hasPermission } from '../../../utils/permissions';
+import { Plus, User, MessageSquare, Eye, Calendar, Pin, Lock, ChevronRight, Home } from '@lucide/astro';
 
 const { id } = Astro.params;
 const page = parseInt(Astro.url.searchParams.get('page') || '1');
@@ -58,41 +59,53 @@ const { topics, pagination } = topicsData;
 <Layout title={categoryData.name}>
   <section class="page-container">
     <!-- Breadcrumb -->
-    <div class="text-sm breadcrumbs mb-4">
-      <ul>
-        <li><a href="/">Inicio</a></li>
-        <li><a href="/forum">Foro</a></li>
-        <li>{categoryData.name}</li>
-      </ul>
-    </div>
+    <nav class="flex items-center gap-2 text-xs sm:text-sm text-gray-400 mb-4 sm:mb-6">
+      <a href="/" class="hover:text-yellow-500 transition-colors flex items-center gap-1">
+        <Home class="w-3 h-3" />
+        Inicio
+      </a>
+      <ChevronRight class="w-3 h-3 text-gray-600" />
+      <a href="/forum" class="hover:text-yellow-500 transition-colors">Foro</a>
+      <ChevronRight class="w-3 h-3 text-gray-600" />
+      <span class="text-yellow-500">{categoryData.name}</span>
+    </nav>
 
     <!-- Header -->
-    <div class="flex justify-between items-start mb-6">
-      <div>
-        <h1 class="text-3xl font-bold mb-2">{categoryData.name}</h1>
-        {categoryData.description && (
-          <p class="text-base-content/70">{categoryData.description}</p>
+    <div class="relative rounded-xl overflow-hidden p-4 sm:p-6 border border-yellow-600/20 mb-6"
+         style="background: linear-gradient(to bottom, rgb(17 24 39 / 0.9), rgb(0 0 0 / 0.85));">
+      <!-- Diamond pattern overlay -->
+      <div class="absolute inset-0 opacity-[0.03] pointer-events-none" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M30 0L60 30L30 60L0 30z\' fill=\'%23d4af37\' fill-opacity=\'0.4\'/%3E%3C/svg%3E'); background-size: 30px 30px;"></div>
+      <!-- Top golden line -->
+      <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-yellow-500/50 to-transparent"></div>
+
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 relative z-10">
+        <div>
+          <h1 class="text-xl sm:text-2xl md:text-3xl font-bold text-yellow-500 medieval-font mb-1">{categoryData.name}</h1>
+          {categoryData.description && (
+            <p class="text-xs sm:text-sm text-gray-400">{categoryData.description}</p>
+          )}
+        </div>
+
+        {canWriteForum && (
+          <a href={`/forum/new-topic?category=${id}`}
+             class="flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-semibold text-black bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-lg hover:from-yellow-400 hover:to-yellow-500 transition-all">
+            <Plus class="w-4 h-4" />
+            Nuevo Tema
+          </a>
         )}
       </div>
-
-      {canWriteForum && (
-        <a href={`/forum/new-topic?category=${id}`} class="btn btn-primary gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
-          </svg>
-          Nuevo Tema
-        </a>
-      )}
     </div>
 
     <!-- Topics List -->
     {topics.length === 0 ? (
-      <div class="text-center py-12">
-        <p class="text-lg text-base-content/70 mb-4">
+      <div class="text-center py-8 sm:py-12">
+        <p class="text-sm sm:text-base text-gray-400 mb-4">
           No hay temas en esta categoría aún.
         </p>
         {canWriteForum && (
-          <a href={`/forum/new-topic?category=${id}`} class="btn btn-primary">
+          <a href={`/forum/new-topic?category=${id}`}
+             class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-black bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-lg hover:from-yellow-400 hover:to-yellow-500 transition-all">
+            <Plus class="w-4 h-4" />
             Crear el primer tema
           </a>
         )}
@@ -100,63 +113,70 @@ const { topics, pagination } = topicsData;
     ) : (
       <div class="space-y-3">
         {topics.map((topic: any) => (
-          <div class="card bg-base-100 shadow hover:shadow-lg transition-shadow">
-            <div class="card-body p-4">
-              <div class="flex gap-4">
-                <!-- Vote Count -->
-                <div class="flex flex-col items-center justify-center min-w-[60px]">
-                  <div class="text-2xl font-bold" class:list={[
-                    topic.total_votes > 0 && 'text-success',
-                    topic.total_votes < 0 && 'text-error',
-                    topic.total_votes === 0 && 'text-base-content/50'
-                  ]}>
-                    {topic.total_votes || 0}
-                  </div>
-                  <div class="text-xs text-base-content/60">votos</div>
-                </div>
+          <a href={`/forum/topic/${topic.id}`}
+             class="relative rounded-xl overflow-hidden p-4 border border-yellow-600/20 hover:border-yellow-500/40 transition-all flex gap-3 sm:gap-4 group block"
+             style="background: linear-gradient(to bottom, rgb(17 24 39 / 0.9), rgb(0 0 0 / 0.85));">
+            <!-- Top golden line -->
+            <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-yellow-500/30 to-transparent group-hover:via-yellow-500/50 transition-all"></div>
 
-                <!-- Topic Info -->
-                <div class="flex-1">
-                  <div class="flex items-start gap-2 mb-2">
-                    {topic.is_pinned && (
-                      <span class="badge badge-warning badge-sm">📌 Fijado</span>
-                    )}
-                    {topic.is_locked && (
-                      <span class="badge badge-error badge-sm">🔒 Cerrado</span>
-                    )}
-                  </div>
+            <!-- Vote Count -->
+            <div class="flex flex-col items-center justify-center min-w-[50px] sm:min-w-[60px] relative z-10">
+              <div class:list={[
+                'text-xl sm:text-2xl font-bold',
+                topic.total_votes > 0 && 'text-green-500',
+                topic.total_votes < 0 && 'text-red-500',
+                topic.total_votes === 0 && 'text-gray-500'
+              ]}>
+                {topic.total_votes || 0}
+              </div>
+              <div class="text-xs text-gray-500">votos</div>
+            </div>
 
-                  <h3 class="text-lg font-semibold mb-1">
-                    <a href={`/forum/topic/${topic.id}`} class="hover:text-primary">
-                      {topic.title}
-                    </a>
-                  </h3>
+            <!-- Topic Info -->
+            <div class="flex-1 relative z-10">
+              <div class="flex items-center gap-2 mb-2 flex-wrap">
+                {topic.is_pinned && (
+                  <span class="inline-flex items-center gap-1 text-xs bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded border border-amber-500/30">
+                    <Pin class="w-3 h-3" />
+                    Fijado
+                  </span>
+                )}
+                {topic.is_locked && (
+                  <span class="inline-flex items-center gap-1 text-xs bg-red-500/20 text-red-400 px-2 py-0.5 rounded border border-red-500/30">
+                    <Lock class="w-3 h-3" />
+                    Cerrado
+                  </span>
+                )}
+              </div>
 
-                  <p class="text-sm text-base-content/70 line-clamp-2 mb-2">
-                    {topic.content.replace(/<[^>]*>/g, '').substring(0, 200)}...
-                  </p>
+              <h3 class="text-sm sm:text-base md:text-lg font-semibold text-white mb-1 group-hover:text-yellow-500 transition-colors">
+                {topic.title}
+              </h3>
 
-                  <div class="flex items-center gap-4 text-xs text-base-content/60">
-                    <span class="flex items-center gap-1">
-                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                      </svg>
-                      {topic.author_name}
-                    </span>
-                    <span class="flex items-center gap-1">
-                      💬 {topic.comments_count || 0} respuestas
-                    </span>
-                    <span class="flex items-center gap-1">
-                      👁️ {topic.views_count || 0} vistas
-                    </span>
-                    <span>
-                      {new Date(topic.created_at).toLocaleDateString('es-ES')}
-                    </span>
-                  </div>
-                </div>
+              <p class="text-xs sm:text-sm text-gray-400 line-clamp-2 mb-2">
+                {topic.content.replace(/<[^>]*>/g, '').substring(0, 200)}...
+              </p>
+
+              <div class="flex items-center gap-3 sm:gap-4 text-xs text-gray-500 flex-wrap">
+                <span class="flex items-center gap-1">
+                  <User class="w-3 h-3 text-yellow-500/70" />
+                  {topic.author_name}
+                </span>
+                <span class="flex items-center gap-1">
+                  <MessageSquare class="w-3 h-3 text-yellow-500/70" />
+                  {topic.comments_count || 0}
+                </span>
+                <span class="flex items-center gap-1">
+                  <Eye class="w-3 h-3 text-yellow-500/70" />
+                  {topic.views_count || 0}
+                </span>
+                <span class="flex items-center gap-1">
+                  <Calendar class="w-3 h-3 text-yellow-500/70" />
+                  {new Date(topic.created_at).toLocaleDateString('es-ES')}
+                </span>
               </div>
             </div>
-          </div>
+          </a>
         ))}
       </div>
     )}
@@ -167,5 +187,5 @@ const { topics, pagination } = topicsData;
       totalPages={pagination.totalPages}
       baseUrl={`/forum/category/${id}`}
     />
-  </div>
+  </section>
 </Layout>

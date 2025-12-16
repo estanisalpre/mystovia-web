@@ -1,7 +1,6 @@
 ---
 import Layout from "@layouts/Layout.astro";
-import HeaderComponent from "@lib/components/shared/HeaderComponent.astro";
-import { Bug, Ticket } from "@lucide/astro";
+import { Bug, Ticket, Zap, Mail, Shield } from "@lucide/astro";
 import Input from "@ui/Input.astro";
 import ErrorMessage from "@ui/ErrorMessage.astro";
 import SubmitBtn from "@ui/SubmitBtn.astro";
@@ -31,114 +30,131 @@ if (accessToken) {
 
 <Layout title="Soporte y Contacto">
   <section class="page-container">
-    <HeaderComponent
-      icon={Bug}
-      title="Soporte y Contacto"
-      description="¿Necesitas ayuda? Envíanos un mensaje y te responderemos pronto"
-    />
+    <!-- Header with medieval style -->
+    <div class="mb-6 sm:mb-8 text-center">
+      <div class="flex items-center justify-center gap-3 mb-3">
+        <div class="h-px w-8 sm:w-12 bg-gradient-to-r from-transparent to-yellow-500/50"></div>
+        <svg class="w-4 h-4 text-yellow-500/70" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M10 0L20 10L10 20L0 10z"/>
+        </svg>
+        <div class="h-px w-8 sm:w-12 bg-gradient-to-l from-transparent to-yellow-500/50"></div>
+      </div>
+      <div class="flex items-center justify-center gap-3 mb-3 sm:mb-4">
+        <Bug class="w-6 h-6 sm:w-8 sm:h-8 text-yellow-500" />
+        <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-yellow-500 medieval-font">Soporte y Contacto</h1>
+      </div>
+      <p class="text-sm sm:text-base md:text-lg text-gray-400">
+        ¿Necesitas ayuda? Envíanos un mensaje y te responderemos pronto
+      </p>
+    </div>
 
     {
       user && (
-        <div class="mb-6 flex justify-end font-extrabold">
+        <div class="mb-6 flex justify-end">
           <a
             href="/support/my-tickets"
-            class="flex justify-start p-2 w-[180px] items-center gap-4 border border-yellow-300 text-yellow-200 bg-yellow-900 cursor-pointer"
+            class="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-yellow-500 border border-yellow-500/50 rounded-lg bg-yellow-500/10 hover:bg-yellow-500/20 transition-colors"
           >
-            <Ticket size={20} />
+            <Ticket class="w-4 h-4" />
             Ver mis tickets
           </a>
         </div>
       )
     }
 
-    <div
-      class=""
-      x-data="supportForm()"
-    >
-      <form
-        @submit.prevent="submitTicket"
-        class="max-w-md w-full backdrop-blur-md border border-white/30 bg-black/30 p-8 space-y-6"
-      >
-        <Input
-          id="username"
-          label="Nombre completo"
-          type="text"
-          placeholder="Escribe tu nombre completo"
-          required
-        />
+    <div x-data="supportForm()">
+      <div class="relative rounded-xl overflow-hidden p-4 sm:p-6 md:p-8 border border-yellow-600/20 max-w-lg"
+           style="background: linear-gradient(to bottom, rgb(17 24 39 / 0.9), rgb(0 0 0 / 0.85));">
+        <!-- Diamond pattern overlay -->
+        <div class="absolute inset-0 opacity-[0.03] pointer-events-none" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M30 0L60 30L30 60L0 30z\' fill=\'%23d4af37\' fill-opacity=\'0.4\'/%3E%3C/svg%3E'); background-size: 30px 30px;"></div>
+        <!-- Top golden line -->
+        <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-yellow-500/50 to-transparent"></div>
 
-        <Input
-          id="email"
-          label="Correo electrónico"
-          type="email"
-          placeholder="Escribe tu correo electrónico"
-          required
-        />
-
-        <Input
-          id="reason"
-          label="Asunto"
-          type="text"
-          placeholder="¿Cuál es el problema?"
-          required
-        />
-
-        <div class="form-group">
-          <label for="message" class="form-label">Mensaje</label>
-          <textarea
-            id="message"
-            name="message"
-            x-model="message"
-            class="form-input h-32 resize-none"
-            placeholder="Describe tu problema con el mayor detalle posible..."
+        <form @submit.prevent="submitTicket" class="relative z-10 space-y-5">
+          <Input
+            id="username"
+            label="Nombre completo"
+            type="text"
+            placeholder="Escribe tu nombre completo"
             required
-          ></textarea>
-        </div>
+          />
 
-        <ErrorMessage
-          message={error}
-          visible={!!error}
-        />
+          <Input
+            id="email"
+            label="Correo electrónico"
+            type="email"
+            placeholder="Escribe tu correo electrónico"
+            required
+          />
 
-        <SubmitBtn label="Enviar ticket" />
+          <Input
+            id="reason"
+            label="Asunto"
+            type="text"
+            placeholder="¿Cuál es el problema?"
+            required
+          />
 
-        <!-- 
-          TODO: Revisar estos mensajes. 
-          Al parecer cuando se envía el formulario se recarga la pagina con el spinner, entonces no se ve el mensaje de exito o error. 
-         -->
-        <WarnErrorSuccessMessage
-          x-show="visible"
-          x-transition.opacity.duration.500ms
-          :type="messageType"
-          :message="feedbackMessage"
-        />
-      </form>
+          <div class="form-group">
+            <label for="message" class="form-label text-sm text-gray-300">Mensaje</label>
+            <textarea
+              id="message"
+              name="message"
+              x-model="message"
+              class="form-input h-32 resize-none w-full bg-gray-900/50 border border-yellow-600/30 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:border-yellow-500/50 focus:outline-none"
+              placeholder="Describe tu problema con el mayor detalle posible..."
+              required
+            ></textarea>
+          </div>
+
+          <ErrorMessage
+            message={error}
+            visible={!!error}
+          />
+
+          <SubmitBtn label="Enviar ticket" />
+
+          <WarnErrorSuccessMessage
+            x-show="visible"
+            x-transition.opacity.duration.500ms
+            :type="messageType"
+            :message="feedbackMessage"
+          />
+        </form>
+      </div>
     </div>
 
-    <div class="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-      <div class="card bg-base-200">
-        <div class="card-body">
-          <div class="text-3xl mb-2">⚡</div>
-          <h3 class="font-semibold">Respuesta Rápida</h3>
-          <p class="text-sm text-base-content/70">
+    <!-- Info cards -->
+    <div class="mt-6 sm:mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="relative rounded-xl overflow-hidden p-4 sm:p-5 border border-yellow-600/20 text-center"
+           style="background: linear-gradient(to bottom, rgb(17 24 39 / 0.9), rgb(0 0 0 / 0.85));">
+        <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-yellow-500/30 to-transparent"></div>
+        <div class="relative z-10">
+          <Zap class="w-6 h-6 sm:w-8 sm:h-8 text-yellow-500 mx-auto mb-2" />
+          <h3 class="text-sm sm:text-base font-semibold text-white mb-1">Respuesta Rápida</h3>
+          <p class="text-xs sm:text-sm text-gray-400">
             Usualmente respondemos en 24-48h
           </p>
         </div>
       </div>
 
-      <div class="card bg-base-200">
-        <div class="card-body">
-          <div class="text-3xl mb-2">📧</div>
-          <h3 class="font-semibold">Notificaciones</h3>
-          <p class="text-sm text-base-content/70">Te avisaremos por email</p>
+      <div class="relative rounded-xl overflow-hidden p-4 sm:p-5 border border-yellow-600/20 text-center"
+           style="background: linear-gradient(to bottom, rgb(17 24 39 / 0.9), rgb(0 0 0 / 0.85));">
+        <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-yellow-500/30 to-transparent"></div>
+        <div class="relative z-10">
+          <Mail class="w-6 h-6 sm:w-8 sm:h-8 text-yellow-500 mx-auto mb-2" />
+          <h3 class="text-sm sm:text-base font-semibold text-white mb-1">Notificaciones</h3>
+          <p class="text-xs sm:text-sm text-gray-400">Te avisaremos por email</p>
         </div>
       </div>
 
-      <div class="card bg-base-200">
-        <div class="card-body">
-          <div class="text-3xl mb-2">🔒</div>
-          <h3 class="font-semibold">Privacidad</h3>
-          <p class="text-sm text-base-content/70">Tu información está segura</p>
+      <div class="relative rounded-xl overflow-hidden p-4 sm:p-5 border border-yellow-600/20 text-center"
+           style="background: linear-gradient(to bottom, rgb(17 24 39 / 0.9), rgb(0 0 0 / 0.85));">
+        <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-yellow-500/30 to-transparent"></div>
+        <div class="relative z-10">
+          <Shield class="w-6 h-6 sm:w-8 sm:h-8 text-yellow-500 mx-auto mb-2" />
+          <h3 class="text-sm sm:text-base font-semibold text-white mb-1">Privacidad</h3>
+          <p class="text-xs sm:text-sm text-gray-400">Tu información está segura</p>
         </div>
       </div>
     </div>

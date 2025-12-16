@@ -1,8 +1,6 @@
 ---
 import Layout from "@layouts/Layout.astro";
-import HeaderComponent from "@lib/components/shared/HeaderComponent.astro";
-import { BookOpenText } from "@lucide/astro";
-import WarnErrorSuccessMessage from "@lib/components/shared/WarnErrorSuccessMessage.astro";
+import { BookOpenText, AlertTriangle, Info } from "@lucide/astro";
 
 const API_URL = import.meta.env.PUBLIC_API_URL || "http://localhost:3000";
 
@@ -16,67 +14,93 @@ try {
   rulesData = { sections: [] };
 }
 
-const { sections } = rulesData; 
+const sections = rulesData?.sections || [];
 ---
 
 <Layout title="Reglas del Servidor">
   <section class="page-container">
-    <HeaderComponent
-      icon={BookOpenText}
-      title="Reglas del servidor"
-      description="Por favor, lee y respeta las siguientes reglas para asegurar una experiencia agradable para todos los jugadores."
-      titleId="rulesTitle"
-      descriptionId="rulesDesc"
-    />
+    <!-- Header with medieval style -->
+    <div class="mb-6 sm:mb-8 text-center">
+      <div class="flex items-center justify-center gap-3 mb-3">
+        <div class="h-px w-8 sm:w-12 bg-gradient-to-r from-transparent to-yellow-500/50"></div>
+        <svg class="w-4 h-4 text-yellow-500/70" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M10 0L20 10L10 20L0 10z"/>
+        </svg>
+        <div class="h-px w-8 sm:w-12 bg-gradient-to-l from-transparent to-yellow-500/50"></div>
+      </div>
+      <div class="flex items-center justify-center gap-3 mb-3 sm:mb-4">
+        <BookOpenText class="w-6 h-6 sm:w-8 sm:h-8 text-yellow-500" />
+        <h1 id="rulesTitle" class="text-2xl sm:text-3xl md:text-4xl font-bold text-yellow-500 medieval-font">Reglas del servidor</h1>
+      </div>
+      <p id="rulesDesc" class="text-sm sm:text-base md:text-lg text-gray-400">
+        Por favor, lee y respeta las siguientes reglas para asegurar una experiencia agradable para todos los jugadores.
+      </p>
+    </div>
 
-    <WarnErrorSuccessMessage
-      type="warn"
-      message="El incumplimiento de estas reglas puede resultar en sanciones que van desde advertencias hasta baneos permanentes."
-      id="rulesWarning"
-    />
+    <!-- Warning message -->
+    <div id="rulesWarning" class="relative rounded-xl overflow-hidden p-3 sm:p-4 mb-6 border border-amber-600/30"
+         style="background: linear-gradient(to right, rgb(120 53 15 / 0.3), rgb(17 24 39 / 0.9));">
+      <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-amber-500/50 via-transparent to-transparent"></div>
+      <div class="flex items-start gap-3 relative z-10">
+        <AlertTriangle class="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+        <p class="message-text text-xs sm:text-sm text-amber-200">
+          El incumplimiento de estas reglas puede resultar en sanciones que van desde advertencias hasta baneos permanentes.
+        </p>
+      </div>
+    </div>
 
     {
       sections.length === 0 ? (
-        <section class="text-center py-12">
-          <p id="noRules" class="text-lg text-base-content/70">
+        <div class="text-center py-8 sm:py-12">
+          <p id="noRules" class="text-sm sm:text-base text-gray-400">
             No hay reglas publicadas aún.
           </p>
-        </section>
+        </div>
       ) : (
-        <section class="space-y-4">
+        <div class="space-y-4 sm:space-y-6">
           {sections.map((section: any) => (
-            <article class="border p-4 border-yellow-400 shadow-xl">
-              <div>
-                <h2 class="text-2xl font-extrabold text-yellow-400 mb-4 pb-2 border-b border-gray-600">{section.name}</h2>
+            <article class="relative rounded-xl overflow-hidden p-4 sm:p-6 border border-yellow-600/20"
+                     style="background: linear-gradient(to bottom, rgb(17 24 39 / 0.9), rgb(0 0 0 / 0.85));">
+              <!-- Diamond pattern overlay -->
+              <div class="absolute inset-0 opacity-[0.03] pointer-events-none" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M30 0L60 30L30 60L0 30z\' fill=\'%23d4af37\' fill-opacity=\'0.4\'/%3E%3C/svg%3E'); background-size: 30px 30px;"></div>
+              <!-- Top golden line -->
+              <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-yellow-500/50 to-transparent"></div>
 
-                {section.rules.length === 0 ? (
-                  <p class="italic no-rules-section">
-                    No hay reglas en esta sección.
-                  </p>
-                ) : (
-                  <div class="space-y-4">
-                    {section.rules.map((rule: any, index: number) => (
-                      <div class="border-l-4 border-primary pl-4">
-                        <h3 class="font-semibold text-lg mb-2">
-                          {index + 1}. {rule.title}
-                        </h3>
-                        <p class="text-base-content/80">{rule.content}</p>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
+              <h2 class="text-lg sm:text-xl md:text-2xl font-bold text-yellow-500 mb-4 medieval-font relative z-10 pb-2 border-b border-yellow-600/30">{section.name}</h2>
+
+              {(section.rules?.length || 0) === 0 ? (
+                <p class="text-sm text-gray-500 italic no-rules-section relative z-10">
+                  No hay reglas en esta sección.
+                </p>
+              ) : (
+                <div class="space-y-3 sm:space-y-4 relative z-10">
+                  {section.rules.map((rule: any, index: number) => (
+                    <div class="border-l-2 border-yellow-500/50 pl-3 sm:pl-4">
+                      <h3 class="text-sm sm:text-base font-semibold text-white mb-1">
+                        {index + 1}. {rule.title}
+                      </h3>
+                      <p class="text-xs sm:text-sm text-gray-400">{rule.content}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
             </article>
           ))}
-        </section>
+        </div>
       )
     }
 
-    <WarnErrorSuccessMessage
-      type="info"
-      message="Al jugar en este servidor, aceptas cumplir con todas estas reglas."
-      id="rulesAcceptance"
-    />
+    <!-- Info message -->
+    <div id="rulesAcceptance" class="relative rounded-xl overflow-hidden p-3 sm:p-4 mt-6 border border-blue-600/30"
+         style="background: linear-gradient(to right, rgb(30 58 138 / 0.3), rgb(17 24 39 / 0.9));">
+      <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-500/50 via-transparent to-transparent"></div>
+      <div class="flex items-start gap-3 relative z-10">
+        <Info class="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
+        <p class="message-text text-xs sm:text-sm text-blue-200">
+          Al jugar en este servidor, aceptas cumplir con todas estas reglas.
+        </p>
+      </div>
+    </div>
   </section>
 </Layout>
 

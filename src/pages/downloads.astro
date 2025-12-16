@@ -1,7 +1,6 @@
 ---
 import Layout from '@layouts/Layout.astro';
-import HeaderComponent from '@lib/components/shared/HeaderComponent.astro';
-import { Download } from '@lucide/astro';
+import { Download, Package, Calendar, ArrowDownCircle } from '@lucide/astro';
 
 const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3000';
 
@@ -15,7 +14,7 @@ try {
   downloadsData = { categories: [] };
 }
 
-const { categories } = downloadsData;
+const categories = downloadsData?.categories || [];
 
 function formatFileSize(bytes: number): string {
   if (!bytes) return 'N/A';
@@ -27,67 +26,92 @@ function formatFileSize(bytes: number): string {
 
 <Layout title="Descargas">
   <section class="page-container">
-    <HeaderComponent
-      title="Descargas"
-      description="Descarga los archivos más recientes y esenciales para tu experiencia en Mystovia."
-      icon={Download}
-      titleId="downloadsTitle"
-      descriptionId="downloadsDesc"
-    />
+    <!-- Header with medieval style -->
+    <div class="mb-6 sm:mb-8 text-center">
+      <div class="flex items-center justify-center gap-3 mb-3">
+        <div class="h-px w-8 sm:w-12 bg-gradient-to-r from-transparent to-yellow-500/50"></div>
+        <svg class="w-4 h-4 text-yellow-500/70" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M10 0L20 10L10 20L0 10z"/>
+        </svg>
+        <div class="h-px w-8 sm:w-12 bg-gradient-to-l from-transparent to-yellow-500/50"></div>
+      </div>
+      <div class="flex items-center justify-center gap-3 mb-3 sm:mb-4">
+        <Download class="w-6 h-6 sm:w-8 sm:h-8 text-yellow-500" />
+        <h1 id="downloadsTitle" class="text-2xl sm:text-3xl md:text-4xl font-bold text-yellow-500 medieval-font">Descargas</h1>
+      </div>
+      <p id="downloadsDesc" class="text-sm sm:text-base md:text-lg text-gray-400">
+        Descarga los archivos más recientes y esenciales para tu experiencia en Mystovia.
+      </p>
+    </div>
 
     {categories.length === 0 ? (
-      <section class="text-center py-12">
-        <p id="noDownloads" class="text-lg text-base-content/70">No hay descargas disponibles aún.</p>
-      </section>
+      <div class="text-center py-8 sm:py-12">
+        <p id="noDownloads" class="text-sm sm:text-base text-gray-400">No hay descargas disponibles aún.</p>
+      </div>
     ) : (
-      <section class="space-y-8">
+      <div class="space-y-6 sm:space-y-8">
         {categories.map((category: any) => (
-          <div>
-            <h2 class="text-2xl font-bold mb-4">{category.name}</h2>
+          <div class="relative rounded-xl overflow-hidden p-4 sm:p-6 border border-yellow-600/20"
+               style="background: linear-gradient(to bottom, rgb(17 24 39 / 0.9), rgb(0 0 0 / 0.85));">
+            <!-- Diamond pattern overlay -->
+            <div class="absolute inset-0 opacity-[0.03] pointer-events-none" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M30 0L60 30L30 60L0 30z\' fill=\'%23d4af37\' fill-opacity=\'0.4\'/%3E%3C/svg%3E'); background-size: 30px 30px;"></div>
+            <!-- Top golden line -->
+            <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-yellow-500/50 to-transparent"></div>
+
+            <h2 class="text-lg sm:text-xl md:text-2xl font-bold text-yellow-500 mb-2 medieval-font relative z-10">{category.name}</h2>
             {category.description && (
-              <p class="text-base-content/70 mb-4">{category.description}</p>
+              <p class="text-xs sm:text-sm text-gray-400 mb-4 relative z-10">{category.description}</p>
             )}
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 relative z-10">
               {category.downloads.map((download: any) => (
-                <div class="card bg-base-100 shadow-xl">
-                  <div class="card-body">
-                    <h3 class="card-title">{download.name}</h3>
-
+                <div class="border border-yellow-600/20 rounded-lg overflow-hidden bg-gray-900/50 p-3 sm:p-4 hover:border-yellow-500/40 transition-colors">
+                  <div class="flex items-start justify-between gap-2 mb-2">
+                    <h3 class="text-sm sm:text-base font-bold text-white">{download.name}</h3>
                     {download.version && (
-                      <div class="badge badge-secondary">{download.version}</div>
+                      <span class="text-xs bg-yellow-500/20 text-yellow-500 px-2 py-0.5 rounded border border-yellow-500/30 shrink-0">
+                        {download.version}
+                      </span>
                     )}
+                  </div>
 
-                    {download.description && (
-                      <p class="text-sm text-base-content/70">{download.description}</p>
+                  {download.description && (
+                    <p class="text-xs sm:text-sm text-gray-400 mb-3">{download.description}</p>
+                  )}
+
+                  <div class="text-xs text-gray-500 space-y-1 mb-4">
+                    {download.file_size && (
+                      <div class="flex items-center gap-2">
+                        <Package class="w-3 h-3 text-yellow-500/70" />
+                        <span><span class="size-label">Tamaño</span>: {formatFileSize(download.file_size)}</span>
+                      </div>
                     )}
-
-                    <div class="text-xs text-base-content/60 space-y-1 mt-2">
-                      {download.file_size && (
-                        <div>📦 <span class="size-label">Tamaño</span>: {formatFileSize(download.file_size)}</div>
-                      )}
-                      <div>⬇️ {download.download_count} <span class="downloads-label">descargas</span></div>
-                      <div>📅 {new Date(download.created_at).toLocaleDateString('es-ES')}</div>
+                    <div class="flex items-center gap-2">
+                      <ArrowDownCircle class="w-3 h-3 text-yellow-500/70" />
+                      <span>{download.download_count} <span class="downloads-label">descargas</span></span>
                     </div>
-
-                    <div class="card-actions justify-end mt-4">
-                      <a
-                        href={download.file_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        onclick={`fetch('/api/downloads/${download.id}/register', { method: 'POST' })`}
-                        class="btn btn-primary btn-sm download-btn"
-                      >
-                        Descargar
-                      </a>
+                    <div class="flex items-center gap-2">
+                      <Calendar class="w-3 h-3 text-yellow-500/70" />
+                      <span>{new Date(download.created_at).toLocaleDateString('es-ES')}</span>
                     </div>
                   </div>
+
+                  <a
+                    href={download.file_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onclick={`fetch('/api/downloads/${download.id}/register', { method: 'POST' })`}
+                    class="download-btn w-full flex items-center justify-center gap-2 px-3 py-2 text-xs sm:text-sm font-semibold text-black bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-lg hover:from-yellow-400 hover:to-yellow-500 transition-all"
+                  >
+                    <Download class="w-4 h-4" />
+                    <span>Descargar</span>
+                  </a>
                 </div>
               ))}
             </div>
           </div>
         ))}
-      </section>
+      </div>
     )}
   </section>
 </Layout>
