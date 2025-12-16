@@ -48,22 +48,34 @@
   @apply flex items-center justify-center;
 }
 
-@layer utilities {
-  .medieval-font {
-    font-family: "Cinzel", serif;
-    letter-spacing: 1px;
-  }
+@utility medieval-font {
+  font-family: "Cinzel", serif;
+  letter-spacing: 1px;
 }
 
-/* form styles */
+/* form styles - Medieval */
 .form-group {
   @apply flex flex-col mb-4;
 }
 .form-label {
-  @apply text-sm font-medium mb-1;
+  @apply text-sm font-medium mb-1.5 text-gray-300;
 }
 .form-input {
-  @apply w-full h-[35px] text-sm px-4 py-2 bg-gray-900 border border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500;
+  @apply w-full h-[38px] text-sm px-4 py-2 rounded-lg transition-all duration-300;
+  background: linear-gradient(to bottom, rgb(17 24 39 / 0.8), rgb(31 41 55 / 0.6));
+  border: 1px solid rgb(202 138 4 / 0.2);
+  color: white;
+}
+.form-input::placeholder {
+  @apply text-gray-500;
+}
+.form-input:focus {
+  outline: none;
+  border-color: rgb(234 179 8 / 0.5);
+  box-shadow: 0 0 0 2px rgb(234 179 8 / 0.1), 0 0 12px rgb(234 179 8 / 0.1);
+}
+.form-input:hover:not(:focus) {
+  border-color: rgb(202 138 4 / 0.35);
 }
 .form-error {
   @apply bg-red-900/50 border border-red-700 text-red-200 px-4 py-3 rounded;
@@ -76,25 +88,127 @@
   @apply hover:text-yellow-500 flex-center gap-2 border backdrop-blur-md px-4 py-1 hover:border-b hover:border-yellow-500 transition;
 }
 
-/* container for page content */
+/* container for page content - Medieval style */
 .page-container {
-  @apply relative bg-gray-800 z-80 my-16 md:my-20 rounded-xl md:rounded-2xl mx-4 sm:mx-8 md:mx-16 lg:mx-32 grow min-h-screen p-4 sm:p-6 md:p-10;
+  @apply relative z-80 my-16 md:my-20 rounded-xl md:rounded-2xl mx-4 sm:mx-8 md:mx-16 lg:mx-32 grow min-h-screen p-4 sm:p-6 md:p-10 overflow-hidden;
+  background: linear-gradient(to bottom, rgb(17 24 39 / 0.95), rgb(17 24 39 / 0.98), rgb(0 0 0 / 0.95));
+  border: 1px solid rgb(202 138 4 / 0.2);
 }
 
-/* stats cards */
-.stat {
-  @apply bg-white p-2 text-black rounded-lg;
+.page-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(to right, transparent, rgb(234 179 8 / 0.4), transparent);
+  pointer-events: none;
 }
-.stat-title{
-  @apply text-xs sm:text-sm font-semibold;
+
+.page-container::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L60 30L30 60L0 30z' fill='%23d4af37' fill-opacity='0.4'/%3E%3C/svg%3E");
+  background-size: 30px 30px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.page-container > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Medieval content container - for React components */
+.medieval-container {
+  @apply relative rounded-xl md:rounded-2xl p-4 sm:p-6 md:p-8 overflow-hidden;
+  background: linear-gradient(to bottom, rgb(17 24 39 / 0.95), rgb(17 24 39 / 0.98), rgb(0 0 0 / 0.95));
+  border: 1px solid rgb(202 138 4 / 0.2);
+}
+
+.medieval-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(to right, transparent, rgb(234 179 8 / 0.4), transparent);
+  pointer-events: none;
+}
+
+.medieval-container::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.03;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L60 30L30 60L0 30z' fill='%23d4af37' fill-opacity='0.4'/%3E%3C/svg%3E");
+  background-size: 30px 30px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.medieval-container > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* stats cards - Medieval style */
+.stat {
+  @apply relative p-4 rounded-lg overflow-hidden;
+  background: linear-gradient(to bottom, rgb(31 41 55 / 0.9), rgb(17 24 39 / 0.95));
+  border: 1px solid rgb(202 138 4 / 0.25);
+}
+.stat::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgb(234 179 8 / 0.4), transparent);
+}
+.stat-title {
+  @apply text-xs sm:text-sm font-semibold text-gray-400;
 }
 .stat-value {
-  @apply text-2xl sm:text-3xl md:text-4xl font-bold;
+  @apply text-2xl sm:text-3xl md:text-4xl font-bold text-yellow-500;
 }
 
-/* admin modal button */
+/* admin modal button - Medieval style */
 .modal-button-container {
-  @apply border border-gray-600 rounded-lg p-4 hover:border-green-300;
+  @apply relative rounded-lg p-4 transition-all duration-300 overflow-hidden;
+  background: linear-gradient(to bottom, rgb(31 41 55 / 0.8), rgb(17 24 39 / 0.9));
+  border: 1px solid rgb(202 138 4 / 0.2);
+}
+.modal-button-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgb(234 179 8 / 0.3), transparent);
+}
+.modal-button-container::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.02;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L60 30L30 60L0 30z' fill='%23d4af37' fill-opacity='0.4'/%3E%3C/svg%3E");
+  background-size: 30px 30px;
+  pointer-events: none;
+}
+.modal-button-container:hover {
+  border-color: rgb(234 179 8 / 0.5);
+  box-shadow: 0 0 20px rgb(234 179 8 / 0.1);
+}
+.modal-button-container > * {
+  position: relative;
+  z-index: 1;
 }
 
 /* alerts */
@@ -109,6 +223,104 @@
 }
 .alert-success {
   @apply bg-green-900/50 border border-green-700 text-green-200 px-4 py-3 rounded;
+}
+
+/* Medieval Buttons - Global styles for use anywhere */
+.btn-medieval {
+  @apply relative px-6 py-2 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center gap-2 overflow-hidden cursor-pointer;
+  font-family: "Cinzel", serif;
+  letter-spacing: 0.5px;
+}
+
+.btn-medieval::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.3), transparent);
+  pointer-events: none;
+}
+
+.btn-medieval::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L60 30L30 60L0 30z' fill='%23ffffff' fill-opacity='0.4'/%3E%3C/svg%3E");
+  background-size: 20px 20px;
+  pointer-events: none;
+}
+
+.btn-medieval > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* Primary - Golden */
+.btn-medieval-primary,
+.btn-medieval.btn-primary {
+  background: linear-gradient(to bottom, rgb(234 179 8), rgb(202 138 4));
+  border: 1px solid rgb(234 179 8 / 0.5);
+  color: black;
+  box-shadow: 0 2px 8px rgb(234 179 8 / 0.3);
+}
+
+.btn-medieval-primary:hover:not(:disabled),
+.btn-medieval.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(to bottom, rgb(250 204 21), rgb(234 179 8));
+  border-color: rgb(250 204 21 / 0.6);
+  box-shadow: 0 4px 16px rgb(234 179 8 / 0.4);
+  transform: translateY(-1px);
+}
+
+/* Secondary - Dark with golden border */
+.btn-medieval-secondary,
+.btn-medieval.btn-secondary {
+  background: linear-gradient(to bottom, rgb(31 41 55 / 0.9), rgb(17 24 39 / 0.95));
+  border: 1px solid rgb(234 179 8 / 0.3);
+  color: rgb(234 179 8);
+}
+
+.btn-medieval-secondary:hover:not(:disabled),
+.btn-medieval.btn-secondary:hover:not(:disabled) {
+  background: linear-gradient(to bottom, rgb(55 65 81 / 0.9), rgb(31 41 55 / 0.95));
+  border-color: rgb(234 179 8 / 0.5);
+  box-shadow: 0 4px 16px rgb(234 179 8 / 0.15);
+}
+
+/* Danger - Red */
+.btn-medieval-danger,
+.btn-medieval.btn-danger {
+  background: linear-gradient(to bottom, rgb(220 38 38), rgb(185 28 28));
+  border: 1px solid rgb(248 113 113 / 0.3);
+  color: white;
+  box-shadow: 0 2px 8px rgb(220 38 38 / 0.3);
+}
+
+.btn-medieval-danger:hover:not(:disabled),
+.btn-medieval.btn-danger:hover:not(:disabled) {
+  background: linear-gradient(to bottom, rgb(239 68 68), rgb(220 38 38));
+  border-color: rgb(248 113 113 / 0.5);
+  box-shadow: 0 4px 16px rgb(220 38 38 / 0.4);
+}
+
+/* Small variant */
+.btn-medieval-sm {
+  @apply px-4 py-1.5 text-sm;
+}
+
+/* Large variant */
+.btn-medieval-lg {
+  @apply px-8 py-3 text-lg;
+}
+
+/* Disabled state */
+.btn-medieval:disabled {
+  @apply opacity-60 cursor-not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
 }
 
 

@@ -83,13 +83,13 @@ if (accessToken) {
           required
         />
 
-        <div class="form-control mb-6">
-          <label class="label">
-            <span class="label-text">Mensaje</span>
-          </label>
+        <div class="form-group">
+          <label for="message" class="form-label">Mensaje</label>
           <textarea
+            id="message"
+            name="message"
             x-model="message"
-            class="textarea textarea-bordered h-32"
+            class="form-input h-32 resize-none"
             placeholder="Describe tu problema con el mayor detalle posible..."
             required
           ></textarea>

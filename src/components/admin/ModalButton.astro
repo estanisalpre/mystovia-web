@@ -7,7 +7,7 @@ interface Props {
     btnName: string;
     btnDescription: string;
     url: string;
-    icon: any; 
+    icon: any;
 }
 
 const { user, permission, btnName, btnDescription, url, icon: Icon } = Astro.props;
@@ -16,14 +16,14 @@ const { user, permission, btnName, btnDescription, url, icon: Icon } = Astro.pro
 {hasPermission(user?.groupId, permission) && (
   <a
     href={url}
-    class="modal-button-container"
+    class="modal-button-container group"
   >
     <div class="card-body flex flex-col items-start gap-2">
-      <div class="flex items-center gap-2 text-primary">
-        <Icon size={22} color="#7bf1a8" /> 
-        <h2 class="font-extrabold text-green-300">{btnName}</h2>
+      <div class="flex items-center gap-2">
+        <Icon size={22} class="text-yellow-500 group-hover:text-yellow-400 transition-colors" />
+        <h2 class="font-bold text-yellow-500 group-hover:text-yellow-400 transition-colors medieval-font">{btnName}</h2>
       </div>
-      <p>{btnDescription}</p>
+      <p class="text-gray-400 text-sm">{btnDescription}</p>
     </div>
   </a>
 )}

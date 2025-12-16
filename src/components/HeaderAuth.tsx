@@ -112,16 +112,6 @@ export default function HeaderAuth() {
         {isDropdownOpen && (
           <div className="absolute right-0 mt-2 w-56 bg-gray-800 border border-gray-700 rounded-lg shadow-xl z-50 overflow-hidden">
             <div className="py-1">
-              {/* Mi perfil */}
-              <a
-                href="/profile"
-                className="flex items-center gap-3 px-4 py-3 text-sm text-gray-300 hover:bg-gray-700 hover:text-white transition-colors"
-                onClick={() => setIsDropdownOpen(false)}
-              >
-                <User size={18} />
-                <span>{t('auth.myProfile')}</span>
-              </a>
-
               {/* Mis personajes */}
               <a
                 href="/create-character"

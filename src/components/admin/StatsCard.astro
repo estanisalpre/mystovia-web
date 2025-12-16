@@ -1,10 +1,8 @@
 ---
-const { statsTitle, statsValue } = Astro.props;
+const { statsTitle, statsValue, icon: Icon } = Astro.props;
 ---
 
-<div class="stats shadow">
-  <div class="stat">
-    <div class="stat-title">{statsTitle}</div>
-    <div class="stat-value text-primary">{statsValue}</div>
-  </div>
+<div class="stat">
+  <div class="stat-title">{statsTitle}</div>
+  <div class="stat-value">{statsValue}</div>
 </div>

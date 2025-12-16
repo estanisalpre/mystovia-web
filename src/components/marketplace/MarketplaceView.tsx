@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Package, Coins, Shield, Search, Sword, Wand2, Sparkles, Heart } from 'lucide-react';
+import { Package, Coins, Shield, Search, Sword, Wand2, Heart } from 'lucide-react';
 import ItemCard from './ItemCard';
 import WeaponSelectionModal from './WeaponSelectionModal';
 import '../../i18n';
@@ -122,7 +122,7 @@ export default function MarketplaceView() {
 
   const handleAddToCart = (item: MarketItem) => {
     // Check if item requires weapon selection
-    if (item.category === 'set_with_weapon' && item.weapon_options && item.weapon_options.length > 0) {
+    if (item.weapon_options && item.weapon_options.length > 0) {
       setSelectedItem(item);
       setWeaponModalOpen(true);
     } else {
@@ -168,7 +168,7 @@ export default function MarketplaceView() {
   };
 
   return (
-    <div className="rounded-xl md:rounded-2xl bg-gray-800 top-16 md:top-20 relative z-10 mx-4 sm:mx-8 md:mx-16 lg:mx-auto lg:max-w-6xl px-4 sm:px-6 md:px-8 py-6 md:py-8 mb-16 md:mb-32">
+    <div className="medieval-container top-16 md:top-20 relative z-10 mx-4 sm:mx-8 md:mx-16 lg:mx-auto lg:max-w-6xl py-6 md:py-8 mb-16 md:mb-32">
       {/* Header */}
       <div className="mb-6 md:mb-8">
         <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2">{t('marketplace.title')}</h1>

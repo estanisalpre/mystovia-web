@@ -3,18 +3,64 @@ import Input from "@ui/Input.astro";
 import SubmitBtn from "@lib/components/ui/SubmitBtn.astro";
 ---
 
-<section class="relative p-5 pt-10 border border-white/30 w-full h-full shadow-md rounded-lg backdrop-blur-md bg-black/30">
-  <h2 id="searchTitle">Encuentra otros jugadores</h2>
-  <form id="searchCharacterForm" class="form-group">
-    <Input
-      id="characterName"
-      label="Nombre del personaje"
-      type="text"
-      placeholder="Ingresa el nombre del personaje"
-      required
-    />
-    <SubmitBtn label="BUSCAR" id="searchBtn" />
-  </form>
+<section class="relative w-full h-full rounded-xl overflow-hidden"
+         style="background: linear-gradient(to bottom, rgb(17 24 39 / 0.98), rgb(17 24 39), rgb(0 0 0 / 0.98));">
+  <!-- Diamond pattern overlay -->
+  <div class="absolute inset-0 opacity-[0.03] pointer-events-none rounded-xl" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M30 0L60 30L30 60L0 30z\' fill=\'%23d4af37\' fill-opacity=\'0.4\'/%3E%3C/svg%3E'); background-size: 30px 30px;"></div>
+
+  <!-- Top golden line -->
+  <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-yellow-500/50 to-transparent rounded-t-xl"></div>
+
+  <!-- Border -->
+  <div class="absolute inset-0 rounded-xl border border-yellow-600/20 pointer-events-none"></div>
+
+  <!-- Corner ornaments -->
+  <div class="absolute top-2 left-2 w-5 h-5 opacity-20 pointer-events-none">
+    <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
+      <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
+    </svg>
+  </div>
+  <div class="absolute top-2 right-2 w-5 h-5 opacity-20 pointer-events-none" style="transform: scaleX(-1);">
+    <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
+      <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
+    </svg>
+  </div>
+  <div class="absolute bottom-2 left-2 w-5 h-5 opacity-20 pointer-events-none" style="transform: scaleY(-1);">
+    <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
+      <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
+    </svg>
+  </div>
+  <div class="absolute bottom-2 right-2 w-5 h-5 opacity-20 pointer-events-none" style="transform: scale(-1);">
+    <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
+      <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
+    </svg>
+  </div>
+
+  <!-- Content -->
+  <div class="relative z-10 p-5 pt-12">
+    <!-- Header badge -->
+    <div class="absolute -top-0.5 left-1/2 -translate-x-1/2">
+      <div class="relative px-6 py-2 rounded-b-lg" style="background: linear-gradient(to bottom, rgb(234 179 8 / 0.9), rgb(202 138 4 / 0.9));">
+        <div class="absolute inset-0 rounded-b-lg border border-yellow-400/30 pointer-events-none"></div>
+        <h2 id="searchTitle" class="text-sm font-bold text-black text-center medieval-font relative z-10">Buscar Personaje</h2>
+      </div>
+    </div>
+
+    <form id="searchCharacterForm" class="flex flex-col md:flex-row items-end gap-4">
+      <div class="flex-1 w-full">
+        <Input
+          id="characterName"
+          label="Nombre del personaje"
+          type="text"
+          placeholder="Ingresa el nombre del personaje"
+          required
+        />
+      </div>
+      <div class="w-full md:w-auto mb-4">
+        <SubmitBtn label="BUSCAR" id="searchBtn" />
+      </div>
+    </form>
+  </div>
 </section>
 
 <script>

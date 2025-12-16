@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { X, ShoppingCart, Trash2, Plus, Minus, CreditCard } from 'lucide-react';
+import { X, ShoppingCart, Trash2, CreditCard } from 'lucide-react';
 import CheckoutModal from './CheckoutModal';
 import '../../i18n';
 
@@ -35,34 +35,6 @@ export default function ShoppingCartSidebar({
 }: ShoppingCartSidebarProps) {
   const { t } = useTranslation();
   const [checkoutOpen, setCheckoutOpen] = useState(false);
-  const [updating, setUpdating] = useState<number | null>(null);
-
-  const updateQuantity = async (cartItemId: number, newQuantity: number) => {
-    if (newQuantity < 1) return;
-
-    setUpdating(cartItemId);
-
-    try {
-      const response = await fetch(`${API_URL}/api/marketplace/cart/${cartItemId}`, {
-        method: 'PUT',
-        credentials: 'include', // Use cookies instead of Authorization header
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ quantity: newQuantity })
-      });
-
-      const data = await response.json();
-
-      if (data.success) {
-        onCartUpdate();
-      }
-    } catch (error) {
-      console.error('Error updating quantity:', error);
-    } finally {
-      setUpdating(null);
-    }
-  };
 
   const removeItem = async (cartItemId: number) => {
     try {
@@ -109,38 +81,63 @@ export default function ShoppingCartSidebar({
       ></div>
 
       {/* Sidebar */}
-      <div className="fixed right-0 top-0 bottom-0 h-screen w-full max-w-md bg-gray-900 shadow-2xl z-50 flex flex-col border-l border-gray-800">
+      <div className="fixed right-0 top-0 bottom-0 h-screen w-full max-w-md shadow-2xl z-50 flex flex-col border-l border-yellow-600/30 overflow-hidden"
+           style={{ background: 'linear-gradient(to bottom, rgb(17 24 39 / 0.98), rgb(17 24 39), rgb(0 0 0 / 0.98))' }}>
+        {/* Diamond pattern overlay */}
+        <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: "url('data:image/svg+xml,%3Csvg width=\"60\" height=\"60\" viewBox=\"0 0 60 60\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cpath d=\"M30 0L60 30L30 60L0 30z\" fill=\"%23d4af37\" fill-opacity=\"0.4\"/%3E%3C/svg%3E')", backgroundSize: '30px 30px' }}></div>
+
+        {/* Top golden line */}
+        <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-yellow-500/60 to-transparent"></div>
+
+        {/* Corner ornaments */}
+        <div className="absolute top-2 left-2 w-6 h-6 opacity-20 pointer-events-none">
+          <svg viewBox="0 0 100 100" fill="none" className="w-full h-full text-yellow-500">
+            <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
+          </svg>
+        </div>
+        <div className="absolute top-2 right-2 w-6 h-6 opacity-20 pointer-events-none" style={{ transform: 'scaleX(-1)' }}>
+          <svg viewBox="0 0 100 100" fill="none" className="w-full h-full text-yellow-500">
+            <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
+          </svg>
+        </div>
+
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-800">
+        <div className="relative flex items-center justify-between p-6 border-b border-yellow-600/20">
           <div className="flex items-center gap-3">
-            <ShoppingCart size={24} className="text-blue-500" />
-            <h2 className="text-2xl font-bold text-white">{t('cart.title')}</h2>
+            <ShoppingCart size={24} className="text-yellow-500" />
+            <h2 className="text-2xl font-bold text-white medieval-font">{t('cart.title')}</h2>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-white transition-colors"
+            className="text-gray-400 hover:text-yellow-500 transition-colors"
           >
             <X size={24} />
           </button>
         </div>
 
         {/* Cart Items */}
-        <div className="flex-1 overflow-y-auto p-6 bg-gray-900" style={{ scrollbarWidth: 'thin', scrollbarColor: '#4B5563 #1F2937' }}>
+        <div className="relative flex-1 overflow-y-auto p-6" style={{ scrollbarWidth: 'thin', scrollbarColor: '#d4af37 #1F2937' }}>
           {cart.length === 0 ? (
             <div className="text-center py-20">
-              <ShoppingCart size={64} className="mx-auto text-gray-700 mb-4" />
-              <p className="text-gray-500 text-lg">{t('cart.empty')}</p>
+              <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-yellow-500/10 border border-yellow-500/20 flex items-center justify-center">
+                <ShoppingCart size={40} className="text-yellow-500/40" />
+              </div>
+              <p className="text-gray-400 text-lg">{t('cart.empty')}</p>
             </div>
           ) : (
             <div className="space-y-4">
               {cart.map((item) => (
                 <div
                   key={item.id}
-                  className="bg-gray-800 rounded-lg p-4 border border-gray-700"
+                  className="relative rounded-lg p-4 border border-yellow-600/20 overflow-hidden"
+                  style={{ background: 'linear-gradient(to bottom, rgb(31 41 55 / 0.8), rgb(17 24 39 / 0.9))' }}
                 >
+                  {/* Item golden top line */}
+                  <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-yellow-500/30 to-transparent"></div>
+
                   <div className="flex gap-4">
                     {/* Image */}
-                    <div className="w-20 h-20 bg-gray-700 rounded-lg shrink-0 overflow-hidden">
+                    <div className="w-20 h-20 bg-gray-800/50 rounded-lg shrink-0 overflow-hidden border border-yellow-600/10">
                       {item.image_url ? (
                         <img
                           src={item.image_url}
@@ -149,7 +146,7 @@ export default function ShoppingCartSidebar({
                         />
                       ) : (
                         <div className="w-full h-full flex items-center justify-center">
-                          <ShoppingCart size={32} className="text-gray-600" />
+                          <ShoppingCart size={32} className="text-yellow-500/30" />
                         </div>
                       )}
                     </div>
@@ -157,44 +154,22 @@ export default function ShoppingCartSidebar({
                     {/* Details */}
                     <div className="flex-1">
                       <h3 className="text-white font-semibold mb-1">{item.name}</h3>
-                      <p className="text-gray-400 text-sm mb-2">
-                        ${item.price.toFixed(2)} {t('cart.each')}
+                      <p className="text-yellow-500/70 text-sm mb-2">
+                        ${item.price.toFixed(2)}
                       </p>
 
-                      {/* Quantity controls */}
-                      <div className="flex items-center gap-3">
-                        <div className="flex items-center gap-2 bg-gray-700 rounded-lg">
-                          <button
-                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                            disabled={updating === item.id || item.quantity <= 1}
-                            className="p-2 hover:bg-gray-600 rounded-l-lg disabled:opacity-50 disabled:cursor-not-allowed"
-                          >
-                            <Minus size={16} className="text-white" />
-                          </button>
-                          <span className="px-3 text-white font-semibold min-w-8 text-center">
-                            {item.quantity}
-                          </span>
-                          <button
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                            disabled={updating === item.id}
-                            className="p-2 hover:bg-gray-600 rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
-                          >
-                            <Plus size={16} className="text-white" />
-                          </button>
-                        </div>
-
-                        <button
-                          onClick={() => removeItem(item.id)}
-                          className="text-red-500 hover:text-red-400 transition-colors"
-                        >
-                          <Trash2 size={18} />
-                        </button>
-                      </div>
+                      <button
+                        onClick={() => removeItem(item.id)}
+                        className="text-red-500 hover:text-red-400 transition-colors"
+                        title={t('cart.remove')}
+                      >
+                        <Trash2 size={16} />
+                      </button>
                     </div>
 
                     {/* Subtotal */}
                     <div className="text-right">
-                      <p className="text-white font-bold">
+                      <p className="text-yellow-500 font-bold">
                         ${item.subtotal.toFixed(2)}
                       </p>
                     </div>
@@ -207,7 +182,10 @@ export default function ShoppingCartSidebar({
 
         {/* Footer */}
         {cart.length > 0 && (
-          <div className="border-t border-gray-800 p-6 space-y-4 bg-gray-900 shrink-0">
+          <div className="relative border-t border-yellow-600/20 p-6 space-y-4 shrink-0">
+            {/* Footer top golden line */}
+            <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-yellow-500/30 to-transparent"></div>
+
             <button
               onClick={clearCart}
               className="w-full text-red-500 hover:text-red-400 text-sm transition-colors"
@@ -215,16 +193,25 @@ export default function ShoppingCartSidebar({
               {t('cart.clearCart')}
             </button>
 
+            {/* Decorative divider */}
+            <div className="flex items-center gap-3">
+              <div className="flex-1 h-px bg-gradient-to-r from-transparent via-yellow-500/20 to-transparent"></div>
+              <svg className="w-4 h-4 text-yellow-500/40" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+              </svg>
+              <div className="flex-1 h-px bg-gradient-to-r from-transparent via-yellow-500/20 to-transparent"></div>
+            </div>
+
             <div className="flex items-center justify-between text-lg">
               <span className="text-gray-400">{t('common.total')}:</span>
-              <span className="text-white font-bold text-2xl">
+              <span className="text-yellow-500 font-bold text-2xl">
                 ${total.toFixed(2)}
               </span>
             </div>
 
             <button
               onClick={() => setCheckoutOpen(true)}
-              className="w-full bg-linear-to-r from-blue-600 to-purple-600 text-white py-4 rounded-lg font-bold hover:from-blue-700 hover:to-purple-700 transition-all flex items-center justify-center gap-2"
+              className="w-full bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-black py-4 rounded-lg font-bold transition-all flex items-center justify-center gap-2 border border-yellow-400/30"
             >
               <CreditCard size={20} />
               {t('cart.proceedToCheckout')}

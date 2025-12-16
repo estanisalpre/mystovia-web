@@ -105,12 +105,12 @@ export default function CartButton() {
     <>
       <button
         onClick={handleCartClick}
-        className="relative cursor-pointer p-2 bg-green-500 hover:bg-green-700 rounded-full transition text-sm font-medium flex items-center gap-2"
+        className="relative cursor-pointer p-2 bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 rounded-full transition text-sm font-medium flex items-center gap-2 border border-yellow-400/30 text-black"
         title="Ver mi carrito"
       >
         <ShoppingCart size={18} />
         {cartItemCount > 0 && (
-          <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+          <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold border border-red-400/50">
             {cartItemCount}
           </span>
         )}

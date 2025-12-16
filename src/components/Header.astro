@@ -6,9 +6,15 @@ import HeaderNav from "./HeaderNav";
 import MobileNav from "./MobileNav";
 ---
 
-<header class="fixed z-100 top-0 flex items-center justify-between w-full px-4 md:px-8 lg:px-16 py-2 backdrop-blur-md bg-black/30">
+<header class="fixed z-900 top-0 flex items-center justify-between w-full px-4 md:px-8 lg:px-16 py-2 bg-gradient-to-b from-gray-900/95 via-gray-900/90 to-gray-900/80 backdrop-blur-md border-b border-yellow-600/20">
+  <!-- Decorative bottom border glow -->
+  <div class="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-yellow-500/40 to-transparent"></div>
+
+  <!-- Subtle pattern overlay -->
+  <div class="absolute inset-0 opacity-[0.03] pointer-events-none" style="background-image: url('data:image/svg+xml,%3Csvg width=&quot;60&quot; height=&quot;60&quot; viewBox=&quot;0 0 60 60&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot;%3E%3Cpath d=&quot;M30 0L60 30L30 60L0 30z&quot; fill=&quot;%23d4af37&quot; fill-opacity=&quot;0.4&quot;/%3E%3C/svg%3E'); background-size: 20px 20px;"></div>
+
   <!-- Logo -->
-  <a href="/" class="flex-shrink-0">
+  <a href="/" class="flex-shrink-0 relative z-10">
     <img
       src={MystoviaLogo.src}
       alt="Mystovia Logo"
@@ -20,7 +26,7 @@ import MobileNav from "./MobileNav";
   <HeaderNav client:load />
 
   <!-- Desktop Auth/Cart -->
-  <aside class="hidden md:flex items-center gap-2 lg:gap-4 flex-shrink-0">
+  <aside class="hidden md:flex items-center gap-2 lg:gap-4 flex-shrink-0 relative z-10">
     <CartButton client:only="react" />
     <HeaderAuth client:only="react" />
   </aside>

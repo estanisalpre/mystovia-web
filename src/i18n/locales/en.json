@@ -231,10 +231,19 @@
   },
   "footer": {
     "description": "The best Tibia private server experience. Join thousands of players in epic adventures!",
-    "quickLinks": "Quick Links",
+    "game": "Game",
     "downloadClient": "Download Client",
-    "serverRules": "Server Rules",
+    "marketplace": "Marketplace",
+    "searchCharacters": "Search Characters",
     "community": "Community",
+    "news": "News",
+    "forum": "Forum",
+    "support": "Support",
+    "serverRules": "Server Rules",
+    "helpCenter": "Help Center",
+    "lostAccount": "Lost Account",
+    "terms": "Terms",
+    "privacy": "Privacy",
     "allRightsReserved": "All rights reserved. Not affiliated with CipSoft GmbH."
   },
   "languages": {

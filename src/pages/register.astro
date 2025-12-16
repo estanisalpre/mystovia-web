@@ -12,61 +12,105 @@ let error = "";
   <section
     class="grow z-100 flex items-center justify-center min-h-screen py-12 px-4"
   >
-    <form
-      id="registerForm"
-      class="max-w-md w-full backdrop-blur-md border border-white/30 bg-black/30 rounded-lg shadow-xl p-8 space-y-6"
-    >
-      <h2 id="registerTitle" class="text-3xl font-bold text-center mb-8">Crear cuenta</h2>
+    <div class="relative max-w-md w-full overflow-hidden">
+      <!-- Medieval container background -->
+      <div class="absolute inset-0 rounded-xl bg-gradient-to-b from-gray-900/95 via-gray-900/98 to-black/95 border border-yellow-600/20"></div>
 
-      <Input
-        id="username"
-        label="Account number"
-        type="text"
-        placeholder="Escribe tu account number"
-        required
-      />
+      <!-- Top golden line -->
+      <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-yellow-500/50 to-transparent"></div>
 
-      <Input
-        id="email"
-        label="Email"
-        type="email"
-        placeholder="you@email.com"
-        required
-      />
+      <!-- Diamond pattern overlay -->
+      <div class="absolute inset-0 opacity-[0.03] pointer-events-none rounded-xl" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M30 0L60 30L30 60L0 30z\' fill=\'%23d4af37\' fill-opacity=\'0.4\'/%3E%3C/svg%3E'); background-size: 30px 30px;"></div>
 
-      <Input
-        id="password"
-        label="Password"
-        type="password"
-        placeholder="••••••••"
-        required
-      />
+      <!-- Corner ornaments -->
+      <div class="absolute top-2 left-2 w-8 h-8 opacity-20 pointer-events-none">
+        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
+          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
+        </svg>
+      </div>
+      <div class="absolute top-2 right-2 w-8 h-8 opacity-20 pointer-events-none" style="transform: scaleX(-1);">
+        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
+          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
+        </svg>
+      </div>
+      <div class="absolute bottom-2 left-2 w-8 h-8 opacity-20 pointer-events-none" style="transform: scaleY(-1);">
+        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
+          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
+        </svg>
+      </div>
+      <div class="absolute bottom-2 right-2 w-8 h-8 opacity-20 pointer-events-none" style="transform: scale(-1);">
+        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
+          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
+        </svg>
+      </div>
 
-      <Input
-        id="confirmPassword"
-        label="Confirmar contraseña"
-        type="password"
-        placeholder="••••••••"
-        required
-      />
+      <!-- Form content -->
+      <form
+        id="registerForm"
+        class="relative z-10 p-8 space-y-6"
+      >
+        <!-- Title with decorative elements -->
+        <div class="text-center mb-8">
+          <div class="flex items-center justify-center gap-3 mb-2">
+            <div class="h-px w-12 bg-gradient-to-r from-transparent to-yellow-500/50"></div>
+            <svg class="w-5 h-5 text-yellow-500/60" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+            </svg>
+            <div class="h-px w-12 bg-gradient-to-l from-transparent to-yellow-500/50"></div>
+          </div>
+          <h2 id="registerTitle" class="text-3xl font-bold text-white medieval-font">Crear cuenta</h2>
+        </div>
 
-      <ErrorMessage
-        message={error}
-        visible={!!error}
-      />
+        <Input
+          id="username"
+          label="Account number"
+          type="text"
+          placeholder="Escribe tu account number"
+          required
+        />
 
-      <SubmitBtn label="REGISTRARSE" id="registerBtn" />
+        <Input
+          id="email"
+          label="Email"
+          type="email"
+          placeholder="you@email.com"
+          required
+        />
 
-      <p id="hasAccountText" class="mt-6 text-center text-sm text-gray-400">
-        ¿Ya tenes una cuenta?
-        <a
-          href="/login"
-          id="loginLink"
-          class="text-yellow-500 hover:text-yellow-400 font-medium"
-          >Ingresar</a
-        >
-      </p>
-    </form>
+        <Input
+          id="password"
+          label="Password"
+          type="password"
+          placeholder="••••••••"
+          required
+        />
+
+        <Input
+          id="confirmPassword"
+          label="Confirmar contraseña"
+          type="password"
+          placeholder="••••••••"
+          required
+        />
+
+        <ErrorMessage
+          message={error}
+          visible={!!error}
+        />
+
+        <SubmitBtn label="REGISTRARSE" id="registerBtn" />
+
+        <p id="hasAccountText" class="mt-6 text-center text-sm text-gray-400">
+          ¿Ya tenes una cuenta?
+          <a
+            href="/login"
+            id="loginLink"
+            class="text-yellow-500 hover:text-yellow-400 font-medium"
+            >Ingresar</a
+          >
+        </p>
+      </form>
+    </div>
   </section>
 
   <!-- Recovery Key Modal -->
@@ -74,56 +118,90 @@ let error = "";
     <!-- Backdrop -->
     <div class="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
 
-    <!-- Modal Content -->
-    <div class="relative max-w-md w-full mx-4 backdrop-blur-md border border-yellow-500/50 bg-gray-900/95 rounded-lg shadow-2xl p-8">
-      <!-- Warning Icon -->
-      <div class="flex justify-center mb-4">
-        <div class="w-16 h-16 bg-yellow-500/20 rounded-full flex items-center justify-center">
-          <svg class="w-8 h-8 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-          </svg>
-        </div>
-      </div>
+    <!-- Modal Content with Medieval style -->
+    <div class="relative max-w-md w-full mx-4 overflow-hidden">
+      <!-- Medieval container background -->
+      <div class="absolute inset-0 rounded-xl bg-gradient-to-b from-gray-900/98 via-gray-900 to-black border border-yellow-500/30"></div>
 
-      <h3 id="modalTitle" class="text-2xl font-bold text-center text-white mb-2">Recovery Key</h3>
-      <p id="modalSubtitle" class="text-center text-gray-400 text-sm mb-6">
-        Guarda esta clave en un lugar seguro. La necesitarás para recuperar tu cuenta.
-      </p>
+      <!-- Top golden line -->
+      <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-yellow-500/60 to-transparent"></div>
 
-      <!-- Recovery Key Display -->
-      <div class="bg-black/50 border border-gray-700 rounded-lg p-4 mb-4">
-        <p id="recoveryKeyDisplay" class="text-center text-2xl font-mono font-bold text-yellow-500 tracking-widest select-all">
-          XXXX-XXXX-XXXX-XXXX
-        </p>
-      </div>
+      <!-- Diamond pattern overlay -->
+      <div class="absolute inset-0 opacity-[0.03] pointer-events-none rounded-xl" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M30 0L60 30L30 60L0 30z\' fill=\'%23d4af37\' fill-opacity=\'0.4\'/%3E%3C/svg%3E'); background-size: 30px 30px;"></div>
 
-      <!-- Copy Button -->
-      <button
-        id="copyKeyBtn"
-        type="button"
-        class="w-full py-2 mb-4 text-sm bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition flex items-center justify-center gap-2"
-      >
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+      <!-- Corner ornaments -->
+      <div class="absolute top-2 left-2 w-8 h-8 opacity-20 pointer-events-none">
+        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
+          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
         </svg>
-        <span id="copyBtnText">Copiar clave</span>
-      </button>
-
-      <!-- Warning Message -->
-      <div class="bg-red-500/10 border border-red-500/30 rounded-lg p-3 mb-6">
-        <p id="warningText" class="text-red-400 text-sm text-center font-medium">
-          No cierres esta pestaña hasta que hayas guardado el código.
-        </p>
+      </div>
+      <div class="absolute top-2 right-2 w-8 h-8 opacity-20 pointer-events-none" style="transform: scaleX(-1);">
+        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
+          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
+        </svg>
+      </div>
+      <div class="absolute bottom-2 left-2 w-8 h-8 opacity-20 pointer-events-none" style="transform: scaleY(-1);">
+        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
+          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
+        </svg>
+      </div>
+      <div class="absolute bottom-2 right-2 w-8 h-8 opacity-20 pointer-events-none" style="transform: scale(-1);">
+        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
+          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
+        </svg>
       </div>
 
-      <!-- Finish Button -->
-      <button
-        id="finishBtn"
-        type="button"
-        class="w-full py-3 bg-yellow-500 hover:bg-yellow-400 text-black font-bold rounded-lg transition"
-      >
-        Finalizar
-      </button>
+      <!-- Modal inner content -->
+      <div class="relative z-10 p-8">
+        <!-- Warning Icon -->
+        <div class="flex justify-center mb-4">
+          <div class="w-16 h-16 bg-yellow-500/20 rounded-full flex items-center justify-center border border-yellow-500/30">
+            <svg class="w-8 h-8 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+            </svg>
+          </div>
+        </div>
+
+        <h3 id="modalTitle" class="text-2xl font-bold text-center text-white mb-2 medieval-font">Recovery Key</h3>
+        <p id="modalSubtitle" class="text-center text-gray-400 text-sm mb-6">
+          Guarda esta clave en un lugar seguro. La necesitarás para recuperar tu cuenta.
+        </p>
+
+        <!-- Recovery Key Display -->
+        <div class="bg-black/50 border border-yellow-500/30 rounded-lg p-4 mb-4">
+          <p id="recoveryKeyDisplay" class="text-center text-2xl font-mono font-bold text-yellow-500 tracking-widest select-all">
+            XXXX-XXXX-XXXX-XXXX
+          </p>
+        </div>
+
+        <!-- Copy Button -->
+        <button
+          id="copyKeyBtn"
+          type="button"
+          class="w-full py-2 mb-4 text-sm bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition flex items-center justify-center gap-2 border border-gray-700"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+          </svg>
+          <span id="copyBtnText">Copiar clave</span>
+        </button>
+
+        <!-- Warning Message -->
+        <div class="bg-red-500/10 border border-red-500/30 rounded-lg p-3 mb-6">
+          <p id="warningText" class="text-red-400 text-sm text-center font-medium">
+            No cierres esta pestaña hasta que hayas guardado el código.
+          </p>
+        </div>
+
+        <!-- Finish Button -->
+        <button
+          id="finishBtn"
+          type="button"
+          class="w-full py-3 bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-black font-bold rounded-lg transition"
+        >
+          Finalizar
+        </button>
+      </div>
     </div>
   </div>
 
@@ -167,6 +245,7 @@ let error = "";
       username: HTMLInputElement;
       email: HTMLInputElement;
       password: HTMLInputElement;
+      confirmPassword: HTMLInputElement;
     };
 
     const modal = document.getElementById("recoveryKeyModal");
@@ -218,10 +297,16 @@ let error = "";
       const username = form.username.value;
       const email = form.email.value;
       const password = form.password.value;
+      const confirmPassword = form.confirmPassword.value;
+
+      if (password !== confirmPassword) {
+        alert(t("auth.passwordsDontMatch", lang) || "Las contraseñas no coinciden");
+        return;
+      }
 
       const res = await useAuth("register", { username, email, password });
+
       if (res.success) {
-        // Show recovery key modal instead of redirecting immediately
         if (res.recoveryKey) {
           showRecoveryKeyModal(res.recoveryKey);
         } else {
