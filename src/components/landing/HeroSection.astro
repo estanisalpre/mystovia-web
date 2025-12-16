@@ -3,25 +3,94 @@ import { MystoviaLogo } from "../../assets/logos";
 ---
 
 <section class="flex justify-start items-center pt-32 flex-col relative py-20">
-  <h1 class="text-5xl flex-center gap-2 md:text-6xl font-bold mb-6 z-50">
-    Bienvenidos a
+  <!-- Decorative elements -->
+  <div class="absolute top-20 left-1/2 -translate-x-1/2 w-full max-w-4xl h-px bg-gradient-to-r from-transparent via-yellow-500/20 to-transparent z-40"></div>
+
+  <!-- Welcome text with medieval style -->
+  <div class="relative z-50 mb-4">
+    <div class="flex items-center justify-center gap-3 mb-2">
+      <div class="h-px w-12 bg-gradient-to-r from-transparent to-yellow-500/50"></div>
+      <svg class="w-4 h-4 text-yellow-500/70" fill="currentColor" viewBox="0 0 20 20">
+        <path d="M10 0L20 10L10 20L0 10z"/>
+      </svg>
+      <div class="h-px w-12 bg-gradient-to-l from-transparent to-yellow-500/50"></div>
+    </div>
+    <p class="text-yellow-500/80 text-lg medieval-font tracking-widest uppercase text-center">Bienvenidos a</p>
+  </div>
+
+  <!-- Logo -->
+  <h1 class="z-50 mb-6">
     <img
       src={MystoviaLogo.src}
       alt="Mystovia Logo Header"
-      class="w-120 h-auto"
+      class="w-80 md:w-[450px] h-auto drop-shadow-[0_0_30px_rgba(234,179,8,0.3)]"
     />
   </h1>
 
-  <p class="text-2xl font-extrabold text-gray-300 p-4 rounded-2xl bg-black/60 mb-8 max-w-3xl shadow-md mx-auto z-50">
-    Forja tu leyenda en Mystovia <br/>
-    Un reino clásico, peligros reales y recompensas únicas.
-  </p>
+  <!-- Tagline with medieval container -->
+  <div class="relative z-50 mb-8 max-w-2xl mx-4">
+    <div class="relative rounded-xl overflow-hidden p-6 text-center"
+         style="background: linear-gradient(to bottom, rgb(17 24 39 / 0.9), rgb(0 0 0 / 0.85));">
+      <!-- Diamond pattern overlay -->
+      <div class="absolute inset-0 opacity-[0.03] pointer-events-none" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M30 0L60 30L30 60L0 30z\' fill=\'%23d4af37\' fill-opacity=\'0.4\'/%3E%3C/svg%3E'); background-size: 30px 30px;"></div>
 
+      <!-- Top golden line -->
+      <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-yellow-500/50 to-transparent"></div>
+
+      <!-- Border -->
+      <div class="absolute inset-0 rounded-xl border border-yellow-600/20 pointer-events-none"></div>
+
+      <!-- Corner ornaments -->
+      <div class="absolute top-2 left-2 w-4 h-4 opacity-30 pointer-events-none">
+        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
+          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
+        </svg>
+      </div>
+      <div class="absolute top-2 right-2 w-4 h-4 opacity-30 pointer-events-none" style="transform: scaleX(-1);">
+        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
+          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
+        </svg>
+      </div>
+      <div class="absolute bottom-2 left-2 w-4 h-4 opacity-30 pointer-events-none" style="transform: scaleY(-1);">
+        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
+          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
+        </svg>
+      </div>
+      <div class="absolute bottom-2 right-2 w-4 h-4 opacity-30 pointer-events-none" style="transform: scale(-1);">
+        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
+          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
+        </svg>
+      </div>
+
+      <!-- Content -->
+      <div class="relative z-10">
+        <h2 class="text-2xl md:text-3xl font-bold text-yellow-500 medieval-font mb-3">
+          Forja tu leyenda
+        </h2>
+        <div class="flex items-center justify-center gap-3 mb-3">
+          <div class="h-px w-16 bg-gradient-to-r from-transparent to-yellow-500/40"></div>
+          <svg class="w-3 h-3 text-yellow-500/50" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M10 0L20 10L10 20L0 10z"/>
+          </svg>
+          <div class="h-px w-16 bg-gradient-to-l from-transparent to-yellow-500/40"></div>
+        </div>
+        <p class="text-gray-300 text-lg leading-relaxed">
+          Un reino clásico donde cada batalla cuenta,<br class="hidden sm:block"/>
+          los peligros son reales y las recompensas, únicas.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA Buttons -->
   <div class="flex z-50 flex-col sm:flex-row gap-4 justify-center">
     <a
       href="/register"
       class="btn-medieval btn-medieval-primary btn-medieval-lg"
     >
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+      </svg>
       <span>Crear cuenta</span>
     </a>
     <a
@@ -29,7 +98,13 @@ import { MystoviaLogo } from "../../assets/logos";
       download="MystoviaLauncher.exe"
       class="btn-medieval btn-medieval-secondary btn-medieval-lg"
     >
-      <span>Descargar Mystovia Client</span>
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+      </svg>
+      <span>Descargar Mystovia Cliente</span>
     </a>
   </div>
+
+  <!-- Bottom decorative line -->
+  <div class="absolute bottom-10 left-1/2 -translate-x-1/2 w-full max-w-4xl h-px bg-gradient-to-r from-transparent via-yellow-500/20 to-transparent z-40"></div>
 </section>

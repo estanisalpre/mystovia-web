@@ -3,6 +3,8 @@ import LoginComponent from "../store/LoginComponent.astro"
 import FeaturesSection from "../store/FeaturesSection.astro"
 import ServerStats from "../store/ServerStats.tsx"
 import SearchCharacter from "../store/SearchCharacter.astro";
+import StoreCarousel from "../store/StoreCarousel.astro";
+import HighscoresPreview from "../store/HighscoresPreview.astro";
 ---
 
 <section class="min-h-screen w-full max-w-[1150px] mx-auto px-4 py-8 bg-transparent">
@@ -26,6 +28,16 @@ import SearchCharacter from "../store/SearchCharacter.astro";
         <!-- Search Character -->
         <div class="md:col-span-2 lg:col-span-4 min-h-[120px] mt-2">
             <SearchCharacter />
+        </div>
+
+        <!-- Store Carousel -->
+        <div class="md:col-span-2 lg:col-span-3 mt-2">
+            <StoreCarousel />
+        </div>
+
+        <!-- Highscores Preview -->
+        <div class="md:col-span-2 lg:col-span-1 mt-2">
+            <HighscoresPreview />
         </div>
     </div>
 </section>

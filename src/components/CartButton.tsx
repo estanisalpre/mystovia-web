@@ -86,6 +86,14 @@ export default function CartButton() {
       return;
     }
     setCartOpen(true);
+    // Dispatch event to hide music player and language selector on mobile
+    window.dispatchEvent(new CustomEvent('cart-sidebar-toggle', { detail: { isOpen: true } }));
+  };
+
+  const handleCartClose = () => {
+    setCartOpen(false);
+    // Dispatch event to show music player and language selector again
+    window.dispatchEvent(new CustomEvent('cart-sidebar-toggle', { detail: { isOpen: false } }));
   };
 
   const cartItemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
@@ -118,7 +126,7 @@ export default function CartButton() {
 
       <ShoppingCartSidebar
         isOpen={cartOpen}
-        onClose={() => setCartOpen(false)}
+        onClose={handleCartClose}
         cart={cart}
         total={cartTotal}
         onCartUpdate={loadCart}

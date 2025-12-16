@@ -1,0 +1,376 @@
+---
+import Layout from "@layouts/Layout.astro";
+---
+
+<Layout title="Highscores">
+  <section class="page-container">
+    <!-- Header -->
+    <header class="text-center mb-8">
+      <h1 class="text-3xl md:text-4xl font-bold text-yellow-500 medieval-font mb-2">Highscores</h1>
+      <p class="text-gray-400">Los mejores jugadores de Mystovia</p>
+    </header>
+
+    <!-- Filters -->
+    <div class="relative rounded-xl overflow-hidden mb-6 p-5"
+         style="background: linear-gradient(to bottom, rgb(31 41 55 / 0.6), rgb(17 24 39 / 0.8)); border: 1px solid rgb(234 179 8 / 0.15);">
+      <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-yellow-500/30 to-transparent"></div>
+
+      <h3 class="text-yellow-500 font-semibold mb-4 medieval-font">Filtros</h3>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Vocation Filter -->
+        <div>
+          <label class="form-label">Vocación</label>
+          <select id="vocationFilter" class="form-input w-full">
+            <option value="">Todas</option>
+            <option value="1">Sorcerer</option>
+            <option value="2">Druid</option>
+            <option value="3">Paladin</option>
+            <option value="4">Knight</option>
+            <option value="5">Master Sorcerer</option>
+            <option value="6">Elder Druid</option>
+            <option value="7">Royal Paladin</option>
+            <option value="8">Elite Knight</option>
+          </select>
+        </div>
+
+        <!-- Category Filter -->
+        <div>
+          <label class="form-label">Categoría</label>
+          <select id="categoryFilter" class="form-input w-full">
+            <option value="level">Nivel</option>
+            <option value="experience">Experiencia</option>
+            <option value="magiclevel">Magic Level</option>
+            <option value="skill_fist">Fist Fighting</option>
+            <option value="skill_club">Club Fighting</option>
+            <option value="skill_sword">Sword Fighting</option>
+            <option value="skill_axe">Axe Fighting</option>
+            <option value="skill_dist">Distance Fighting</option>
+            <option value="skill_shielding">Shielding</option>
+            <option value="skill_fishing">Fishing</option>
+          </select>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="flex items-end">
+          <button id="filterBtn" class="btn-medieval btn-medieval-primary w-full">
+            <span>Buscar</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results Info -->
+    <div class="flex justify-between items-center mb-4 text-sm text-gray-400">
+      <span id="lastUpdate">Última actualización: --</span>
+      <span id="resultsCount">Resultados: --</span>
+    </div>
+
+    <!-- Table -->
+    <div class="relative rounded-xl overflow-hidden"
+         style="background: linear-gradient(to bottom, rgb(31 41 55 / 0.6), rgb(17 24 39 / 0.8)); border: 1px solid rgb(234 179 8 / 0.15);">
+      <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-yellow-500/30 to-transparent"></div>
+
+      <!-- Table Header - Desktop -->
+      <div class="hidden sm:grid grid-cols-12 gap-2 px-4 py-3 text-sm text-yellow-500 font-semibold border-b border-yellow-600/20 bg-black/20">
+        <div class="col-span-1 text-center" id="headerRank">Rank</div>
+        <div class="col-span-4" id="headerName">Nombre</div>
+        <div class="col-span-3" id="headerVocation">Vocación</div>
+        <div class="col-span-2 text-center" id="headerLevel">Nivel</div>
+        <div class="col-span-2 text-right" id="headerPoints">Puntos</div>
+      </div>
+      <!-- Table Header - Mobile -->
+      <div class="sm:hidden px-4 py-3 text-sm text-yellow-500 font-semibold border-b border-yellow-600/20 bg-black/20 flex justify-between">
+        <span id="mobileHeaderPlayer">Jugador</span>
+        <span id="mobileHeaderPoints">Puntos</span>
+      </div>
+
+      <!-- Loading State -->
+      <div id="loadingState" class="py-12 text-center">
+        <div class="w-8 h-8 border-2 border-yellow-500/30 border-t-yellow-500 rounded-full animate-spin mx-auto mb-3"></div>
+        <p class="text-gray-400">Cargando highscores...</p>
+      </div>
+
+      <!-- Error State -->
+      <div id="errorState" class="hidden py-12 text-center">
+        <svg class="w-12 h-12 mx-auto text-red-500/50 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+        </svg>
+        <p class="text-red-400">Error al cargar los datos</p>
+      </div>
+
+      <!-- Empty State -->
+      <div id="emptyState" class="hidden py-12 text-center">
+        <svg class="w-12 h-12 mx-auto text-yellow-500/30 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
+        </svg>
+        <p class="text-gray-400">No hay jugadores en el ranking</p>
+      </div>
+
+      <!-- Players List -->
+      <div id="playersList" class="hidden">
+        <!-- Players will be inserted here -->
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div id="pagination" class="hidden flex justify-center items-center gap-2 mt-6">
+      <!-- Pagination will be inserted here -->
+    </div>
+  </section>
+</Layout>
+
+<script>
+  const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3000';
+
+  interface Player {
+    rank: number;
+    name: string;
+    vocation: string;
+    vocationId: number;
+    level: number;
+    points: number;
+  }
+
+  interface HighscoresResponse {
+    players: Player[];
+    pagination: {
+      page: number;
+      totalPages: number;
+      total: number;
+    };
+    lastUpdate?: string;
+  }
+
+  let currentPage = 1;
+  let currentVocation = '';
+  let currentCategory = 'level';
+
+  function init() {
+    const vocationFilter = document.getElementById('vocationFilter') as HTMLSelectElement;
+    const categoryFilter = document.getElementById('categoryFilter') as HTMLSelectElement;
+    const filterBtn = document.getElementById('filterBtn');
+
+    // Load from URL params
+    const params = new URLSearchParams(window.location.search);
+    currentPage = parseInt(params.get('page') || '1');
+    currentVocation = params.get('vocation') || '';
+    currentCategory = params.get('category') || 'level';
+
+    if (vocationFilter) vocationFilter.value = currentVocation;
+    if (categoryFilter) categoryFilter.value = currentCategory;
+
+    filterBtn?.addEventListener('click', () => {
+      currentVocation = vocationFilter?.value || '';
+      currentCategory = categoryFilter?.value || 'level';
+      currentPage = 1;
+      loadHighscores();
+      updateURL();
+    });
+
+    loadHighscores();
+  }
+
+  function updateURL() {
+    const params = new URLSearchParams();
+    if (currentPage > 1) params.set('page', currentPage.toString());
+    if (currentVocation) params.set('vocation', currentVocation);
+    if (currentCategory !== 'level') params.set('category', currentCategory);
+
+    const newURL = params.toString() ? `?${params.toString()}` : window.location.pathname;
+    window.history.replaceState({}, '', newURL);
+  }
+
+  function formatNumber(num: number): string {
+    return num.toLocaleString('es-ES');
+  }
+
+  function getVocationName(vocationId: number): string {
+    const vocations: Record<number, string> = {
+      0: 'None',
+      1: 'Sorcerer',
+      2: 'Druid',
+      3: 'Paladin',
+      4: 'Knight',
+      5: 'Master Sorcerer',
+      6: 'Elder Druid',
+      7: 'Royal Paladin',
+      8: 'Elite Knight'
+    };
+    return vocations[vocationId] || 'Unknown';
+  }
+
+  async function loadHighscores() {
+    const loadingState = document.getElementById('loadingState');
+    const errorState = document.getElementById('errorState');
+    const emptyState = document.getElementById('emptyState');
+    const playersList = document.getElementById('playersList');
+    const pagination = document.getElementById('pagination');
+    const lastUpdate = document.getElementById('lastUpdate');
+    const resultsCount = document.getElementById('resultsCount');
+
+    // Show loading
+    loadingState?.classList.remove('hidden');
+    errorState?.classList.add('hidden');
+    emptyState?.classList.add('hidden');
+    playersList?.classList.add('hidden');
+    pagination?.classList.add('hidden');
+
+    try {
+      const params = new URLSearchParams({
+        page: currentPage.toString(),
+        limit: '20',
+        category: currentCategory
+      });
+      if (currentVocation) params.set('vocation', currentVocation);
+
+      const response = await fetch(`${API_URL}/api/highscores?${params.toString()}`);
+
+      if (!response.ok) throw new Error('Failed to fetch');
+
+      const data: HighscoresResponse = await response.json();
+
+      loadingState?.classList.add('hidden');
+
+      if (!data.players || data.players.length === 0) {
+        emptyState?.classList.remove('hidden');
+        return;
+      }
+
+      // Update info
+      if (lastUpdate) {
+        lastUpdate.textContent = `Última actualización: ${data.lastUpdate || 'Ahora'}`;
+      }
+      if (resultsCount) {
+        resultsCount.textContent = `Resultados: ${formatNumber(data.pagination?.total || data.players.length)}`;
+      }
+
+      // Render players
+      if (playersList) {
+        playersList.innerHTML = data.players.map((player, index) => {
+          const actualRank = (currentPage - 1) * 20 + index + 1;
+          const isTop3 = actualRank <= 3 && currentPage === 1;
+
+          let rankDisplay = actualRank.toString();
+          if (actualRank === 1) rankDisplay = '🥇';
+          else if (actualRank === 2) rankDisplay = '🥈';
+          else if (actualRank === 3) rankDisplay = '🥉';
+
+          const bgStyle = isTop3
+            ? `background: linear-gradient(to right, rgb(234 179 8 / ${0.15 - index * 0.04}), transparent);`
+            : '';
+
+          return `
+            <a href="/character-information?name=${encodeURIComponent(player.name)}"
+               class="block sm:grid sm:grid-cols-12 gap-2 px-4 py-3 border-b border-yellow-600/10 transition-all duration-300 hover:bg-yellow-500/5 group"
+               style="${bgStyle}">
+              <!-- Desktop Layout -->
+              <div class="hidden sm:block col-span-1 text-center ${isTop3 ? 'text-lg' : 'text-gray-500'}">${rankDisplay}</div>
+              <div class="hidden sm:block col-span-4 text-white font-semibold group-hover:text-yellow-500 transition-colors truncate">${player.name}</div>
+              <div class="hidden sm:block col-span-3 text-gray-400 text-sm truncate">${player.vocation || getVocationName(player.vocationId)}</div>
+              <div class="hidden sm:block col-span-2 text-center text-white">${player.level}</div>
+              <div class="hidden sm:block col-span-2 text-right text-yellow-500 font-semibold">${formatNumber(player.points)}</div>
+              <!-- Mobile Layout -->
+              <div class="sm:hidden flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                  <span class="${isTop3 ? 'text-lg' : 'text-gray-500 text-sm'}">${rankDisplay}</span>
+                  <div>
+                    <div class="text-white font-semibold group-hover:text-yellow-500 transition-colors">${player.name}</div>
+                    <div class="text-gray-500 text-xs">${player.vocation || getVocationName(player.vocationId)} · Lvl ${player.level}</div>
+                  </div>
+                </div>
+                <div class="text-yellow-500 font-semibold text-sm">${formatNumber(player.points)}</div>
+              </div>
+            </a>
+          `;
+        }).join('');
+
+        playersList.classList.remove('hidden');
+      }
+
+      // Render pagination
+      if (pagination && data.pagination && data.pagination.totalPages > 1) {
+        const { page, totalPages } = data.pagination;
+        let paginationHTML = '';
+
+        // Previous button
+        if (page > 1) {
+          paginationHTML += `<button class="pagination-btn" data-page="${page - 1}">&laquo;</button>`;
+        }
+
+        // Page numbers
+        const startPage = Math.max(1, page - 2);
+        const endPage = Math.min(totalPages, page + 2);
+
+        if (startPage > 1) {
+          paginationHTML += `<button class="pagination-btn" data-page="1">1</button>`;
+          if (startPage > 2) paginationHTML += `<span class="text-gray-500 px-2">...</span>`;
+        }
+
+        for (let i = startPage; i <= endPage; i++) {
+          const isActive = i === page;
+          paginationHTML += `<button class="pagination-btn ${isActive ? 'active' : ''}" data-page="${i}">${i}</button>`;
+        }
+
+        if (endPage < totalPages) {
+          if (endPage < totalPages - 1) paginationHTML += `<span class="text-gray-500 px-2">...</span>`;
+          paginationHTML += `<button class="pagination-btn" data-page="${totalPages}">${totalPages}</button>`;
+        }
+
+        // Next button
+        if (page < totalPages) {
+          paginationHTML += `<button class="pagination-btn" data-page="${page + 1}">&raquo;</button>`;
+        }
+
+        pagination.innerHTML = paginationHTML;
+        pagination.classList.remove('hidden');
+
+        // Add click handlers
+        pagination.querySelectorAll('.pagination-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const target = e.target as HTMLElement;
+            const page = target.dataset.page;
+            if (page) {
+              currentPage = parseInt(page);
+              loadHighscores();
+              updateURL();
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+          });
+        });
+      }
+
+    } catch (error) {
+      console.error('Error loading highscores:', error);
+      loadingState?.classList.add('hidden');
+      errorState?.classList.remove('hidden');
+    }
+  }
+
+  init();
+  document.addEventListener('astro:page-load', init);
+</script>
+
+<style>
+  .pagination-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    background: linear-gradient(to bottom, rgb(31 41 55 / 0.8), rgb(17 24 39 / 0.9));
+    border: 1px solid rgb(234 179 8 / 0.2);
+    color: rgb(234 179 8);
+    font-weight: 500;
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+
+  .pagination-btn:hover {
+    background: linear-gradient(to bottom, rgb(55 65 81 / 0.8), rgb(31 41 55 / 0.9));
+    border-color: rgb(234 179 8 / 0.4);
+  }
+
+  .pagination-btn.active {
+    background: linear-gradient(to bottom, rgb(234 179 8), rgb(202 138 4));
+    color: black;
+    border-color: rgb(234 179 8);
+  }
+</style>

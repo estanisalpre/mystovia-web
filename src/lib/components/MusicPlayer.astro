@@ -3,7 +3,7 @@ import { Music } from "@lucide/astro";
 ---
 <aside
   id="musicPlayerContainer"
-  class="fixed bottom-4 right-4 z-50 group flex items-center gap-2 bg-black/40 border border-yellow-500 rounded-lg p-3 cursor-pointer backdrop-blur-md transition-all hover:pr-4"
+  class="fixed bottom-4 right-4 z-[900] group flex items-center gap-2 bg-black/40 border border-yellow-500 rounded-lg p-3 cursor-pointer backdrop-blur-md transition-all hover:pr-4"
 >
   <Music class="text-yellow-400 w-6 h-6 group-hover:text-yellow-300 transition" />
   <input
@@ -102,4 +102,13 @@ import { Music } from "@lucide/astro";
   }
 
   document.addEventListener("astro:page-load", initMusicPlayer);
+
+  // Listen for cart sidebar toggle to hide on mobile
+  window.addEventListener("cart-sidebar-toggle", (e: Event) => {
+    const customEvent = e as CustomEvent<{ isOpen: boolean }>;
+    const container = document.getElementById("musicPlayerContainer");
+    if (container && window.innerWidth < 1024) {
+      container.style.display = customEvent.detail.isOpen ? "none" : "flex";
+    }
+  });
 </script>

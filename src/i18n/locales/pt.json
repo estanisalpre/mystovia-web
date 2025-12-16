@@ -251,6 +251,52 @@
     "en": "English",
     "pt": "Português"
   },
+  "highscores": {
+    "title": "Highscores",
+    "subtitle": "Os melhores jogadores de Mystovia",
+    "filters": "Filtros",
+    "vocation": "Vocação",
+    "category": "Categoria",
+    "all": "Todas",
+    "search": "Buscar",
+    "lastUpdate": "Última atualização",
+    "results": "Resultados",
+    "rank": "Rank",
+    "name": "Nome",
+    "level": "Nível",
+    "points": "Pontos",
+    "loading": "Carregando highscores...",
+    "error": "Erro ao carregar dados",
+    "empty": "Não há jogadores no ranking",
+    "experience": "Experiência",
+    "magicLevel": "Magic Level",
+    "fistFighting": "Fist Fighting",
+    "clubFighting": "Club Fighting",
+    "swordFighting": "Sword Fighting",
+    "axeFighting": "Axe Fighting",
+    "distanceFighting": "Distance Fighting",
+    "shielding": "Shielding",
+    "fishing": "Fishing"
+  },
+  "hero": {
+    "welcome": "Bem-vindo a",
+    "tagline": "Forje sua lenda em Mystovia",
+    "description": "Um reino clássico, perigos reais e recompensas únicas.",
+    "playNow": "Jogar Agora",
+    "downloadClient": "Baixar Cliente Mystovia"
+  },
+  "store": {
+    "title": "Loja",
+    "noProducts": "Nenhum produto disponível",
+    "learnMore": "Saiba mais",
+    "prev": "Anterior",
+    "next": "Próximo"
+  },
+  "legal": {
+    "termsTitle": "Termos e Condições",
+    "privacyTitle": "Política de Privacidade",
+    "lastUpdated": "Última atualização"
+  },
   "account": {
     "title": "Gerenciamento de Conta",
     "description": "Gerencie as configurações da sua conta",

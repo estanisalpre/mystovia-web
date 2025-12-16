@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Store, Menu, X, Gamepad2, Users, HelpCircle } from 'lucide-react';
-import CartButton from './CartButton';
 import HeaderAuth from './HeaderAuth';
 import '../i18n';
 
@@ -37,18 +36,13 @@ export default function MobileNav() {
     };
   }, [isOpen]);
 
-  // Diamond pattern as inline style for the background
-  const diamondPattern = {
-    backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L60 30L30 60L0 30z' fill='%23d4af37' fill-opacity='0.4'/%3E%3C/svg%3E")`,
-    backgroundSize: '30px 30px'
-  };
-
   return (
     <>
       {/* Mobile Menu Button */}
       <button
         onClick={toggleMenu}
-        className="lg:hidden p-2 text-white hover:text-yellow-500 transition relative z-10"
+        className="lg:hidden p-2 text-white hover:text-yellow-500 transition"
+        style={{ position: 'relative', zIndex: 1000 }}
         aria-label="Abrir menu"
       >
         {isOpen ? <X size={28} /> : <Menu size={28} />}
@@ -56,36 +50,48 @@ export default function MobileNav() {
 
       {/* Mobile Menu Overlay */}
       {isOpen && (
-        <div className="fixed inset-0 z-90 lg:hidden overflow-hidden">
-          {/* Background with gradient */}
-          <div className="absolute inset-0 bg-gradient-to-b from-gray-900 via-gray-900 to-black" />
-
+        <div
+          className="lg:hidden"
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            width: '100vw',
+            height: '100vh',
+            zIndex: 950,
+            background: 'linear-gradient(to bottom, rgb(17 24 39), rgb(17 24 39), rgb(0 0 0))'
+          }}
+        >
           {/* Diamond pattern overlay */}
           <div
             className="absolute inset-0 opacity-5 pointer-events-none"
-            style={diamondPattern}
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 0L60 30L30 60L0 30z' fill='%23d4af37' fill-opacity='0.4'/%3E%3C/svg%3E")`,
+              backgroundSize: '30px 30px'
+            }}
           />
 
           {/* Decorative top border */}
           <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-yellow-500/50 to-transparent" />
 
           {/* Decorative corner ornaments */}
-          <div className="absolute bottom-0 left-0 w-24 h-24 opacity-10 pointer-events-none">
+          <div className="absolute bottom-4 left-4 w-20 h-20 opacity-10 pointer-events-none">
             <svg viewBox="0 0 100 100" fill="none" className="w-full h-full text-yellow-500">
               <path d="M0 100 L0 60 Q0 0 60 0 L100 0 L100 10 L60 10 Q10 10 10 60 L10 100 Z" fill="currentColor"/>
             </svg>
           </div>
-          <div className="absolute bottom-0 right-0 w-24 h-24 opacity-10 pointer-events-none" style={{ transform: 'scaleX(-1)' }}>
+          <div className="absolute bottom-4 right-4 w-20 h-20 opacity-10 pointer-events-none" style={{ transform: 'scaleX(-1)' }}>
             <svg viewBox="0 0 100 100" fill="none" className="w-full h-full text-yellow-500">
               <path d="M0 100 L0 60 Q0 0 60 0 L100 0 L100 10 L60 10 Q10 10 10 60 L10 100 Z" fill="currentColor"/>
             </svg>
           </div>
 
-          {/* Content */}
-          <div className="relative flex flex-col h-full pt-20 pb-8 px-6 overflow-y-auto">
+          {/* Scrollable Content */}
+          <div className="relative z-10 w-full h-full overflow-y-auto pt-16 pb-8 px-6">
             {/* Mobile Auth (at top) */}
-            <div className="flex items-center justify-center gap-4 mb-8 md:hidden">
-              <CartButton />
+            <div className="flex items-center justify-center gap-4 mb-6">
               <HeaderAuth />
             </div>
 
@@ -110,18 +116,19 @@ export default function MobileNav() {
             <a
               href="/marketplace"
               onClick={closeMenu}
-              className="flex items-center justify-center gap-3 text-yellow-500 border border-yellow-500/50 px-6 py-4 rounded-xl hover:bg-yellow-500/10 transition-all duration-300 mb-8 medieval-font font-semibold text-lg bg-yellow-500/5"
+              className="flex items-center justify-center gap-3 text-yellow-500 border border-yellow-500/50 px-6 py-4 rounded-xl hover:bg-yellow-500/10 transition-all duration-300 mb-6 font-semibold text-lg bg-yellow-500/5"
+              style={{ fontFamily: '"Cinzel", serif' }}
             >
               <Store size={22} /> {t('nav.store')}
             </a>
 
             {/* Navigation Sections */}
-            <nav className="flex flex-col gap-6">
+            <nav className="flex flex-col gap-5">
               {/* Game Section */}
               <div>
-                <h3 className="text-yellow-500/70 text-xs uppercase tracking-wider mb-3 flex items-center gap-2 px-2">
+                <h3 className="text-yellow-500/70 text-xs uppercase tracking-wider mb-2 flex items-center gap-2 px-2">
                   <Gamepad2 size={14} />
-                  <span>Juego</span>
+                  <span>{t('nav.game') || 'Juego'}</span>
                 </h3>
                 <div className="space-y-1">
                   <a
@@ -140,14 +147,22 @@ export default function MobileNav() {
                     <span className="w-1.5 h-1.5 rounded-full bg-gray-600 group-hover:bg-yellow-500 transition-colors" />
                     {t('nav.wiki')}
                   </a>
+                  <a
+                    href="/highscores"
+                    onClick={closeMenu}
+                    className="flex items-center gap-3 text-gray-300 hover:text-yellow-500 transition-colors py-3 px-4 rounded-lg hover:bg-white/5 group"
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-gray-600 group-hover:bg-yellow-500 transition-colors" />
+                    Highscores
+                  </a>
                 </div>
               </div>
 
               {/* Community Section */}
               <div>
-                <h3 className="text-yellow-500/70 text-xs uppercase tracking-wider mb-3 flex items-center gap-2 px-2">
+                <h3 className="text-yellow-500/70 text-xs uppercase tracking-wider mb-2 flex items-center gap-2 px-2">
                   <Users size={14} />
-                  <span>Comunidad</span>
+                  <span>{t('nav.community') || 'Comunidad'}</span>
                 </h3>
                 <div className="space-y-1">
                   <a
@@ -171,9 +186,9 @@ export default function MobileNav() {
 
               {/* Support Section */}
               <div>
-                <h3 className="text-yellow-500/70 text-xs uppercase tracking-wider mb-3 flex items-center gap-2 px-2">
+                <h3 className="text-yellow-500/70 text-xs uppercase tracking-wider mb-2 flex items-center gap-2 px-2">
                   <HelpCircle size={14} />
-                  <span>Soporte</span>
+                  <span>{t('nav.supportSection') || 'Soporte'}</span>
                 </h3>
                 <div className="space-y-1">
                   <a
@@ -205,7 +220,7 @@ export default function MobileNav() {
             </nav>
 
             {/* Bottom decorative divider */}
-            <div className="mt-auto pt-8">
+            <div className="mt-8 pt-6">
               <div className="flex items-center gap-3">
                 <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-700 to-transparent" />
                 <div className="flex items-center gap-1 text-yellow-600/40">

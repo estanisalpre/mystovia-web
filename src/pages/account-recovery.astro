@@ -3,84 +3,133 @@ import Layout from "../layouts/Layout.astro";
 ---
 
 <Layout title="Account Recovery | Mystovia">
-  <section class="grow z-100 flex items-center justify-center min-h-screen py-12 px-4">
-    <div class="max-w-2xl w-full backdrop-blur-md border border-white/30 bg-black/30 rounded-lg shadow-xl overflow-hidden">
-      <!-- Header -->
-      <div class="bg-gradient-to-r from-amber-900/80 to-amber-800/80 px-6 py-4 border-b border-amber-700/50">
-        <h2 id="pageTitle" class="text-xl font-bold text-amber-100">Specify Your Problem</h2>
+  <section class="grow z-100 flex items-center justify-center min-h-screen py-16 sm:py-20 px-4 sm:px-6">
+    <div class="relative max-w-2xl w-full overflow-hidden">
+      <!-- Medieval container background -->
+      <div class="absolute inset-0 rounded-xl bg-gradient-to-b from-gray-900/95 via-gray-900/98 to-black/95 border border-yellow-600/20"></div>
+
+      <!-- Top golden line -->
+      <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-yellow-500/50 to-transparent rounded-t-xl"></div>
+
+      <!-- Diamond pattern overlay -->
+      <div class="absolute inset-0 opacity-[0.03] pointer-events-none rounded-xl" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M30 0L60 30L30 60L0 30z\' fill=\'%23d4af37\' fill-opacity=\'0.4\'/%3E%3C/svg%3E'); background-size: 30px 30px;"></div>
+
+      <!-- Corner ornaments -->
+      <div class="absolute top-2 left-2 w-6 h-6 sm:w-8 sm:h-8 opacity-20 pointer-events-none">
+        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
+          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
+        </svg>
+      </div>
+      <div class="absolute top-2 right-2 w-6 h-6 sm:w-8 sm:h-8 opacity-20 pointer-events-none" style="transform: scaleX(-1);">
+        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
+          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
+        </svg>
+      </div>
+      <div class="absolute bottom-2 left-2 w-6 h-6 sm:w-8 sm:h-8 opacity-20 pointer-events-none" style="transform: scaleY(-1);">
+        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
+          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
+        </svg>
+      </div>
+      <div class="absolute bottom-2 right-2 w-6 h-6 sm:w-8 sm:h-8 opacity-20 pointer-events-none" style="transform: scale(-1);">
+        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
+          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
+        </svg>
       </div>
 
       <!-- Content -->
-      <div class="p-6 space-y-6">
-        <!-- Account Info -->
-        <div id="accountInfo" class="bg-gray-800/50 rounded-lg p-4 border border-gray-700">
-          <p class="text-sm text-gray-400">
-            <span id="accountLabel">Account:</span>
-            <span id="accountName" class="text-yellow-500 font-medium">Loading...</span>
-          </p>
+      <div class="relative z-10">
+        <!-- Header -->
+        <div class="px-4 sm:px-6 py-4 border-b border-yellow-600/20">
+          <div class="flex items-center justify-center gap-3 mb-2">
+            <div class="h-px w-8 sm:w-12 bg-gradient-to-r from-transparent to-yellow-500/50"></div>
+            <svg class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-500/60" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M10 0L20 10L10 20L0 10z"/>
+            </svg>
+            <div class="h-px w-8 sm:w-12 bg-gradient-to-l from-transparent to-yellow-500/50"></div>
+          </div>
+          <h2 id="pageTitle" class="text-xl sm:text-2xl font-bold text-yellow-500 text-center medieval-font">Specify Your Problem</h2>
         </div>
 
-        <!-- Password Section -->
-        <div class="border border-amber-700/30 rounded-lg overflow-hidden">
-          <div class="bg-amber-900/40 px-4 py-2 border-b border-amber-700/30">
-            <h3 class="font-bold text-amber-100" id="passwordSectionTitle">Password</h3>
+        <!-- Content -->
+        <div class="p-4 sm:p-6 space-y-4 sm:space-y-6">
+          <!-- Account Info -->
+          <div id="accountInfo" class="relative rounded-lg p-3 sm:p-4 overflow-hidden"
+               style="background: linear-gradient(to bottom, rgb(31 41 55 / 0.6), rgb(17 24 39 / 0.8)); border: 1px solid rgb(234 179 8 / 0.15);">
+            <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-yellow-500/20 to-transparent"></div>
+            <p class="text-sm text-gray-400">
+              <span id="accountLabel">Account:</span>
+              <span id="accountName" class="text-yellow-500 font-medium ml-1">Loading...</span>
+            </p>
           </div>
-          <div class="p-4 space-y-3">
-            <label class="flex items-start gap-3 cursor-pointer group">
-              <input type="radio" name="problem" value="forgot_password" class="mt-1 accent-yellow-500" />
-              <span id="forgotPasswordOption" class="text-gray-300 group-hover:text-white transition">I have forgotten my password.</span>
-            </label>
-            <label class="flex items-start gap-3 cursor-pointer group">
-              <input type="radio" name="problem" value="hacked" class="mt-1 accent-yellow-500" />
-              <span id="hackedOption" class="text-gray-300 group-hover:text-white transition">My account has been hacked.</span>
-            </label>
-          </div>
-        </div>
 
-        <!-- Email Section -->
-        <div class="border border-amber-700/30 rounded-lg overflow-hidden">
-          <div class="bg-amber-900/40 px-4 py-2 border-b border-amber-700/30">
-            <h3 class="font-bold text-amber-100" id="emailSectionTitle">E-Mail</h3>
+          <!-- Password Section -->
+          <div class="relative rounded-lg overflow-hidden"
+               style="background: linear-gradient(to bottom, rgb(31 41 55 / 0.4), rgb(17 24 39 / 0.6)); border: 1px solid rgb(234 179 8 / 0.15);">
+            <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-yellow-500/20 to-transparent"></div>
+            <div class="px-3 sm:px-4 py-2 sm:py-3 border-b border-yellow-600/20">
+              <h3 class="font-bold text-yellow-500 medieval-font text-sm sm:text-base" id="passwordSectionTitle">Password</h3>
+            </div>
+            <div class="p-3 sm:p-4 space-y-3">
+              <label class="flex items-start gap-3 cursor-pointer group">
+                <input type="radio" name="problem" value="forgot_password" class="mt-1 accent-yellow-500 w-4 h-4" />
+                <span id="forgotPasswordOption" class="text-gray-300 group-hover:text-yellow-500 transition text-sm sm:text-base">I have forgotten my password.</span>
+              </label>
+              <label class="flex items-start gap-3 cursor-pointer group">
+                <input type="radio" name="problem" value="hacked" class="mt-1 accent-yellow-500 w-4 h-4" />
+                <span id="hackedOption" class="text-gray-300 group-hover:text-yellow-500 transition text-sm sm:text-base">My account has been hacked.</span>
+              </label>
+            </div>
           </div>
-          <div class="p-4 space-y-1">
-            <p id="emailDescription" class="text-gray-400 text-sm mb-3">I want to change the email address of my account instantly:</p>
-            <label class="flex items-start gap-3 cursor-pointer group">
-              <input type="radio" name="problem" value="change_email_recovery" class="mt-1 accent-yellow-500" />
-              <span id="recoveryKeyOption" class="text-gray-300 group-hover:text-white transition">I have a recovery key.</span>
-            </label>
-          </div>
-        </div>
 
-        <!-- Recovery Key Section -->
-        <div class="border border-amber-700/30 rounded-lg overflow-hidden">
-          <div class="bg-amber-900/40 px-4 py-2 border-b border-amber-700/30">
-            <h3 class="font-bold text-amber-100" id="recoveryKeySectionTitle">Recovery Key</h3>
+          <!-- Email Section -->
+          <div class="relative rounded-lg overflow-hidden"
+               style="background: linear-gradient(to bottom, rgb(31 41 55 / 0.4), rgb(17 24 39 / 0.6)); border: 1px solid rgb(234 179 8 / 0.15);">
+            <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-yellow-500/20 to-transparent"></div>
+            <div class="px-3 sm:px-4 py-2 sm:py-3 border-b border-yellow-600/20">
+              <h3 class="font-bold text-yellow-500 medieval-font text-sm sm:text-base" id="emailSectionTitle">E-Mail</h3>
+            </div>
+            <div class="p-3 sm:p-4 space-y-1">
+              <p id="emailDescription" class="text-gray-400 text-xs sm:text-sm mb-3">I want to change the email address of my account instantly:</p>
+              <label class="flex items-start gap-3 cursor-pointer group">
+                <input type="radio" name="problem" value="change_email_recovery" class="mt-1 accent-yellow-500 w-4 h-4" />
+                <span id="recoveryKeyOption" class="text-gray-300 group-hover:text-yellow-500 transition text-sm sm:text-base">I have a recovery key.</span>
+              </label>
+            </div>
           </div>
-          <div class="p-4 space-y-3">
-            <label class="flex items-start gap-3 cursor-pointer group">
-              <input type="radio" name="problem" value="new_recovery_key" class="mt-1 accent-yellow-500" />
-              <span id="newRecoveryKeyOption" class="text-gray-300 group-hover:text-white transition">I need a new recovery key.</span>
-            </label>
-          </div>
-        </div>
 
-        <!-- Action Buttons -->
-        <div class="flex gap-4 pt-4">
-          <a
-            href="/lost-account"
-            id="backBtn"
-            class="flex-1 py-3 text-center bg-gray-700 hover:bg-gray-600 text-white font-medium rounded-lg transition"
-          >
-            Volver
-          </a>
-          <button
-            type="button"
-            id="continueBtn"
-            disabled
-            class="flex-1 py-3 bg-yellow-500 hover:bg-yellow-400 disabled:bg-gray-600 disabled:cursor-not-allowed text-black font-bold rounded-lg transition"
-          >
-            Continuar
-          </button>
+          <!-- Recovery Key Section -->
+          <div class="relative rounded-lg overflow-hidden"
+               style="background: linear-gradient(to bottom, rgb(31 41 55 / 0.4), rgb(17 24 39 / 0.6)); border: 1px solid rgb(234 179 8 / 0.15);">
+            <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-yellow-500/20 to-transparent"></div>
+            <div class="px-3 sm:px-4 py-2 sm:py-3 border-b border-yellow-600/20">
+              <h3 class="font-bold text-yellow-500 medieval-font text-sm sm:text-base" id="recoveryKeySectionTitle">Recovery Key</h3>
+            </div>
+            <div class="p-3 sm:p-4 space-y-3">
+              <label class="flex items-start gap-3 cursor-pointer group">
+                <input type="radio" name="problem" value="new_recovery_key" class="mt-1 accent-yellow-500 w-4 h-4" />
+                <span id="newRecoveryKeyOption" class="text-gray-300 group-hover:text-yellow-500 transition text-sm sm:text-base">I need a new recovery key.</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-4">
+            <a
+              href="/lost-account"
+              id="backBtn"
+              class="btn-medieval btn-medieval-secondary flex-1 text-center"
+            >
+              <span>Volver</span>
+            </a>
+            <button
+              type="button"
+              id="continueBtn"
+              disabled
+              class="btn-medieval btn-medieval-primary flex-1"
+            >
+              <span>Continuar</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -136,10 +185,16 @@ import Layout from "../layouts/Layout.astro";
     if (newRecoveryKeyOption) newRecoveryKeyOption.textContent = t("recovery.needNewRecoveryKey", lang);
 
     const backBtn = document.getElementById("backBtn");
-    if (backBtn) backBtn.textContent = t("common.back", lang);
+    if (backBtn) {
+      const span = backBtn.querySelector('span');
+      if (span) span.textContent = t("common.back", lang);
+    }
 
     const continueBtn = document.getElementById("continueBtn");
-    if (continueBtn) continueBtn.textContent = t("recovery.continue", lang);
+    if (continueBtn) {
+      const span = continueBtn.querySelector('span');
+      if (span) span.textContent = t("recovery.continue", lang);
+    }
 
     // Enable continue button when a radio is selected
     const radios = document.querySelectorAll('input[name="problem"]');

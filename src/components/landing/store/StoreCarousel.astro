@@ -1,0 +1,262 @@
+---
+const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3000';
+
+interface Item {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  image_url: string;
+  category: string;
+}
+
+let items: Item[] = [];
+
+try {
+  const response = await fetch(`${API_URL}/api/marketplace/items`);
+  if (response.ok) {
+    const data = await response.json();
+    items = data.items?.slice(0, 10) || [];
+  }
+} catch (error) {
+  console.error('Error fetching store items:', error);
+}
+---
+
+<section class="relative w-full rounded-xl overflow-hidden"
+         style="background: linear-gradient(to bottom, rgb(17 24 39 / 0.98), rgb(17 24 39), rgb(0 0 0 / 0.98));">
+  <!-- Diamond pattern overlay -->
+  <div class="absolute inset-0 opacity-[0.03] pointer-events-none rounded-xl" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M30 0L60 30L30 60L0 30z\' fill=\'%23d4af37\' fill-opacity=\'0.4\'/%3E%3C/svg%3E'); background-size: 30px 30px;"></div>
+
+  <!-- Top golden line -->
+  <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-yellow-500/50 to-transparent rounded-t-xl"></div>
+
+  <!-- Border -->
+  <div class="absolute inset-0 rounded-xl border border-yellow-600/20 pointer-events-none"></div>
+
+  <!-- Corner ornaments -->
+  <div class="absolute top-2 left-2 w-5 h-5 opacity-20 pointer-events-none">
+    <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
+      <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
+    </svg>
+  </div>
+  <div class="absolute top-2 right-2 w-5 h-5 opacity-20 pointer-events-none" style="transform: scaleX(-1);">
+    <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
+      <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
+    </svg>
+  </div>
+  <div class="absolute bottom-2 left-2 w-5 h-5 opacity-20 pointer-events-none" style="transform: scaleY(-1);">
+    <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
+      <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
+    </svg>
+  </div>
+  <div class="absolute bottom-2 right-2 w-5 h-5 opacity-20 pointer-events-none" style="transform: scale(-1);">
+    <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
+      <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
+    </svg>
+  </div>
+
+  <!-- Content -->
+  <div class="relative z-10 p-5 pt-12">
+    <!-- Header badge -->
+    <div class="absolute -top-0.5 left-1/2 -translate-x-1/2">
+      <div class="relative px-6 py-2 rounded-b-lg" style="background: linear-gradient(to bottom, rgb(234 179 8 / 0.9), rgb(202 138 4 / 0.9));">
+        <div class="absolute inset-0 rounded-b-lg border border-yellow-400/30 pointer-events-none"></div>
+        <h2 class="text-sm font-bold text-black text-center medieval-font relative z-10">Tienda</h2>
+      </div>
+    </div>
+
+    {items.length === 0 ? (
+      <div class="flex items-center justify-center py-12 text-center">
+        <div>
+          <svg class="w-12 h-12 mx-auto text-yellow-500/30 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+          </svg>
+          <p class="text-gray-400 text-sm">No hay productos disponibles</p>
+        </div>
+      </div>
+    ) : (
+      <div class="relative">
+        <!-- Navigation arrows -->
+        <button
+          id="carousel-prev"
+          class="absolute -left-1 sm:left-0 top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full transition-all duration-300 opacity-70 hover:opacity-100"
+          style="background: linear-gradient(to bottom, rgb(31 41 55 / 0.9), rgb(17 24 39 / 0.95)); border: 1px solid rgb(234 179 8 / 0.3);"
+          aria-label="Anterior"
+        >
+          <svg class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+          </svg>
+        </button>
+
+        <button
+          id="carousel-next"
+          class="absolute -right-1 sm:right-0 top-1/2 -translate-y-1/2 z-20 w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full transition-all duration-300 opacity-70 hover:opacity-100"
+          style="background: linear-gradient(to bottom, rgb(31 41 55 / 0.9), rgb(17 24 39 / 0.95)); border: 1px solid rgb(234 179 8 / 0.3);"
+          aria-label="Siguiente"
+        >
+          <svg class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+          </svg>
+        </button>
+
+        <!-- Carousel container -->
+        <div class="overflow-hidden mx-8 sm:mx-12">
+          <div id="carousel-track" class="flex gap-4 transition-transform duration-500 ease-out">
+            {items.map((item) => (
+              <div class="carousel-item flex-shrink-0 w-[200px]">
+                <div class="relative rounded-lg overflow-hidden h-full flex flex-col group"
+                     style="background: linear-gradient(to bottom, rgb(31 41 55 / 0.6), rgb(17 24 39 / 0.8)); border: 1px solid rgb(234 179 8 / 0.15);">
+                  <!-- Item top line -->
+                  <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-yellow-500/30 to-transparent"></div>
+
+                  <!-- Image container -->
+                  <div class="relative h-32 overflow-hidden flex items-center justify-center p-3"
+                       style="background: linear-gradient(to bottom, rgb(17 24 39 / 0.5), transparent);">
+                    <img
+                      src={item.image_url}
+                      alt={item.name}
+                      class="max-h-full max-w-full object-contain group-hover:scale-110 transition-transform duration-300"
+                      loading="lazy"
+                    />
+                  </div>
+
+                  <!-- Content -->
+                  <div class="p-3 flex flex-col flex-1">
+                    <h3 class="text-white text-sm font-semibold line-clamp-1 mb-1 group-hover:text-yellow-500 transition-colors">
+                      {item.name}
+                    </h3>
+
+                    <p class="text-yellow-500 font-bold text-lg medieval-font mb-3">
+                      ${item.price}
+                    </p>
+
+                    <a
+                      href="/marketplace"
+                      class="mt-auto btn-medieval btn-medieval-primary btn-medieval-sm text-xs"
+                    >
+                      <span>Conocer más</span>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <!-- Dots indicator -->
+        <div id="carousel-dots" class="flex justify-center gap-2 mt-4">
+          <!-- Dots will be generated by JS -->
+        </div>
+      </div>
+    )}
+  </div>
+</section>
+
+<script>
+  function initCarousel() {
+    const track = document.getElementById('carousel-track');
+    const prevBtn = document.getElementById('carousel-prev');
+    const nextBtn = document.getElementById('carousel-next');
+    const dotsContainer = document.getElementById('carousel-dots');
+
+    if (!track || !prevBtn || !nextBtn || !dotsContainer) return;
+
+    const items = track.querySelectorAll('.carousel-item');
+    if (items.length === 0) return;
+
+    const itemWidth = 200 + 16; // width + gap
+    let currentIndex = 0;
+
+    // Calculate visible items based on container width
+    const getVisibleItems = () => {
+      const containerWidth = track.parentElement?.clientWidth || 800;
+      return Math.floor(containerWidth / itemWidth);
+    };
+
+    const getMaxIndex = () => {
+      const visibleItems = getVisibleItems();
+      return Math.max(0, items.length - visibleItems);
+    };
+
+    // Generate dots
+    const updateDots = () => {
+      const maxIndex = getMaxIndex();
+      const totalDots = maxIndex + 1;
+
+      dotsContainer.innerHTML = '';
+      for (let i = 0; i < totalDots; i++) {
+        const dot = document.createElement('button');
+        dot.className = `w-2 h-2 rounded-full transition-all duration-300 ${
+          i === currentIndex
+            ? 'bg-yellow-500 w-6'
+            : 'bg-yellow-500/30 hover:bg-yellow-500/50'
+        }`;
+        dot.addEventListener('click', () => goToSlide(i));
+        dotsContainer.appendChild(dot);
+      }
+    };
+
+    const updateCarousel = () => {
+      const offset = currentIndex * itemWidth;
+      track.style.transform = `translateX(-${offset}px)`;
+      updateDots();
+    };
+
+    const goToSlide = (index: number) => {
+      const maxIndex = getMaxIndex();
+      currentIndex = Math.max(0, Math.min(index, maxIndex));
+      updateCarousel();
+    };
+
+    const next = () => {
+      const maxIndex = getMaxIndex();
+      if (currentIndex < maxIndex) {
+        currentIndex++;
+      } else {
+        currentIndex = 0;
+      }
+      updateCarousel();
+    };
+
+    const prev = () => {
+      const maxIndex = getMaxIndex();
+      if (currentIndex > 0) {
+        currentIndex--;
+      } else {
+        currentIndex = maxIndex;
+      }
+      updateCarousel();
+    };
+
+    prevBtn.addEventListener('click', prev);
+    nextBtn.addEventListener('click', next);
+
+    // Auto-play
+    let autoplayInterval = setInterval(next, 5000);
+
+    track.parentElement?.addEventListener('mouseenter', () => {
+      clearInterval(autoplayInterval);
+    });
+
+    track.parentElement?.addEventListener('mouseleave', () => {
+      autoplayInterval = setInterval(next, 5000);
+    });
+
+    // Handle resize
+    window.addEventListener('resize', () => {
+      const maxIndex = getMaxIndex();
+      if (currentIndex > maxIndex) {
+        currentIndex = maxIndex;
+      }
+      updateCarousel();
+    });
+
+    // Initial render
+    updateCarousel();
+  }
+
+  // Initialize on page load and after Astro navigation
+  initCarousel();
+  document.addEventListener('astro:page-load', initCarousel);
+</script>

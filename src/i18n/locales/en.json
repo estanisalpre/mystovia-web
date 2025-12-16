@@ -251,6 +251,52 @@
     "en": "English",
     "pt": "Português"
   },
+  "highscores": {
+    "title": "Highscores",
+    "subtitle": "The best players of Mystovia",
+    "filters": "Filters",
+    "vocation": "Vocation",
+    "category": "Category",
+    "all": "All",
+    "search": "Search",
+    "lastUpdate": "Last update",
+    "results": "Results",
+    "rank": "Rank",
+    "name": "Name",
+    "level": "Level",
+    "points": "Points",
+    "loading": "Loading highscores...",
+    "error": "Error loading data",
+    "empty": "No players in the ranking",
+    "experience": "Experience",
+    "magicLevel": "Magic Level",
+    "fistFighting": "Fist Fighting",
+    "clubFighting": "Club Fighting",
+    "swordFighting": "Sword Fighting",
+    "axeFighting": "Axe Fighting",
+    "distanceFighting": "Distance Fighting",
+    "shielding": "Shielding",
+    "fishing": "Fishing"
+  },
+  "hero": {
+    "welcome": "Welcome to",
+    "tagline": "Forge your legend in Mystovia",
+    "description": "A classic realm, real dangers and unique rewards.",
+    "playNow": "Play Now",
+    "downloadClient": "Download Mystovia Client"
+  },
+  "store": {
+    "title": "Store",
+    "noProducts": "No products available",
+    "learnMore": "Learn more",
+    "prev": "Previous",
+    "next": "Next"
+  },
+  "legal": {
+    "termsTitle": "Terms and Conditions",
+    "privacyTitle": "Privacy Policy",
+    "lastUpdated": "Last updated"
+  },
   "account": {
     "title": "Account Management",
     "description": "Manage your account settings",

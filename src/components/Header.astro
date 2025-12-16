@@ -26,11 +26,14 @@ import MobileNav from "./MobileNav";
   <HeaderNav client:load />
 
   <!-- Desktop Auth/Cart -->
-  <aside class="hidden md:flex items-center gap-2 lg:gap-4 flex-shrink-0 relative z-10">
+  <aside class="hidden lg:flex items-center gap-2 lg:gap-4 flex-shrink-0 relative z-10">
     <CartButton client:only="react" />
     <HeaderAuth client:only="react" />
   </aside>
 
-  <!-- Mobile Menu -->
-  <MobileNav client:load />
+  <!-- Mobile Cart + Menu -->
+  <div class="flex lg:hidden items-center gap-2 flex-shrink-0 relative z-10">
+    <CartButton client:only="react" />
+    <MobileNav client:load />
+  </div>
 </header>

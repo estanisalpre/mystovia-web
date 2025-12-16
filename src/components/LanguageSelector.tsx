@@ -11,9 +11,23 @@ const languages = [
 export default function LanguageSelector() {
   const [currentLang, setCurrentLang] = useState('es');
   const [isOpen, setIsOpen] = useState(false);
+  const [isHiddenByCart, setIsHiddenByCart] = useState(false);
 
   useEffect(() => {
     setCurrentLang(getCurrentLanguage());
+  }, []);
+
+  // Listen for cart sidebar toggle event to hide on mobile
+  useEffect(() => {
+    const handleCartToggle = (e: CustomEvent<{ isOpen: boolean }>) => {
+      // Only hide on mobile (< 1024px)
+      if (window.innerWidth < 1024) {
+        setIsHiddenByCart(e.detail.isOpen);
+      }
+    };
+
+    window.addEventListener('cart-sidebar-toggle', handleCartToggle as EventListener);
+    return () => window.removeEventListener('cart-sidebar-toggle', handleCartToggle as EventListener);
   }, []);
 
   const handleLanguageChange = (langCode: string) => {
@@ -25,9 +39,14 @@ export default function LanguageSelector() {
 
   const currentLanguage = languages.find(l => l.code === currentLang) || languages[0];
 
+  // Hide when cart is open on mobile
+  if (isHiddenByCart) {
+    return null;
+  }
+
   return (
     <aside
-      className="fixed bottom-18 right-4 z-50 group flex items-center gap-2 bg-black/40 border border-yellow-500 rounded-lg p-3 cursor-pointer backdrop-blur-md transition-all"
+      className="fixed bottom-18 right-4 z-[900] group flex items-center gap-2 bg-black/40 border border-yellow-500 rounded-lg p-3 cursor-pointer backdrop-blur-md transition-all"
       onMouseEnter={() => setIsOpen(true)}
       onMouseLeave={() => setIsOpen(false)}
     >
