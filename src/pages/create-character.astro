@@ -144,6 +144,20 @@ import Layout from "../layouts/Layout.astro";
             </div>
           </div>
 
+          <!-- Checkbox de aceptación de reglas y condiciones -->
+          <div class="flex items-start gap-3">
+            <input
+              type="checkbox"
+              id="acceptRules"
+              name="acceptRules"
+              required
+              class="mt-1 w-4 h-4 accent-yellow-500 cursor-pointer"
+            />
+            <label for="acceptRules" class="text-sm text-gray-300 cursor-pointer">
+              Acepto las <a href="/rules" class="text-yellow-500 hover:text-yellow-400 underline" target="_blank">reglas</a> y las <a href="/terms" class="text-yellow-500 hover:text-yellow-400 underline" target="_blank">condiciones</a> del servidor.
+            </label>
+          </div>
+
           <div
             id="errorMessage"
             class="hidden bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-lg"
@@ -158,7 +172,8 @@ import Layout from "../layouts/Layout.astro";
           <button
             type="submit"
             id="createCharBtn"
-            class="w-full bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-black font-bold py-3 rounded-lg transition-all border border-yellow-400/30"
+            disabled
+            class="w-full bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-black font-bold py-3 rounded-lg transition-all border border-yellow-400/30 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:from-yellow-600 disabled:hover:to-yellow-500"
           >
             CREAR PERSONAJE
           </button>
@@ -257,7 +272,14 @@ import Layout from "../layouts/Layout.astro";
   const errorDiv = document.getElementById("errorMessage")!;
   const successDiv = document.getElementById("successMessage")!;
   const charactersList = document.getElementById("charactersList")!;
+  const acceptRulesCheckbox = document.getElementById("acceptRules") as HTMLInputElement;
+  const createCharBtnEl = document.getElementById("createCharBtn") as HTMLButtonElement;
   const API_URL = import.meta.env.PUBLIC_API_URL;
+
+  // Handle checkbox state for button enable/disable
+  acceptRulesCheckbox.addEventListener("change", () => {
+    createCharBtnEl.disabled = !acceptRulesCheckbox.checked;
+  });
 
   // Check authentication using cookie-based auth
   async function checkAuth() {

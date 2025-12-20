@@ -20,6 +20,7 @@ import rulesRoutes from './routes/rulesRoutes.js';
 import supportRoutes from './routes/supportRoutes.js';
 import userManagementRoutes from './routes/userManagementRoutes.js';
 import highscoresRoutes from './routes/highscoresRoutes.js';
+import deathsRoutes from './routes/deathsRoutes.js';
 
 // Load .env from project root
 const __filename = fileURLToPath(import.meta.url);
@@ -65,6 +66,7 @@ app.use('/api/downloads', downloadsRoutes);
 app.use('/api/rules', rulesRoutes);
 app.use('/api/support', supportRoutes);
 app.use('/api/highscores', highscoresRoutes);
+app.use('/api/deaths', deathsRoutes);
 
 // Admin routes
 app.use('/api/admin/users', userManagementRoutes);

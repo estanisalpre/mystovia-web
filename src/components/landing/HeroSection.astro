@@ -27,6 +27,155 @@ import { MystoviaLogo } from "../../assets/logos";
     />
   </h1>
 
+  <!-- Countdown Timer - Grand Opening -->
+  <div class="relative z-50 mb-8 max-w-4xl mx-4">
+    <div class="relative rounded-2xl overflow-hidden p-8 text-center"
+         style="background: linear-gradient(to bottom, rgb(17 24 39 / 0.95), rgb(0 0 0 / 0.9)); box-shadow: 0 0 60px rgba(234, 179, 8, 0.15), inset 0 1px 0 rgba(234, 179, 8, 0.1);">
+
+      <!-- Animated glow effect -->
+      <div class="absolute inset-0 opacity-20 pointer-events-none" style="background: radial-gradient(ellipse at center, rgba(234, 179, 8, 0.3) 0%, transparent 70%);"></div>
+
+      <!-- Diamond pattern overlay -->
+      <div class="absolute inset-0 opacity-[0.04] pointer-events-none" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M30 0L60 30L30 60L0 30z\' fill=\'%23d4af37\' fill-opacity=\'0.4\'/%3E%3C/svg%3E'); background-size: 30px 30px;"></div>
+
+      <!-- Top golden line with glow -->
+      <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-yellow-500/70 to-transparent"></div>
+      <div class="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-yellow-500/70 to-transparent"></div>
+
+      <!-- Border with glow -->
+      <div class="absolute inset-0 rounded-2xl border-2 border-yellow-500/30 pointer-events-none"></div>
+
+      <!-- Corner ornaments - larger -->
+      <div class="absolute top-3 left-3 w-8 h-8 opacity-40 pointer-events-none">
+        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
+          <path d="M0 0 L50 0 L50 10 L10 10 L10 50 L0 50 Z" fill="currentColor"/>
+          <path d="M15 15 L30 15 L30 20 L20 20 L20 30 L15 30 Z" fill="currentColor" opacity="0.6"/>
+        </svg>
+      </div>
+      <div class="absolute top-3 right-3 w-8 h-8 opacity-40 pointer-events-none" style="transform: scaleX(-1);">
+        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
+          <path d="M0 0 L50 0 L50 10 L10 10 L10 50 L0 50 Z" fill="currentColor"/>
+          <path d="M15 15 L30 15 L30 20 L20 20 L20 30 L15 30 Z" fill="currentColor" opacity="0.6"/>
+        </svg>
+      </div>
+      <div class="absolute bottom-3 left-3 w-8 h-8 opacity-40 pointer-events-none" style="transform: scaleY(-1);">
+        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
+          <path d="M0 0 L50 0 L50 10 L10 10 L10 50 L0 50 Z" fill="currentColor"/>
+          <path d="M15 15 L30 15 L30 20 L20 20 L20 30 L15 30 Z" fill="currentColor" opacity="0.6"/>
+        </svg>
+      </div>
+      <div class="absolute bottom-3 right-3 w-8 h-8 opacity-40 pointer-events-none" style="transform: scale(-1);">
+        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
+          <path d="M0 0 L50 0 L50 10 L10 10 L10 50 L0 50 Z" fill="currentColor"/>
+          <path d="M15 15 L30 15 L30 20 L20 20 L20 30 L15 30 Z" fill="currentColor" opacity="0.6"/>
+        </svg>
+      </div>
+
+      <!-- Sword decorations on sides -->
+      <div class="absolute left-6 top-1/2 -translate-y-1/2 opacity-20 hidden md:block">
+        <svg class="w-6 h-24 text-yellow-500" fill="currentColor" viewBox="0 0 24 96">
+          <path d="M12 0 L14 8 L14 70 L18 74 L18 78 L14 76 L14 88 L16 92 L16 96 L12 94 L8 96 L8 92 L10 88 L10 76 L6 78 L6 74 L10 70 L10 8 Z"/>
+        </svg>
+      </div>
+      <div class="absolute right-6 top-1/2 -translate-y-1/2 opacity-20 hidden md:block">
+        <svg class="w-6 h-24 text-yellow-500" fill="currentColor" viewBox="0 0 24 96">
+          <path d="M12 0 L14 8 L14 70 L18 74 L18 78 L14 76 L14 88 L16 92 L16 96 L12 94 L8 96 L8 92 L10 88 L10 76 L6 78 L6 74 L10 70 L10 8 Z"/>
+        </svg>
+      </div>
+
+      <!-- Content -->
+      <div class="relative z-10">
+        <!-- Title -->
+        <div class="flex items-center justify-center gap-4 mb-2">
+          <svg class="w-6 h-6 text-yellow-500/80 animate-pulse" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+          </svg>
+          <h2 class="text-xl md:text-2xl font-bold text-yellow-500/90 medieval-font tracking-wider uppercase">
+            Gran Apertura
+          </h2>
+          <svg class="w-6 h-6 text-yellow-500/80 animate-pulse" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+          </svg>
+        </div>
+
+        <p class="text-gray-400 text-sm mb-4 tracking-wide">25 de Diciembre - 17:00hs</p>
+
+        <!-- Countdown boxes -->
+        <div id="countdown-container" class="flex justify-center gap-3 md:gap-6 mb-6">
+          <!-- Days -->
+          <div class="relative">
+            <div class="w-16 h-20 md:w-24 md:h-28 flex flex-col items-center justify-center rounded-lg border-2 border-yellow-500/40 relative overflow-hidden"
+                 style="background: linear-gradient(to bottom, rgba(234, 179, 8, 0.1), rgba(0, 0, 0, 0.5));">
+              <div class="absolute inset-0 bg-gradient-to-b from-yellow-500/10 to-transparent"></div>
+              <span id="countdown-days" class="text-3xl md:text-5xl font-bold text-yellow-500 medieval-font relative z-10" style="text-shadow: 0 0 20px rgba(234, 179, 8, 0.5);">00</span>
+              <span class="text-xs md:text-sm text-gray-400 uppercase tracking-wider relative z-10">Días</span>
+            </div>
+          </div>
+
+          <!-- Separator -->
+          <div class="flex items-center text-yellow-500/60 text-2xl md:text-4xl font-bold">:</div>
+
+          <!-- Hours -->
+          <div class="relative">
+            <div class="w-16 h-20 md:w-24 md:h-28 flex flex-col items-center justify-center rounded-lg border-2 border-yellow-500/40 relative overflow-hidden"
+                 style="background: linear-gradient(to bottom, rgba(234, 179, 8, 0.1), rgba(0, 0, 0, 0.5));">
+              <div class="absolute inset-0 bg-gradient-to-b from-yellow-500/10 to-transparent"></div>
+              <span id="countdown-hours" class="text-3xl md:text-5xl font-bold text-yellow-500 medieval-font relative z-10" style="text-shadow: 0 0 20px rgba(234, 179, 8, 0.5);">00</span>
+              <span class="text-xs md:text-sm text-gray-400 uppercase tracking-wider relative z-10">Horas</span>
+            </div>
+          </div>
+
+          <!-- Separator -->
+          <div class="flex items-center text-yellow-500/60 text-2xl md:text-4xl font-bold">:</div>
+
+          <!-- Minutes -->
+          <div class="relative">
+            <div class="w-16 h-20 md:w-24 md:h-28 flex flex-col items-center justify-center rounded-lg border-2 border-yellow-500/40 relative overflow-hidden"
+                 style="background: linear-gradient(to bottom, rgba(234, 179, 8, 0.1), rgba(0, 0, 0, 0.5));">
+              <div class="absolute inset-0 bg-gradient-to-b from-yellow-500/10 to-transparent"></div>
+              <span id="countdown-minutes" class="text-3xl md:text-5xl font-bold text-yellow-500 medieval-font relative z-10" style="text-shadow: 0 0 20px rgba(234, 179, 8, 0.5);">00</span>
+              <span class="text-xs md:text-sm text-gray-400 uppercase tracking-wider relative z-10">Min</span>
+            </div>
+          </div>
+
+          <!-- Separator -->
+          <div class="flex items-center text-yellow-500/60 text-2xl md:text-4xl font-bold">:</div>
+
+          <!-- Seconds -->
+          <div class="relative">
+            <div class="w-16 h-20 md:w-24 md:h-28 flex flex-col items-center justify-center rounded-lg border-2 border-yellow-500/40 relative overflow-hidden"
+                 style="background: linear-gradient(to bottom, rgba(234, 179, 8, 0.1), rgba(0, 0, 0, 0.5));">
+              <div class="absolute inset-0 bg-gradient-to-b from-yellow-500/10 to-transparent"></div>
+              <span id="countdown-seconds" class="text-3xl md:text-5xl font-bold text-yellow-500 medieval-font relative z-10 transition-all" style="text-shadow: 0 0 20px rgba(234, 179, 8, 0.5);">00</span>
+              <span class="text-xs md:text-sm text-gray-400 uppercase tracking-wider relative z-10">Seg</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Divider -->
+        <div class="flex items-center justify-center gap-3 mb-4">
+          <div class="h-px w-20 bg-gradient-to-r from-transparent to-yellow-500/40"></div>
+          <svg class="w-4 h-4 text-yellow-500/50" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M10 0L20 10L10 20L0 10z"/>
+          </svg>
+          <div class="h-px w-20 bg-gradient-to-l from-transparent to-yellow-500/40"></div>
+        </div>
+
+        <!-- CTA Button -->
+        <a
+          href="/register"
+          class="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-600 hover:from-yellow-500 hover:via-yellow-400 hover:to-yellow-500 text-black font-bold text-lg rounded-lg transition-all transform hover:scale-105 border border-yellow-400/50 shadow-lg shadow-yellow-500/20"
+          style="text-shadow: none;"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+          </svg>
+          <span class="medieval-font tracking-wide">REGISTRARME HOY</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
   <!-- Tagline with medieval container -->
   <div class="relative z-50 mb-8 max-w-2xl mx-4">
     <div class="relative rounded-xl overflow-hidden p-6 text-center"
@@ -108,3 +257,42 @@ import { MystoviaLogo } from "../../assets/logos";
   <!-- Bottom decorative line -->
   <div class="absolute bottom-10 left-1/2 -translate-x-1/2 w-full max-w-4xl h-px bg-gradient-to-r from-transparent via-yellow-500/20 to-transparent z-40"></div>
 </section>
+
+<script>
+  // Countdown Timer - Target: December 25, 2025 at 17:00 (Argentina Time - UTC-3)
+  const targetDate = new Date('2025-12-25T17:00:00-03:00').getTime();
+
+  function updateCountdown() {
+    const now = new Date().getTime();
+    const distance = targetDate - now;
+
+    // Calculate time units
+    const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+    // Update DOM elements
+    const daysEl = document.getElementById('countdown-days');
+    const hoursEl = document.getElementById('countdown-hours');
+    const minutesEl = document.getElementById('countdown-minutes');
+    const secondsEl = document.getElementById('countdown-seconds');
+
+    if (daysEl) daysEl.textContent = days.toString().padStart(2, '0');
+    if (hoursEl) hoursEl.textContent = hours.toString().padStart(2, '0');
+    if (minutesEl) minutesEl.textContent = minutes.toString().padStart(2, '0');
+    if (secondsEl) secondsEl.textContent = seconds.toString().padStart(2, '0');
+
+    // If countdown is finished
+    if (distance < 0) {
+      const container = document.getElementById('countdown-container');
+      if (container) {
+        container.innerHTML = '<span class="text-2xl md:text-4xl font-bold text-yellow-500 medieval-font animate-pulse">¡El reino está abierto!</span>';
+      }
+    }
+  }
+
+  // Update immediately and then every second
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+</script>
