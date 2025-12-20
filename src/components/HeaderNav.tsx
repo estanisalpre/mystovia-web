@@ -26,7 +26,6 @@ export default function HeaderNav() {
         <a href="/wiki" className="nav-link"><span className="opacity-0">Wiki</span></a>
         <a href="/downloads" className="nav-link"><span className="opacity-0">Downloads</span></a>
         <a href="/rules" className="nav-link"><span className="opacity-0">Rules</span></a>
-        <a href="/faqs" className="nav-link"><span className="opacity-0">FAQs</span></a>
         <a href="/support" className="nav-link"><span className="opacity-0">Support</span></a>
       </nav>
     );
@@ -42,7 +41,6 @@ export default function HeaderNav() {
       <a href="/wiki" className="nav-link">{t('nav.wiki')}</a>
       <a href="/downloads" className="nav-link">{t('nav.downloads')}</a>
       <a href="/rules" className="nav-link">{t('nav.rules')}</a>
-      <a href="/faqs" className="nav-link">{t('nav.faqs')}</a>
       <a href="/support" className="nav-link">{t('nav.support')}</a>
     </nav>
   );

@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import { ViewTransitions } from 'astro:transitions';
 import Header from '../components/Header.astro';
+import SearchBarFixed from '../components/SearchBarFixed.astro';
 import Footer from '../components/Footer.astro';
 import bg5 from "../assets/backgrounds/bg-5.jpg";
 import MusicPlayer from '@lib/components/MusicPlayer.astro';
@@ -34,7 +35,8 @@ const { title, description = "Tibia Private Server" } = Astro.props;
 </head>
 <body class="min-h-screen text-white flex flex-col">
   <Header />
-  <main class="relative flex-1 bg-cover bg-center bg-fixed"
+  <SearchBarFixed />
+  <main class="relative flex-1 bg-cover bg-center bg-fixed md:pt-[50px]"
     style={{ backgroundImage: `url(${bg5.src})` }}
   >
     <div class="absolute inset-0 bg-black/50 pointer-events-none z-0"></div>

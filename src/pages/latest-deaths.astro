@@ -1,0 +1,232 @@
+---
+import Layout from "@layouts/Layout.astro";
+---
+
+<Layout title="Últimas Muertes - Mystovia">
+  <section class="page-container">
+    <!-- Header -->
+    <header class="text-center mb-8">
+      <div class="flex items-center justify-center gap-3 mb-2">
+        <div class="h-px w-16 bg-gradient-to-r from-transparent to-red-500/50"></div>
+        <svg class="w-6 h-6 text-red-500/60" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/>
+        </svg>
+        <div class="h-px w-16 bg-gradient-to-l from-transparent to-red-500/50"></div>
+      </div>
+      <h1 class="text-3xl md:text-4xl font-bold text-red-500 medieval-font mb-2">Últimas 100 Muertes</h1>
+      <p class="text-gray-400">Registro de las caídas más recientes en Mystovia</p>
+    </header>
+
+    <!-- Results Info -->
+    <div class="flex justify-between items-center mb-4 text-sm text-gray-400">
+      <span id="lastUpdate">Última actualización: --</span>
+      <span id="resultsCount">Muertes: --</span>
+    </div>
+
+    <!-- Table -->
+    <div class="relative rounded-xl overflow-hidden"
+         style="background: linear-gradient(to bottom, rgb(31 41 55 / 0.6), rgb(17 24 39 / 0.8)); border: 1px solid rgb(220 38 38 / 0.15);">
+      <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-red-500/30 to-transparent"></div>
+
+      <!-- Diamond pattern overlay -->
+      <div class="absolute inset-0 opacity-[0.02] pointer-events-none" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M30 0L60 30L30 60L0 30z\' fill=\'%23dc2626\' fill-opacity=\'0.4\'/%3E%3C/svg%3E'); background-size: 30px 30px;"></div>
+
+      <!-- Corner ornaments -->
+      <div class="absolute top-2 left-2 w-6 h-6 opacity-15 pointer-events-none">
+        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-red-500">
+          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
+        </svg>
+      </div>
+      <div class="absolute top-2 right-2 w-6 h-6 opacity-15 pointer-events-none" style="transform: scaleX(-1);">
+        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-red-500">
+          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
+        </svg>
+      </div>
+      <div class="absolute bottom-2 left-2 w-6 h-6 opacity-15 pointer-events-none" style="transform: scaleY(-1);">
+        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-red-500">
+          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
+        </svg>
+      </div>
+      <div class="absolute bottom-2 right-2 w-6 h-6 opacity-15 pointer-events-none" style="transform: scale(-1);">
+        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-red-500">
+          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
+        </svg>
+      </div>
+
+      <!-- Table Header - Desktop -->
+      <div class="hidden sm:grid grid-cols-12 gap-2 px-4 py-3 text-sm text-red-500 font-semibold border-b border-red-600/20 bg-black/20 relative z-10">
+        <div class="col-span-1 text-center">#</div>
+        <div class="col-span-3">Jugador</div>
+        <div class="col-span-2">Vocación</div>
+        <div class="col-span-1 text-center">Nivel</div>
+        <div class="col-span-3">Killed By</div>
+        <div class="col-span-2 text-right">Fecha</div>
+      </div>
+      <!-- Table Header - Mobile -->
+      <div class="sm:hidden px-4 py-3 text-sm text-red-500 font-semibold border-b border-red-600/20 bg-black/20 flex justify-between relative z-10">
+        <span>Jugador</span>
+        <span>Killed By</span>
+      </div>
+
+      <!-- Loading State -->
+      <div id="loadingState" class="py-12 text-center relative z-10">
+        <div class="w-8 h-8 border-2 border-red-500/30 border-t-red-500 rounded-full animate-spin mx-auto mb-3"></div>
+        <p class="text-gray-400">Cargando muertes...</p>
+      </div>
+
+      <!-- Error State -->
+      <div id="errorState" class="hidden py-12 text-center relative z-10">
+        <svg class="w-12 h-12 mx-auto text-red-500/50 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+        </svg>
+        <p class="text-red-400">Error al cargar los datos</p>
+      </div>
+
+      <!-- Empty State -->
+      <div id="emptyState" class="hidden py-12 text-center relative z-10">
+        <svg class="w-12 h-12 mx-auto text-red-500/30 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+        </svg>
+        <p class="text-gray-400">No hay muertes registradas</p>
+      </div>
+
+      <!-- Deaths List -->
+      <div id="deathsList" class="hidden relative z-10">
+        <!-- Deaths will be inserted here -->
+      </div>
+    </div>
+
+    <!-- Back button -->
+    <div class="mt-6 text-center">
+      <a href="/" class="inline-flex items-center gap-2 text-gray-400 hover:text-red-400 transition-colors">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+        Volver al inicio
+      </a>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3000';
+
+  interface Death {
+    id: number;
+    date: number;
+    level: number;
+    player: {
+      id: number;
+      name: string;
+      vocation: string;
+    };
+    killedBy: string;
+    isPlayerKill: boolean;
+  }
+
+  interface DeathsResponse {
+    deaths: Death[];
+    total: number;
+    lastUpdate?: string;
+  }
+
+  function formatDate(timestamp: number): string {
+    const date = new Date(timestamp * 1000);
+    return date.toLocaleString('es-ES', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+
+  async function loadDeaths() {
+    const loadingState = document.getElementById('loadingState');
+    const errorState = document.getElementById('errorState');
+    const emptyState = document.getElementById('emptyState');
+    const deathsList = document.getElementById('deathsList');
+    const lastUpdate = document.getElementById('lastUpdate');
+    const resultsCount = document.getElementById('resultsCount');
+
+    // Show loading
+    loadingState?.classList.remove('hidden');
+    errorState?.classList.add('hidden');
+    emptyState?.classList.add('hidden');
+    deathsList?.classList.add('hidden');
+
+    try {
+      const response = await fetch(`${API_URL}/api/deaths/latest?limit=100`);
+
+      if (!response.ok) throw new Error('Failed to fetch');
+
+      const data: DeathsResponse = await response.json();
+
+      loadingState?.classList.add('hidden');
+
+      if (!data.deaths || data.deaths.length === 0) {
+        emptyState?.classList.remove('hidden');
+        return;
+      }
+
+      // Update info
+      if (lastUpdate) {
+        lastUpdate.textContent = `Última actualización: ${data.lastUpdate || 'Ahora'}`;
+      }
+      if (resultsCount) {
+        resultsCount.textContent = `Muertes: ${data.total}`;
+      }
+
+      // Render deaths
+      if (deathsList) {
+        deathsList.innerHTML = data.deaths.map((death, index) => {
+          const isPlayerKill = death.isPlayerKill;
+
+          return `
+            <div class="block sm:grid sm:grid-cols-12 gap-2 px-4 py-3 border-b border-red-600/10 transition-all duration-300 hover:bg-red-500/5"
+                 style="background: linear-gradient(to right, rgba(220, 38, 38, ${0.03 - index * 0.0003}), transparent);">
+              <!-- Desktop Layout -->
+              <div class="hidden sm:block col-span-1 text-center text-gray-500">${index + 1}</div>
+              <div class="hidden sm:block col-span-3">
+                <a href="/character-information?name=${encodeURIComponent(death.player.name)}" class="text-red-400 hover:text-red-300 font-semibold transition-colors truncate block">
+                  ${death.player.name}
+                </a>
+              </div>
+              <div class="hidden sm:block col-span-2 text-gray-400 text-sm truncate">${death.player.vocation}</div>
+              <div class="hidden sm:block col-span-1 text-center text-white">${death.level}</div>
+              <div class="hidden sm:block col-span-3 truncate">
+                <span class="${isPlayerKill ? 'text-yellow-500' : 'text-gray-300'} font-medium">${death.killedBy}</span>
+                ${isPlayerKill ? '<span class="ml-1 text-xs text-yellow-500/60">(PvP)</span>' : ''}
+              </div>
+              <div class="hidden sm:block col-span-2 text-right text-gray-500 text-sm">${formatDate(death.date)}</div>
+
+              <!-- Mobile Layout -->
+              <div class="sm:hidden">
+                <div class="flex justify-between items-start mb-1">
+                  <a href="/character-information?name=${encodeURIComponent(death.player.name)}" class="text-red-400 hover:text-red-300 font-semibold transition-colors">
+                    ${death.player.name}
+                  </a>
+                  <span class="${isPlayerKill ? 'text-yellow-500' : 'text-gray-300'} text-sm font-medium truncate max-w-[120px]">${death.killedBy}</span>
+                </div>
+                <div class="flex justify-between items-center text-xs text-gray-500">
+                  <span>Lvl ${death.level} ${death.player.vocation}</span>
+                  <span>${formatDate(death.date)}</span>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        deathsList.classList.remove('hidden');
+      }
+
+    } catch (error) {
+      console.error('Error loading deaths:', error);
+      loadingState?.classList.add('hidden');
+      errorState?.classList.remove('hidden');
+    }
+  }
+
+  loadDeaths();
+  document.addEventListener('astro:page-load', loadDeaths);
+</script>

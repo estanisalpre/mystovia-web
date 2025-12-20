@@ -2,42 +2,50 @@
 import LoginComponent from "../store/LoginComponent.astro"
 import FeaturesSection from "../store/FeaturesSection.astro"
 import ServerStats from "../store/ServerStats.tsx"
+import ServerInfo from "../store/ServerInfo.astro"
+import LatestDeaths from "../store/LatestDeaths.astro"
 import SearchCharacter from "../store/SearchCharacter.astro";
 import StoreCarousel from "../store/StoreCarousel.astro";
 import HighscoresPreview from "../store/HighscoresPreview.astro";
 ---
 
 <section class="min-h-screen w-full max-w-[1150px] mx-auto px-4 py-8 bg-transparent">
-    <!-- Mobile: Stack vertically, Desktop: Grid layout -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 auto-rows-auto pt-4">
-        <!-- Login Component -->
-        <div class="md:col-span-1 lg:col-span-1 min-h-[300px] mt-2">
-            <LoginComponent />
-        </div>
-
-        <!-- Features Section (News) -->
-        <div class="md:col-span-1 lg:col-span-2 min-h-[300px] mt-2">
-            <FeaturesSection />
-        </div>
-
-        <!-- Server Stats -->
-        <div class="md:col-span-1 lg:col-span-1 min-h-[300px] mt-2">
-            <ServerStats client:load />
-        </div>
-
-        <!-- Search Character -->
-        <div class="md:col-span-2 lg:col-span-4 min-h-[120px] mt-2">
+    <!-- Mobile: Stack vertically, Desktop: 3 column Grid layout -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-4">
+        <!-- MOBILE ONLY: Search Character (full width, first) -->
+        <div class="md:hidden col-span-1">
             <SearchCharacter />
         </div>
 
-        <!-- Store Carousel -->
-        <div class="md:col-span-2 lg:col-span-3 mt-2">
+        <!-- ROW 1: Server Info (2 cols) + Login (1 col) - items-start prevents stretching -->
+        <div class="md:col-span-2">
+            <ServerInfo />
+        </div>
+        <div class="md:col-span-1 self-start">
+            <LoginComponent />
+        </div>
+
+        <!-- ROW 2: Highscores (2 cols) + News (1 col) -->
+        <div class="md:col-span-2">
+            <HighscoresPreview />
+        </div>
+        <div class="md:col-span-1">
+            <ServerStats client:load />
+        </div>
+
+        <!-- ROW 3: Store Carousel (3 cols) -->
+        <div class="md:col-span-3">
             <StoreCarousel />
         </div>
 
-        <!-- Highscores Preview -->
-        <div class="md:col-span-2 lg:col-span-1 mt-2">
-            <HighscoresPreview />
+        <!-- ROW 4: Latest Deaths (3 cols) -->
+        <div class="md:col-span-3">
+            <LatestDeaths />
+        </div>
+
+        <!-- ROW 5: News (2 cols) + empty (1 col) -->
+        <div class="md:col-span-3">
+            <FeaturesSection />
         </div>
     </div>
 </section>

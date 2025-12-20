@@ -200,14 +200,6 @@ export default function MobileNav() {
                     {t('nav.rules')}
                   </a>
                   <a
-                    href="/faqs"
-                    onClick={closeMenu}
-                    className="flex items-center gap-3 text-gray-300 hover:text-yellow-500 transition-colors py-3 px-4 rounded-lg hover:bg-white/5 group"
-                  >
-                    <span className="w-1.5 h-1.5 rounded-full bg-gray-600 group-hover:bg-yellow-500 transition-colors" />
-                    {t('nav.faqs')}
-                  </a>
-                  <a
                     href="/support"
                     onClick={closeMenu}
                     className="flex items-center gap-3 text-gray-300 hover:text-yellow-500 transition-colors py-3 px-4 rounded-lg hover:bg-white/5 group"
