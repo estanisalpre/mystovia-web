@@ -1,17 +1,19 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import { hasPermission } from '../../utils/permissions';
+import { PenLine, ChevronRight, Home, FolderOpen, Type, FileText } from '@lucide/astro';
 
 const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3000';
 
 // Get user
-const accessToken = Astro.cookies.get('accessToken')?.value;
+const userId = Astro.cookies.get('userId')?.value;
+const userEmail = Astro.cookies.get('userEmail')?.value;
 let user = null;
 
-if (accessToken) {
+if (userId && userEmail) {
   try {
     const verifyResponse = await fetch(`${API_URL}/api/auth/verify`, {
-      headers: { Cookie: `accessToken=${accessToken}` }
+      headers: { Cookie: `userId=${userId}; userEmail=${userEmail}` }
     });
     if (verifyResponse.ok) {
       const data = await verifyResponse.json();
@@ -42,21 +44,76 @@ const { categories } = categoriesData;
 const selectedCategory = Astro.url.searchParams.get('category');
 ---
 
-<Layout title="Crear Nuevo Tema">
-  <div class="container mx-auto px-4 py-8 max-w-3xl">
-    <h1 class="text-3xl font-bold mb-6">✏️ Crear Nuevo Tema</h1>
+<Layout title="Crear Nuevo Tema | Mystovia">
+  <section class="page-container max-w-3xl mx-auto">
+    <!-- Breadcrumb -->
+    <nav class="flex items-center gap-2 text-xs sm:text-sm text-gray-400 mb-4 sm:mb-6">
+      <a href="/" class="hover:text-yellow-500 transition-colors flex items-center gap-1">
+        <Home class="w-3 h-3" />
+        Inicio
+      </a>
+      <ChevronRight class="w-3 h-3 text-gray-600" />
+      <a href="/forum" class="hover:text-yellow-500 transition-colors">Foro</a>
+      <ChevronRight class="w-3 h-3 text-gray-600" />
+      <span class="text-yellow-500">Nuevo Tema</span>
+    </nav>
 
-    <div class="card bg-base-100 shadow-xl" x-data="topicForm()">
-      <div class="card-body">
-        <form @submit.prevent="submitTopic">
-          <!-- Category -->
-          <div class="form-control mb-4">
-            <label class="label">
-              <span class="label-text font-semibold">Categoría</span>
-            </label>
+    <!-- Main Card -->
+    <div class="relative overflow-hidden rounded-xl">
+      <!-- Medieval container background -->
+      <div class="absolute inset-0 bg-gradient-to-b from-gray-900/95 via-gray-900/98 to-black/95 border border-yellow-600/20 rounded-xl"></div>
+
+      <!-- Top golden line -->
+      <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-yellow-500/50 to-transparent"></div>
+
+      <!-- Diamond pattern overlay -->
+      <div class="absolute inset-0 opacity-[0.03] pointer-events-none rounded-xl" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M30 0L60 30L30 60L0 30z\' fill=\'%23d4af37\' fill-opacity=\'0.4\'/%3E%3C/svg%3E'); background-size: 30px 30px;"></div>
+
+      <!-- Corner ornaments -->
+      <div class="absolute top-2 left-2 w-8 h-8 opacity-20 pointer-events-none">
+        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
+          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
+        </svg>
+      </div>
+      <div class="absolute top-2 right-2 w-8 h-8 opacity-20 pointer-events-none" style="transform: scaleX(-1);">
+        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
+          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
+        </svg>
+      </div>
+      <div class="absolute bottom-2 left-2 w-8 h-8 opacity-20 pointer-events-none" style="transform: scaleY(-1);">
+        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
+          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
+        </svg>
+      </div>
+      <div class="absolute bottom-2 right-2 w-8 h-8 opacity-20 pointer-events-none" style="transform: scale(-1);">
+        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
+          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
+        </svg>
+      </div>
+
+      <!-- Form content -->
+      <form id="topicForm" class="relative z-10 p-6 sm:p-8 space-y-6">
+        <!-- Title with decorative elements -->
+        <div class="text-center mb-6">
+          <div class="flex items-center justify-center gap-3 mb-3">
+            <div class="h-px w-8 sm:w-12 bg-gradient-to-r from-transparent to-yellow-500/50"></div>
+            <PenLine class="w-5 h-5 sm:w-6 sm:h-6 text-yellow-500/70" />
+            <div class="h-px w-8 sm:w-12 bg-gradient-to-l from-transparent to-yellow-500/50"></div>
+          </div>
+          <h1 class="text-2xl sm:text-3xl font-bold text-white medieval-font">Crear Nuevo Tema</h1>
+          <p class="text-sm text-gray-400 mt-2">Comparte tus ideas con la comunidad</p>
+        </div>
+
+        <!-- Category Select -->
+        <div class="space-y-2">
+          <label class="flex items-center gap-2 text-sm font-semibold text-gray-300">
+            <FolderOpen class="w-4 h-4 text-yellow-500/70" />
+            Categoría
+          </label>
+          <div class="relative">
             <select
-              x-model="categoryId"
-              class="select select-bordered w-full"
+              id="categoryId"
+              class="w-full px-4 py-3 bg-gray-800/80 border border-gray-700/50 rounded-lg text-white focus:outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/30 transition-all appearance-none cursor-pointer"
               required
             >
               <option value="">Selecciona una categoría</option>
@@ -69,102 +126,134 @@ const selectedCategory = Astro.url.searchParams.get('category');
                 </option>
               ))}
             </select>
+            <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+              <ChevronRight class="w-4 h-4 text-gray-400 rotate-90" />
+            </div>
           </div>
+        </div>
 
-          <!-- Title -->
-          <div class="form-control mb-4">
-            <label class="label">
-              <span class="label-text font-semibold">Título</span>
-            </label>
-            <input
-              type="text"
-              x-model="title"
-              class="input input-bordered w-full"
-              placeholder="Escribe un título descriptivo..."
-              maxlength="255"
-              required
-            />
-          </div>
+        <!-- Title Input -->
+        <div class="space-y-2">
+          <label class="flex items-center gap-2 text-sm font-semibold text-gray-300">
+            <Type class="w-4 h-4 text-yellow-500/70" />
+            Título
+          </label>
+          <input
+            type="text"
+            id="title"
+            class="w-full px-4 py-3 bg-gray-800/80 border border-gray-700/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/30 transition-all"
+            placeholder="Escribe un título descriptivo..."
+            maxlength="255"
+            required
+          />
+        </div>
 
-          <!-- Content -->
-          <div class="form-control mb-6">
-            <label class="label">
-              <span class="label-text font-semibold">Contenido</span>
-            </label>
-            <textarea
-              x-model="content"
-              class="textarea textarea-bordered w-full h-64"
-              placeholder="Escribe el contenido de tu tema..."
-              required
-            ></textarea>
-            <label class="label">
-              <span class="label-text-alt">Puedes usar Markdown para formato</span>
-            </label>
-          </div>
+        <!-- Content Textarea -->
+        <div class="space-y-2">
+          <label class="flex items-center gap-2 text-sm font-semibold text-gray-300">
+            <FileText class="w-4 h-4 text-yellow-500/70" />
+            Contenido
+          </label>
+          <textarea
+            id="content"
+            class="w-full px-4 py-3 bg-gray-800/80 border border-gray-700/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/30 transition-all resize-none"
+            placeholder="Escribe el contenido de tu tema..."
+            rows="8"
+            required
+          ></textarea>
+          <p class="text-xs text-gray-500 flex items-center gap-1">
+            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+            </svg>
+            Puedes usar Markdown para dar formato a tu texto
+          </p>
+        </div>
 
-          <!-- Buttons -->
-          <div class="flex gap-4">
-            <button
-              type="submit"
-              class="btn btn-primary"
-              :disabled="loading"
-            >
-              <span x-show="!loading">Crear Tema</span>
-              <span x-show="loading" class="loading loading-spinner"></span>
-            </button>
+        <!-- Decorative divider -->
+        <div class="flex items-center gap-3 py-2">
+          <div class="flex-1 h-px bg-gradient-to-r from-transparent via-gray-700 to-transparent"></div>
+        </div>
 
-            <a href="/forum" class="btn btn-ghost">
-              Cancelar
-            </a>
-          </div>
-        </form>
-      </div>
+        <!-- Buttons -->
+        <div class="flex flex-col sm:flex-row gap-3 sm:gap-4">
+          <button
+            type="submit"
+            id="submitBtn"
+            class="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-b from-yellow-600 to-yellow-700 hover:from-yellow-500 hover:to-yellow-600 text-white font-semibold rounded-lg transition-all duration-300 border border-yellow-500/30 shadow-[0_0_15px_rgba(202,138,4,0.2)] hover:shadow-[0_0_20px_rgba(202,138,4,0.4)]"
+          >
+            <PenLine class="w-4 h-4" />
+            <span>Crear Tema</span>
+          </button>
+          <a
+            href="/forum"
+            class="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-b from-gray-700 to-gray-800 hover:from-gray-600 hover:to-gray-700 text-white font-semibold rounded-lg transition-all duration-300 border border-gray-600/30"
+          >
+            Cancelar
+          </a>
+        </div>
+      </form>
     </div>
-  </div>
+  </section>
 </Layout>
 
 <script>
-  function topicForm() {
-    return {
-      categoryId: '',
-      title: '',
-      content: '',
-      loading: false,
+  const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3000';
 
-      async submitTopic() {
-        if (!this.categoryId || !this.title || !this.content) {
-          alert('Por favor completa todos los campos');
-          return;
-        }
+  const form = document.getElementById('topicForm') as HTMLFormElement;
+  const categorySelect = document.getElementById('categoryId') as HTMLSelectElement;
+  const titleInput = document.getElementById('title') as HTMLInputElement;
+  const contentTextarea = document.getElementById('content') as HTMLTextAreaElement;
+  const submitBtn = document.getElementById('submitBtn') as HTMLButtonElement;
 
-        this.loading = true;
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
 
-        try {
-          const response = await fetch('/api/forum/topics', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify({
-              categoryId: parseInt(this.categoryId),
-              title: this.title,
-              content: this.content
-            })
-          });
+    const categoryId = categorySelect.value;
+    const title = titleInput.value;
+    const content = contentTextarea.value;
 
-          const data = await response.json();
+    if (!categoryId || !title || !content) {
+      alert('Por favor completa todos los campos');
+      return;
+    }
 
-          if (data.success) {
-            window.location.href = `/forum/topic/${data.topicId}`;
-          } else {
-            alert(data.error || 'Error al crear el tema');
-          }
-        } catch (error) {
-          console.error('Error:', error);
-          alert('Error al crear el tema');
-        } finally {
-          this.loading = false;
-        }
+    // Disable button and show loading
+    submitBtn.disabled = true;
+    const originalContent = submitBtn.innerHTML;
+    submitBtn.innerHTML = `
+      <svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+      <span>Creando...</span>
+    `;
+
+    try {
+      const response = await fetch(`${API_URL}/api/forum/topics`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          categoryId: parseInt(categoryId),
+          title,
+          content
+        })
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        window.location.href = `/forum/topic/${data.topicId}`;
+      } else {
+        alert(data.error || 'Error al crear el tema');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalContent;
       }
-    };
-  }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Error al crear el tema');
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalContent;
+    }
+  });
 </script>

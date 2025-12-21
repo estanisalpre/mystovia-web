@@ -6,7 +6,7 @@
 // Definición de roles
 export const ROLES = {
   USER: 1,
-  FORUM_ADMIN: 6,
+  GAME_MASTER: 6,
   SUPER_ADMIN: 10,
 } as const;
 
@@ -29,10 +29,8 @@ const ROLE_PERMISSIONS: Record<number, string[]> = {
     'like_news',
   ],
 
-  // Admin Foro - Solo moderación de foro
-  [ROLES.FORUM_ADMIN]: [
-    'view_admin_panel',
-    'manage_forum',
+  // Game Master - Sin acceso al panel admin
+  [ROLES.GAME_MASTER]: [
     'write_forum',
     'vote_forum',
   ],
@@ -53,6 +51,9 @@ const ROLE_PERMISSIONS: Record<number, string[]> = {
  */
 export function hasPermission(groupId: number | undefined, permission: string): boolean {
   if (!groupId) return false;
+
+  // Super Admin tiene acceso a todo
+  if (groupId === ROLES.SUPER_ADMIN) return true;
 
   const permissions = ROLE_PERMISSIONS[groupId] || [];
   return permissions.includes(permission);
@@ -90,10 +91,10 @@ export function isSuperAdmin(groupId: number | undefined): boolean {
 }
 
 /**
- * Verifica si un usuario es Admin de Foro
+ * Verifica si un usuario es Game Master
  */
-export function isForumAdmin(groupId: number | undefined): boolean {
-  return groupId === ROLES.FORUM_ADMIN || isSuperAdmin(groupId);
+export function isGameMaster(groupId: number | undefined): boolean {
+  return groupId === ROLES.GAME_MASTER || isSuperAdmin(groupId);
 }
 
 /**
@@ -110,8 +111,8 @@ export function getRoleName(groupId: number | undefined): string {
   switch (groupId) {
     case ROLES.SUPER_ADMIN:
       return 'Super Admin';
-    case ROLES.FORUM_ADMIN:
-      return 'Admin Foro';
+    case ROLES.GAME_MASTER:
+      return 'Game Master';
     case ROLES.USER:
       return 'Usuario';
     default:
@@ -126,7 +127,7 @@ export function getRoleColor(groupId: number | undefined): string {
   switch (groupId) {
     case ROLES.SUPER_ADMIN:
       return 'bg-red-500';
-    case ROLES.FORUM_ADMIN:
+    case ROLES.GAME_MASTER:
       return 'bg-blue-500';
     case ROLES.USER:
       return 'bg-gray-500';

@@ -1,23 +1,176 @@
 ---
 import Layout from "@layouts/Layout.astro";
-import { BookOpenText, AlertTriangle, Info } from "@lucide/astro";
+import { BookOpenText, AlertTriangle, Info, Shield, Swords, MessageSquare, Scale, ShoppingBag, Gavel } from "@lucide/astro";
 
-const API_URL = import.meta.env.PUBLIC_API_URL || "http://localhost:3000";
+// Reglas del servidor - Contenido estático
+const sections = [
+  {
+    id: 1,
+    name: "Reglas principales",
+    icon: "Shield",
+    rules: [
+      {
+        title: "Respeto hacia todos",
+        content: "Trata a todos los jugadores y al personal del servidor con respeto. No se toleran insultos, acoso, discriminacion ni comportamientos toxicos."
+      },
+      {
+        title: "Nombres apropiados",
+        content: "Usa nombres de personajes adecuados. Nombres ofensivos, vulgares, o que imiten al staff seran eliminados sin aviso."
+      },
+      {
+        title: "Multicuenta",
+        content: "Solo se permite 1 cuenta por persona. Usar multiples cuentas podra resultar en el baneo de todas."
+      },
+      {
+        title: "Comercio seguro",
+        content: "Solo se permite comerciar dentro del juego. Las transacciones fuera del servidor no estan protegidas."
+      },
+      {
+        title: "Reportar bugs",
+        content: "Si encuentras un bug, reportalo inmediatamente. Abusar de bugs puede resultar en sanciones severas."
+      }
+    ]
+  },
+  {
+    id: 2,
+    name: "Hacer trampa",
+    icon: "Swords",
+    rules: [
+      {
+        title: "Programas externos",
+        content: "Esta prohibido el uso de bots, macros o cualquier software externo que automatice acciones del juego."
+      },
+      {
+        title: "Modificacion del cliente",
+        content: "No modifiques el cliente del juego de ninguna forma. Solo usa el cliente oficial de Mystovia."
+      },
+      {
+        title: "Explotacion de bugs",
+        content: "Explotar bugs del juego para obtener ventajas es considerado hacer trampa y sera sancionado."
+      },
+      {
+        title: "Suplantacion de identidad",
+        content: "Hacerse pasar por otro jugador o por miembro del staff esta estrictamente prohibido."
+      }
+    ]
+  },
+  {
+    id: 3,
+    name: "Mensajes y declaraciones",
+    icon: "MessageSquare",
+    rules: [
+      {
+        title: "Spam",
+        content: "No hagas spam en ningun canal. Esto incluye mensajes repetitivos, publicidad excesiva y flood."
+      },
+      {
+        title: "Contenido inapropiado",
+        content: "No compartas contenido NSFW, ilegal, o extremadamente violento en ningun canal del juego."
+      },
+      {
+        title: "Publicidad",
+        content: "No hagas publicidad de otros servidores. Esto resultara en un baneo permanente inmediato."
+      },
+      {
+        title: "Lenguaje en canales publicos",
+        content: "Evita el uso excesivo de lenguaje vulgar en canales publicos. Respeta que hay jugadores de todas las edades."
+      },
+      {
+        title: "Difamacion",
+        content: "No difames ni hagas acusaciones falsas contra otros jugadores o el staff."
+      }
+    ]
+  },
+  {
+    id: 4,
+    name: "Balance de PvP",
+    icon: "Scale",
+    rules: [
+      {
+        title: "Zonas seguras",
+        content: "No abuses de las zonas de proteccion para escapar de peleas o molestar a otros jugadores."
+      },
+      {
+        title: "Bloqueo de spawns",
+        content: "No bloquees spawns de manera intencional para perjudicar a otros jugadores."
+      },
+      {
+        title: "Luring",
+        content: "Atraer monstruos a proposito hacia otros jugadores para matarlos esta prohibido."
+      },
+      {
+        title: "Interferencia en hunts",
+        content: "Respetar las hunts de otros jugadores. No interfieran de manera malintencionada."
+      }
+    ]
+  },
+  {
+    id: 5,
+    name: "Ventas y publicaciones",
+    icon: "ShoppingBag",
+    rules: [
+      {
+        title: "Venta por dinero real",
+        content: "Esta prohibida la venta de items, cuentas o cualquier bien del juego por dinero real."
+      },
+      {
+        title: "Estafas",
+        content: "Las estafas estan prohibidas. Si se comprueba una estafa, el infractor sera baneado permanentemente."
+      },
+      {
+        title: "Mercado justo",
+        content: "No manipules el mercado de manera fraudulenta. Las practicas desleales seran sancionadas."
+      },
+      {
+        title: "Publicaciones en market",
+        content: "Usa el market de forma adecuada. No publiques ofertas falsas o enganosas."
+      }
+    ]
+  },
+  {
+    id: 6,
+    name: "Sanciones",
+    icon: "Gavel",
+    rules: [
+      {
+        title: "Sistema de sanciones",
+        content: "Las sanciones se aplican progresivamente: advertencia, baneo temporal (1-7 dias), baneo extendido (30 dias) y baneo permanente."
+      },
+      {
+        title: "Gravedad de la infraccion",
+        content: "Dependiendo de la gravedad, el staff puede aplicar sanciones mas severas directamente."
+      },
+      {
+        title: "Apelaciones",
+        content: "Puedes apelar tu sancion a traves del sistema de soporte. Las apelaciones seran revisadas por el staff."
+      },
+      {
+        title: "Decisiones del staff",
+        content: "Las decisiones del staff son finales. Discutir agresivamente con el staff puede resultar en sanciones adicionales."
+      },
+      {
+        title: "Baneos permanentes",
+        content: "Los baneos permanentes se reservan para: cheating confirmado, estafas graves, publicidad de otros servidores y comportamiento extremadamente toxico."
+      }
+    ]
+  }
+];
 
-let rulesData;
-
-try {
-  const response = await fetch(`${API_URL}/api/rules`);
-  rulesData = await response.json();
-} catch (error) {
-  console.error("Error fetching rules:", error);
-  rulesData = { sections: [] };
-}
-
-const sections = rulesData?.sections || [];
+// Icon mapping function
+const getIconComponent = (iconName: string) => {
+  const icons: Record<string, any> = {
+    Shield,
+    Swords,
+    MessageSquare,
+    Scale,
+    ShoppingBag,
+    Gavel
+  };
+  return icons[iconName] || Shield;
+};
 ---
 
-<Layout title="Reglas del Servidor">
+<Layout title="Reglas del Servidor | Mystovia">
   <section class="page-container">
     <!-- Header with medieval style -->
     <div class="mb-6 sm:mb-8 text-center">
@@ -30,110 +183,126 @@ const sections = rulesData?.sections || [];
       </div>
       <div class="flex items-center justify-center gap-3 mb-3 sm:mb-4">
         <BookOpenText class="w-6 h-6 sm:w-8 sm:h-8 text-yellow-500" />
-        <h1 id="rulesTitle" class="text-2xl sm:text-3xl md:text-4xl font-bold text-yellow-500 medieval-font">Reglas del servidor</h1>
+        <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-yellow-500 medieval-font">Reglas del Servidor</h1>
       </div>
-      <p id="rulesDesc" class="text-sm sm:text-base md:text-lg text-gray-400">
+      <p class="text-sm sm:text-base md:text-lg text-gray-400 max-w-2xl mx-auto">
         Por favor, lee y respeta las siguientes reglas para asegurar una experiencia agradable para todos los jugadores.
       </p>
     </div>
 
     <!-- Warning message -->
-    <div id="rulesWarning" class="relative rounded-xl overflow-hidden p-3 sm:p-4 mb-6 border border-amber-600/30"
+    <div class="relative rounded-xl overflow-hidden p-3 sm:p-4 mb-6 border border-amber-600/30"
          style="background: linear-gradient(to right, rgb(120 53 15 / 0.3), rgb(17 24 39 / 0.9));">
       <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-amber-500/50 via-transparent to-transparent"></div>
       <div class="flex items-start gap-3 relative z-10">
         <AlertTriangle class="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
-        <p class="message-text text-xs sm:text-sm text-amber-200">
-          El incumplimiento de estas reglas puede resultar en sanciones que van desde advertencias hasta baneos permanentes.
+        <p class="text-xs sm:text-sm text-amber-200">
+          El incumplimiento de estas reglas puede resultar en sanciones que van desde advertencias hasta baneos permanentes. Ignorar las reglas no es excusa.
         </p>
       </div>
     </div>
 
-    {
-      sections.length === 0 ? (
-        <div class="text-center py-8 sm:py-12">
-          <p id="noRules" class="text-sm sm:text-base text-gray-400">
-            No hay reglas publicadas aún.
-          </p>
-        </div>
-      ) : (
-        <div class="space-y-4 sm:space-y-6">
-          {sections.map((section: any) => (
-            <article class="relative rounded-xl overflow-hidden p-4 sm:p-6 border border-yellow-600/20"
-                     style="background: linear-gradient(to bottom, rgb(17 24 39 / 0.9), rgb(0 0 0 / 0.85));">
-              <!-- Diamond pattern overlay -->
-              <div class="absolute inset-0 opacity-[0.03] pointer-events-none" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M30 0L60 30L30 60L0 30z\' fill=\'%23d4af37\' fill-opacity=\'0.4\'/%3E%3C/svg%3E'); background-size: 30px 30px;"></div>
-              <!-- Top golden line -->
-              <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-yellow-500/50 to-transparent"></div>
+    <!-- Table of Contents -->
+    <div class="relative rounded-xl overflow-hidden p-4 sm:p-6 mb-6 border border-yellow-600/20"
+         style="background: linear-gradient(to bottom, rgb(17 24 39 / 0.95), rgb(0 0 0 / 0.9));">
+      <div class="absolute inset-0 opacity-[0.02] pointer-events-none" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M30 0L60 30L30 60L0 30z\' fill=\'%23d4af37\' fill-opacity=\'0.4\'/%3E%3C/svg%3E'); background-size: 30px 30px;"></div>
+      <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-yellow-500/40 to-transparent"></div>
 
-              <h2 class="text-lg sm:text-xl md:text-2xl font-bold text-yellow-500 mb-4 medieval-font relative z-10 pb-2 border-b border-yellow-600/30">{section.name}</h2>
+      <h2 class="text-lg font-bold text-yellow-500 mb-4 medieval-font relative z-10">Indice de Secciones</h2>
+      <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 relative z-10">
+        {sections.map((section, index) => (
+          <a href={`#section-${section.id}`}
+             class="flex items-center gap-2 p-2 sm:p-3 rounded-lg border border-yellow-600/20 hover:border-yellow-500/40 transition-all text-gray-300 hover:text-yellow-500 group"
+             style="background: linear-gradient(to bottom, rgb(31 41 55 / 0.5), rgb(17 24 39 / 0.7));">
+            <span class="w-6 h-6 flex items-center justify-center rounded bg-yellow-500/10 text-yellow-500 text-xs font-bold group-hover:bg-yellow-500/20 transition-colors">
+              {index + 1}
+            </span>
+            <span class="text-xs sm:text-sm truncate">{section.name}</span>
+          </a>
+        ))}
+      </div>
+    </div>
 
-              {(section.rules?.length || 0) === 0 ? (
-                <p class="text-sm text-gray-500 italic no-rules-section relative z-10">
-                  No hay reglas en esta sección.
-                </p>
-              ) : (
-                <div class="space-y-3 sm:space-y-4 relative z-10">
-                  {section.rules.map((rule: any, index: number) => (
-                    <div class="border-l-2 border-yellow-500/50 pl-3 sm:pl-4">
-                      <h3 class="text-sm sm:text-base font-semibold text-white mb-1">
-                        {index + 1}. {rule.title}
-                      </h3>
-                      <p class="text-xs sm:text-sm text-gray-400">{rule.content}</p>
-                    </div>
-                  ))}
+    <!-- Rules Sections -->
+    <div class="space-y-6 sm:space-y-8">
+      {sections.map((section, sectionIndex) => {
+        const IconComponent = getIconComponent(section.icon);
+        return (
+          <article id={`section-${section.id}`}
+                   class="relative rounded-xl overflow-hidden border border-yellow-600/20 scroll-mt-24"
+                   style="background: linear-gradient(to bottom, rgb(17 24 39 / 0.95), rgb(0 0 0 / 0.9));">
+            <!-- Diamond pattern overlay -->
+            <div class="absolute inset-0 opacity-[0.02] pointer-events-none" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M30 0L60 30L30 60L0 30z\' fill=\'%23d4af37\' fill-opacity=\'0.4\'/%3E%3C/svg%3E'); background-size: 30px 30px;"></div>
+            <!-- Top golden line -->
+            <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-yellow-500/50 to-transparent"></div>
+
+            <!-- Corner ornaments -->
+            <div class="absolute top-2 left-2 w-4 h-4 opacity-30 pointer-events-none">
+              <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
+                <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
+              </svg>
+            </div>
+            <div class="absolute top-2 right-2 w-4 h-4 opacity-30 pointer-events-none" style="transform: scaleX(-1);">
+              <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
+                <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
+              </svg>
+            </div>
+
+            <!-- Section Header -->
+            <div class="p-4 sm:p-6 border-b border-yellow-600/20 relative z-10"
+                 style="background: linear-gradient(to right, rgb(234 179 8 / 0.05), transparent);">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-lg flex items-center justify-center border border-yellow-500/30"
+                     style="background: linear-gradient(to bottom, rgb(234 179 8 / 0.15), rgb(234 179 8 / 0.05));">
+                  <IconComponent class="w-5 h-5 sm:w-6 sm:h-6 text-yellow-500" />
                 </div>
-              )}
-            </article>
-          ))}
-        </div>
-      )
-    }
+                <div>
+                  <span class="text-xs text-yellow-500/60 uppercase tracking-wider">Seccion {sectionIndex + 1}</span>
+                  <h2 class="text-lg sm:text-xl md:text-2xl font-bold text-yellow-500 medieval-font">{section.name}</h2>
+                </div>
+              </div>
+            </div>
+
+            <!-- Rules List -->
+            <div class="p-4 sm:p-6 space-y-4 relative z-10">
+              {section.rules.map((rule, ruleIndex) => (
+                <div class="relative pl-4 sm:pl-6 border-l-2 border-yellow-500/30 hover:border-yellow-500/60 transition-colors group">
+                  <div class="absolute left-[-5px] top-0 w-2 h-2 rounded-full bg-yellow-500/50 group-hover:bg-yellow-500 transition-colors"></div>
+                  <h3 class="text-sm sm:text-base font-semibold text-white mb-1 group-hover:text-yellow-500 transition-colors">
+                    {sectionIndex + 1}.{ruleIndex + 1} {rule.title}
+                  </h3>
+                  <p class="text-xs sm:text-sm text-gray-400 leading-relaxed">{rule.content}</p>
+                </div>
+              ))}
+            </div>
+          </article>
+        );
+      })}
+    </div>
 
     <!-- Info message -->
-    <div id="rulesAcceptance" class="relative rounded-xl overflow-hidden p-3 sm:p-4 mt-6 border border-blue-600/30"
+    <div class="relative rounded-xl overflow-hidden p-4 sm:p-5 mt-8 border border-blue-600/30"
          style="background: linear-gradient(to right, rgb(30 58 138 / 0.3), rgb(17 24 39 / 0.9));">
       <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-500/50 via-transparent to-transparent"></div>
       <div class="flex items-start gap-3 relative z-10">
         <Info class="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
-        <p class="message-text text-xs sm:text-sm text-blue-200">
-          Al jugar en este servidor, aceptas cumplir con todas estas reglas.
-        </p>
+        <div>
+          <p class="text-sm sm:text-base text-blue-200 font-medium mb-1">Aceptacion de reglas</p>
+          <p class="text-xs sm:text-sm text-blue-300/80">
+            Al jugar en Mystovia, aceptas cumplir con todas estas reglas. El desconocimiento de las mismas no exime de su cumplimiento. Si tienes dudas sobre alguna regla, contacta al staff.
+          </p>
+        </div>
       </div>
+    </div>
+
+    <!-- Back to top button -->
+    <div class="flex justify-center mt-8">
+      <a href="#" class="btn-medieval btn-medieval-secondary text-sm">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
+        </svg>
+        <span>Volver arriba</span>
+      </a>
     </div>
   </section>
 </Layout>
-
-<script>
-  import { t, getStoredLanguage } from '../i18n/translations';
-
-  const lang = getStoredLanguage();
-
-  const title = document.getElementById('rulesTitle');
-  if (title) {
-    const span = title.querySelector('span');
-    if (span) span.textContent = t('rules.title', lang);
-  }
-
-  const desc = document.getElementById('rulesDesc');
-  if (desc) desc.textContent = t('rules.description', lang);
-
-  const warning = document.getElementById('rulesWarning');
-  if (warning) {
-    const msgSpan = warning.querySelector('.message-text');
-    if (msgSpan) msgSpan.textContent = t('rules.warning', lang);
-  }
-
-  const noRules = document.getElementById('noRules');
-  if (noRules) noRules.textContent = t('rules.noRules', lang);
-
-  document.querySelectorAll('.no-rules-section').forEach(el => {
-    el.textContent = t('rules.noRulesInSection', lang);
-  });
-
-  const acceptance = document.getElementById('rulesAcceptance');
-  if (acceptance) {
-    const msgSpan = acceptance.querySelector('.message-text');
-    if (msgSpan) msgSpan.textContent = t('rules.acceptance', lang);
-  }
-</script>

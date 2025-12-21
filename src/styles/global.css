@@ -22,6 +22,10 @@
     --color-text-muted: #6B7280;
   }
 
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     /* @apply bg-[var(--color-bg-primary)] text-[var(--color-text-gold)]; */
     font-family: "Raleway", sans-serif;

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Store, Menu, X, Gamepad2, Users, HelpCircle } from 'lucide-react';
 import HeaderAuth from './HeaderAuth';
 import '../i18n';
+import { openDownloadModal } from './DownloadModal';
 
 export default function MobileNav() {
   const { t } = useTranslation();
@@ -131,14 +132,16 @@ export default function MobileNav() {
                   <span>{t('nav.game') || 'Juego'}</span>
                 </h3>
                 <div className="space-y-1">
-                  <a
-                    href="/downloads"
-                    onClick={closeMenu}
-                    className="flex items-center gap-3 text-gray-300 hover:text-yellow-500 transition-colors py-3 px-4 rounded-lg hover:bg-white/5 group"
+                  <button
+                    onClick={() => {
+                      closeMenu();
+                      openDownloadModal();
+                    }}
+                    className="flex items-center gap-3 text-gray-300 hover:text-yellow-500 transition-colors py-3 px-4 rounded-lg hover:bg-white/5 group w-full text-left"
                   >
                     <span className="w-1.5 h-1.5 rounded-full bg-gray-600 group-hover:bg-yellow-500 transition-colors" />
                     {t('nav.downloads')}
-                  </a>
+                  </button>
                   <a
                     href="/wiki"
                     onClick={closeMenu}
