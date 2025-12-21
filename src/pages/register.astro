@@ -304,7 +304,7 @@ let error = "";
         return;
       }
 
-      const res = await useAuth("register", { username, email, password });
+      const res = await useAuth("register", { username, email, password }) as { success: boolean; recoveryKey?: string; error?: string };
 
       if (res.success) {
         if (res.recoveryKey) {

@@ -7,11 +7,6 @@ import {
   Store,
   Megaphone,
   Rss,
-  Newspaper,
-  Tickets,
-  FileDown,
-  Gavel,
-  CircleQuestionMark,
 } from "@lucide/astro";
 import StatsCard from "@c/admin/StatsCard.astro";
 import ModalButton from "@c/admin/ModalButton.astro";
@@ -23,7 +18,6 @@ const API_URL = import.meta.env.PUBLIC_API_URL || "http://localhost:3000";
 const accessToken = Astro.cookies.get("accessToken")?.value;
 */
 
-// 🍪 Usar cookies simples (sin JWT)
 const userId = Astro.cookies.get("userId")?.value;
 const userEmail = Astro.cookies.get("userEmail")?.value;
 let user = null;
@@ -124,51 +118,6 @@ try {
         btnDescription="Crear y gestionar noticias"
         url="/admin/news"
         icon={Rss}
-      />
-
-      <ModalButton
-        user={user}
-        permission="manage_wiki"
-        btnName="Wiki"
-        btnDescription="Administrar artículos y wikis"
-        url="/admin/wiki"
-        icon={Newspaper}
-      />
-
-      <ModalButton
-        user={user}
-        permission="manage_support"
-        btnName="Soporte"
-        btnDescription="Gestionar tickets"
-        url="/admin/support"
-        icon={Tickets}
-      />
-
-      <ModalButton
-        user={user}
-        permission="manage_downloads"
-        btnName="Descargas"
-        btnDescription="Administrar archivos y descargas"
-        url="/admin/downloads"
-        icon={FileDown}
-      />
-
-      <ModalButton
-        user={user}
-        permission="manage_rules"
-        btnName="Reglas"
-        btnDescription="Gestionar reglas"
-        url="/admin/rules"
-        icon={Gavel}
-      />
-
-      <ModalButton
-        user={user}
-        permission="manage_faqs"
-        btnName="FAQs"
-        btnDescription="Administrar preguntas frecuentes (FAQs)"
-        url="/admin/faqs"
-        icon={CircleQuestionMark}
       />
     </section>
   </section>

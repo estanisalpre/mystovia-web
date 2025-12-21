@@ -9,7 +9,14 @@ import db from '../config/database.js';
 export const getCategories = async (_req: Request, res: Response) => {
   try {
     const [categories] = await db.query(
-      `SELECT * FROM forum_categories WHERE is_active = 1 ORDER BY order_position ASC`
+      `SELECT
+        fc.*,
+        COUNT(ft.id) as topics_count
+      FROM forum_categories fc
+      LEFT JOIN forum_topics ft ON fc.id = ft.category_id
+      WHERE fc.is_active = 1
+      GROUP BY fc.id
+      ORDER BY fc.order_position ASC`
     ) as any[];
 
     res.json({ success: true, categories });
@@ -197,6 +204,8 @@ export const voteTopic = async (req: Request, res: Response) => {
       [topicId, userId]
     ) as any[];
 
+    let userVote = vote;
+
     if (existingVotes.length > 0) {
       const currentVote = existingVotes[0].vote;
 
@@ -206,24 +215,36 @@ export const voteTopic = async (req: Request, res: Response) => {
           'DELETE FROM forum_topic_votes WHERE topic_id = ? AND user_id = ?',
           [topicId, userId]
         );
-        return res.json({ success: true, message: 'Voto removido', userVote: null });
+        userVote = null;
       } else {
         // Actualizar voto
         await db.query(
           'UPDATE forum_topic_votes SET vote = ? WHERE topic_id = ? AND user_id = ?',
           [vote, topicId, userId]
         );
-        return res.json({ success: true, message: 'Voto actualizado', userVote: vote });
       }
+    } else {
+      // Insertar nuevo voto
+      await db.query(
+        'INSERT INTO forum_topic_votes (topic_id, user_id, vote) VALUES (?, ?, ?)',
+        [topicId, userId, vote]
+      );
     }
 
-    // Insertar nuevo voto
-    await db.query(
-      'INSERT INTO forum_topic_votes (topic_id, user_id, vote) VALUES (?, ?, ?)',
-      [topicId, userId, vote]
-    );
+    // Obtener el total de votos actualizado
+    const [voteResult] = await db.query(
+      'SELECT COALESCE(SUM(vote), 0) as total_votes FROM forum_topic_votes WHERE topic_id = ?',
+      [topicId]
+    ) as any[];
 
-    res.json({ success: true, message: 'Voto registrado', userVote: vote });
+    const totalVotes = voteResult[0].total_votes;
+
+    res.json({
+      success: true,
+      message: userVote === null ? 'Voto removido' : 'Voto registrado',
+      userVote,
+      totalVotes
+    });
   } catch (error) {
     console.error('Error votando tema:', error);
     res.status(500).json({ error: 'Error interno del servidor' });

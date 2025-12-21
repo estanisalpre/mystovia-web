@@ -1,52 +1,118 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { Skull, Home, ShoppingBag } from '@lucide/astro';
 ---
 
 <Layout title="Página No Encontrada | Mystovia">
-  <div class="container mx-auto px-4 py-20 min-h-screen flex items-center justify-center relative z-10">
-    <div class="max-w-2xl mx-auto text-center">
-      <div class="mb-8">
-        <h1 class="text-9xl font-bold text-yellow-600 medieval-font mb-4">
+  <section class="grow z-100 flex items-center justify-center min-h-screen py-12 px-4">
+    <div class="relative max-w-2xl w-full overflow-hidden">
+      <!-- Medieval container background -->
+      <div class="absolute inset-0 rounded-xl bg-gradient-to-b from-gray-900/95 via-gray-900/98 to-black/95 border border-yellow-600/20"></div>
+
+      <!-- Top golden line -->
+      <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-yellow-500/50 to-transparent"></div>
+
+      <!-- Diamond pattern overlay -->
+      <div class="absolute inset-0 opacity-[0.03] pointer-events-none rounded-xl" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M30 0L60 30L30 60L0 30z\' fill=\'%23d4af37\' fill-opacity=\'0.4\'/%3E%3C/svg%3E'); background-size: 30px 30px;"></div>
+
+      <!-- Corner ornaments -->
+      <div class="absolute top-2 left-2 w-8 h-8 opacity-20 pointer-events-none">
+        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
+          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
+        </svg>
+      </div>
+      <div class="absolute top-2 right-2 w-8 h-8 opacity-20 pointer-events-none" style="transform: scaleX(-1);">
+        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
+          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
+        </svg>
+      </div>
+      <div class="absolute bottom-2 left-2 w-8 h-8 opacity-20 pointer-events-none" style="transform: scaleY(-1);">
+        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
+          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
+        </svg>
+      </div>
+      <div class="absolute bottom-2 right-2 w-8 h-8 opacity-20 pointer-events-none" style="transform: scale(-1);">
+        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
+          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
+        </svg>
+      </div>
+
+      <!-- Content -->
+      <div class="relative z-10 p-6 sm:p-10 text-center">
+        <!-- Decorative header -->
+        <div class="flex items-center justify-center gap-3 mb-4">
+          <div class="h-px w-8 sm:w-16 bg-gradient-to-r from-transparent to-yellow-500/50"></div>
+          <Skull class="w-6 h-6 sm:w-8 sm:h-8 text-yellow-500/60" />
+          <div class="h-px w-8 sm:w-16 bg-gradient-to-l from-transparent to-yellow-500/50"></div>
+        </div>
+
+        <!-- 404 Number -->
+        <h1 class="text-7xl sm:text-9xl font-bold text-yellow-600 medieval-font mb-2 drop-shadow-[0_0_15px_rgba(202,138,4,0.3)]">
           404
         </h1>
-        <div class="w-32 h-1 bg-yellow-600 mx-auto mb-8"></div>
-      </div>
 
-      <h2 id="notFoundTitle" class="text-4xl font-bold text-white mb-6">
-        Página No Encontrada
-      </h2>
+        <!-- Decorative divider -->
+        <div class="flex items-center justify-center gap-2 mb-6">
+          <div class="h-px w-12 sm:w-20 bg-gradient-to-r from-transparent via-yellow-600/50 to-transparent"></div>
+          <div class="w-2 h-2 rotate-45 bg-yellow-600/50"></div>
+          <div class="h-px w-12 sm:w-20 bg-gradient-to-l from-transparent via-yellow-600/50 to-transparent"></div>
+        </div>
 
-      <p id="notFoundMessage" class="text-xl text-gray-300 mb-8">
-        Lo sentimos. La página que buscas no está disponible.
-      </p>
+        <!-- Title -->
+        <h2 id="notFoundTitle" class="text-2xl sm:text-3xl font-bold text-white medieval-font mb-4">
+          Página No Encontrada
+        </h2>
 
-      <div class="bg-gray-800 border border-gray-700 rounded-xl p-8 mb-8">
-        <p id="notFoundExplanation" class="text-lg text-gray-400 mb-4">
-          Es posible que la página haya sido movida, eliminada o que la URL sea incorrecta.
+        <!-- Message -->
+        <p id="notFoundMessage" class="text-base sm:text-lg text-gray-300 mb-6 px-2">
+          Lo sentimos. La página que buscas no está disponible.
         </p>
-        <p id="notFoundThanks" class="text-yellow-500 font-semibold text-lg">
-          ¡Gracias por jugar en Mystovia!
-        </p>
-      </div>
 
-      <div class="flex gap-4 justify-center flex-wrap">
-        <a
-          id="backHomeBtn"
-          href="/"
-          class="px-6 py-3 bg-yellow-600 hover:bg-yellow-700 text-white font-semibold rounded-lg transition"
-        >
-          Volver al Inicio
-        </a>
-        <a
-          id="goMarketplaceBtn"
-          href="/marketplace"
-          class="px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition"
-        >
-          Ir al Marketplace
-        </a>
+        <!-- Info box -->
+        <div class="relative mb-8 p-4 sm:p-6 rounded-lg overflow-hidden">
+          <div class="absolute inset-0 bg-gray-800/50 border border-gray-700/50 rounded-lg"></div>
+          <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gray-600/30 to-transparent"></div>
+          <div class="relative z-10">
+            <p id="notFoundExplanation" class="text-sm sm:text-base text-gray-400 mb-3">
+              Es posible que la página haya sido movida, eliminada o que la URL sea incorrecta.
+            </p>
+            <p id="notFoundThanks" class="text-yellow-500 font-semibold text-base sm:text-lg medieval-font">
+              ¡Gracias por jugar en Mystovia!
+            </p>
+          </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+          <a
+            id="backHomeBtn"
+            href="/"
+            class="medieval-btn group inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-b from-yellow-600 to-yellow-700 hover:from-yellow-500 hover:to-yellow-600 text-white font-semibold rounded-lg transition-all duration-300 border border-yellow-500/30 shadow-[0_0_15px_rgba(202,138,4,0.2)] hover:shadow-[0_0_20px_rgba(202,138,4,0.4)]"
+          >
+            <Home class="w-4 h-4 group-hover:scale-110 transition-transform" />
+            <span>Volver al Inicio</span>
+          </a>
+          <a
+            id="goMarketplaceBtn"
+            href="/marketplace"
+            class="medieval-btn-secondary group inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-b from-gray-700 to-gray-800 hover:from-gray-600 hover:to-gray-700 text-white font-semibold rounded-lg transition-all duration-300 border border-gray-600/30"
+          >
+            <ShoppingBag class="w-4 h-4 group-hover:scale-110 transition-transform" />
+            <span>Ir al Marketplace</span>
+          </a>
+        </div>
+
+        <!-- Bottom decorative element -->
+        <div class="flex items-center justify-center gap-3 mt-8">
+          <div class="h-px w-8 sm:w-12 bg-gradient-to-r from-transparent to-yellow-500/30"></div>
+          <svg class="w-4 h-4 text-yellow-500/40" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+          </svg>
+          <div class="h-px w-8 sm:w-12 bg-gradient-to-l from-transparent to-yellow-500/30"></div>
+        </div>
       </div>
     </div>
-  </div>
+  </section>
 </Layout>
 
 <script>
@@ -67,8 +133,14 @@ import Layout from '../layouts/Layout.astro';
   if (thanks) thanks.textContent = t('notFound.thanks', lang);
 
   const backHome = document.getElementById('backHomeBtn');
-  if (backHome) backHome.textContent = t('common.backHome', lang);
+  if (backHome) {
+    const span = backHome.querySelector('span');
+    if (span) span.textContent = t('common.backHome', lang);
+  }
 
   const goMarketplace = document.getElementById('goMarketplaceBtn');
-  if (goMarketplace) goMarketplace.textContent = t('notFound.goToMarketplace', lang);
+  if (goMarketplace) {
+    const span = goMarketplace.querySelector('span');
+    if (span) span.textContent = t('notFound.goToMarketplace', lang);
+  }
 </script>

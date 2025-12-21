@@ -59,7 +59,6 @@ import { Music } from "@lucide/astro";
       if (audio.paused) {
         audio.play().then(() => {
           window.__musicPlayer!.initialized = true;
-          console.log("Music started playing");
         }).catch((err) => {
           console.warn("Autoplay blocked, waiting for user interaction...", err.message);
         });
