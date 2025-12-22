@@ -103,7 +103,7 @@ export default function DownloadModal() {
         {/* Close button */}
         <button
           onClick={() => setIsOpen(false)}
-          className="absolute top-4 right-4 z-10 p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
+          className="absolute top-4 right-4 z-200 p-2 cursor-pointer rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
           aria-label="Cerrar"
         >
           <X size={20} />

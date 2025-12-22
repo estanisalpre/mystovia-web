@@ -31,7 +31,10 @@
     "support": "Soporte",
     "game": "Juego",
     "community": "Comunidad",
-    "supportSection": "Soporte"
+    "supportSection": "Soporte",
+    "guilds": "Guilds",
+    "highscores": "Highscores",
+    "latestDeaths": "Muertes"
   },
   "auth": {
     "login": "Ingresar",
