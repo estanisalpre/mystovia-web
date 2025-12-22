@@ -151,7 +151,7 @@ function formatDate(timestamp: number): string {
               <div class="relative group">
                 <div id="guildLogo" class="w-20 h-20 rounded-xl bg-gradient-to-br from-yellow-600/40 to-yellow-800/40 border-2 border-yellow-500/30 flex items-center justify-center shadow-lg overflow-hidden">
                   {guildData.has_logo ? (
-                    <img src={`${API_URL}/api/guilds/${id}/logo`} alt={guildData.name} class="w-full h-full object-cover" />
+                    <img src={`${INTERNAL_API_URL}/api/guilds/${id}/logo`} alt={guildData.name} class="w-full h-full object-cover" />
                   ) : (
                     <span class="text-4xl font-bold text-yellow-500">{guildData.name[0].toUpperCase()}</span>
                   )}
