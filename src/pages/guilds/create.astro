@@ -170,13 +170,7 @@ function getVocationName(vocationId: number): string {
   </section>
 </Layout>
 
-<script is:inline define:vars={{ API_URL }}>
-  window.__CREATE_GUILD_API_URL__ = API_URL;
-</script>
-
 <script>
-  const API_URL = (window as any).__CREATE_GUILD_API_URL__ || 'http://localhost:3001';
-
   function init() {
     const form = document.getElementById('createGuildForm') as HTMLFormElement;
     const errorMessage = document.getElementById('errorMessage');
@@ -206,7 +200,8 @@ function getVocationName(vocationId: number): string {
       }
 
       try {
-        const response = await fetch(`${API_URL}/api/guilds`, {
+        // Use relative URL for same-origin requests (avoids cross-domain cookie issues)
+        const response = await fetch('/api/guilds', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',

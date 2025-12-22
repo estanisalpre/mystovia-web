@@ -478,15 +478,14 @@ function formatDate(timestamp: number): string {
   </section>
 </Layout>
 
-<script is:inline define:vars={{ API_URL, guildId: id, userMemberCharId: userMemberChar?.id, invitedCharId: invitedChar?.player_id }}>
-  window.__GUILD_API_URL__ = API_URL;
+<script is:inline define:vars={{ guildId: id, userMemberCharId: userMemberChar?.id, invitedCharId: invitedChar?.player_id }}>
   window.__GUILD_ID__ = guildId;
   window.__USER_MEMBER_CHAR_ID__ = userMemberCharId;
   window.__INVITED_CHAR_ID__ = invitedCharId;
 </script>
 
 <script>
-  const API_URL = (window as any).__GUILD_API_URL__ || 'http://localhost:3001';
+  // Use relative URLs for same-origin requests (avoids cross-domain cookie issues)
   const guildId = (window as any).__GUILD_ID__;
   const userMemberCharId = (window as any).__USER_MEMBER_CHAR_ID__;
   const invitedCharId = (window as any).__INVITED_CHAR_ID__;
@@ -523,7 +522,7 @@ function formatDate(timestamp: number): string {
       if (!playerId) return;
 
       try {
-        const response = await fetch(`${API_URL}/api/guilds/${guildId}/accept`, {
+        const response = await fetch(`/api/guilds/${guildId}/accept`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
@@ -548,7 +547,7 @@ function formatDate(timestamp: number): string {
       if (!playerId) return;
 
       try {
-        const response = await fetch(`${API_URL}/api/guilds/${guildId}/reject`, {
+        const response = await fetch(`/api/guilds/${guildId}/reject`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
@@ -570,7 +569,7 @@ function formatDate(timestamp: number): string {
     const deleteGuildBtn = document.getElementById('deleteGuildBtn');
     deleteGuildBtn?.addEventListener('click', async () => {
       try {
-        const response = await fetch(`${API_URL}/api/guilds/${guildId}`, {
+        const response = await fetch(`/api/guilds/${guildId}`, {
           method: 'DELETE',
           credentials: 'include'
         });
@@ -593,7 +592,7 @@ function formatDate(timestamp: number): string {
       if (!playerId) return;
 
       try {
-        const response = await fetch(`${API_URL}/api/guilds/${guildId}/leave`, {
+        const response = await fetch(`/api/guilds/${guildId}/leave`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
@@ -619,7 +618,7 @@ function formatDate(timestamp: number): string {
         const newRank = parseInt(target.dataset.newRank || '0');
 
         try {
-          const response = await fetch(`${API_URL}/api/guilds/${guildId}/change-rank`, {
+          const response = await fetch(`/api/guilds/${guildId}/change-rank`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
@@ -645,7 +644,7 @@ function formatDate(timestamp: number): string {
         const playerId = target.dataset.playerId;
 
         try {
-          const response = await fetch(`${API_URL}/api/guilds/${guildId}/kick`, {
+          const response = await fetch(`/api/guilds/${guildId}/kick`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
@@ -671,7 +670,7 @@ function formatDate(timestamp: number): string {
         const playerId = target.dataset.playerId;
 
         try {
-          const response = await fetch(`${API_URL}/api/guilds/${guildId}/cancel-invite`, {
+          const response = await fetch(`/api/guilds/${guildId}/cancel-invite`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
@@ -702,7 +701,7 @@ function formatDate(timestamp: number): string {
       inviteError?.classList.add('hidden');
 
       try {
-        const response = await fetch(`${API_URL}/api/guilds/${guildId}/invite`, {
+        const response = await fetch(`/api/guilds/${guildId}/invite`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
@@ -829,7 +828,7 @@ function formatDate(timestamp: number): string {
       saveLogo.textContent = 'Guardando...';
 
       try {
-        const response = await fetch(`${API_URL}/api/guilds/${guildId}/logo`, {
+        const response = await fetch(`/api/guilds/${guildId}/logo`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
@@ -853,7 +852,7 @@ function formatDate(timestamp: number): string {
 
     deleteLogo?.addEventListener('click', async () => {
       try {
-        const response = await fetch(`${API_URL}/api/guilds/${guildId}/logo`, {
+        const response = await fetch(`/api/guilds/${guildId}/logo`, {
           method: 'DELETE',
           credentials: 'include'
         });

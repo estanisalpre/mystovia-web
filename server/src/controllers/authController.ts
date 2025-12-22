@@ -34,7 +34,7 @@ const cookieConfig = (maxAge: number) => ({
   httpOnly: true,
   secure: isProduction,
   sameSite: sameSiteMode,
-  domain: isProduction ? undefined : undefined,
+  path: '/',
   maxAge
 });
 

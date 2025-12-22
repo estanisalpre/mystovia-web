@@ -28,6 +28,9 @@ function formatVotes(votes: number): string {
 const { id } = Astro.params;
 const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3000';
 
+// For internal SSR calls, use localhost with the same port (same Express server)
+const INTERNAL_API_URL = `http://localhost:${process.env.PORT || 3000}`;
+
 // Get user from cookies and verify with API
 const userId = Astro.cookies.get('userId')?.value;
 const userEmail = Astro.cookies.get('userEmail')?.value;
@@ -35,7 +38,8 @@ let user = null;
 
 if (userId && userEmail) {
   try {
-    const verifyResponse = await fetch(`${API_URL}/api/auth/verify`, {
+    // Use internal URL for SSR verification (same server, no cross-origin issues)
+    const verifyResponse = await fetch(`${INTERNAL_API_URL}/api/auth/verify`, {
       method: 'GET',
       headers: {
         'Cookie': `userId=${userId}; userEmail=${userEmail}`,
@@ -65,7 +69,7 @@ const canManageForum = hasPermission(user?.groupId, 'manage_forum');
 let topicData;
 
 try {
-  const response = await fetch(`${API_URL}/api/forum/topics/${id}`);
+  const response = await fetch(`${INTERNAL_API_URL}/api/forum/topics/${id}`);
   topicData = await response.json();
 
   if (!topicData.success) {
@@ -332,7 +336,7 @@ const { topic, comments } = topicData;
   </section>
 </Layout>
 
-<script define:vars={{ topicId: topic.id, API_URL }}>
+<script define:vars={{ topicId: topic.id }}>
   // Helper function to format votes
   function formatVotes(votes) {
     if (votes > 0) return `+${votes}`;
@@ -347,7 +351,7 @@ const { topic, comments } = topicData;
 
   async function vote(direction) {
     try {
-      const response = await fetch(`${API_URL}/api/forum/topics/${topicId}/vote`, {
+      const response = await fetch(`/api/forum/topics/${topicId}/vote`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -413,7 +417,7 @@ const { topic, comments } = topicData;
     `;
 
     try {
-      const response = await fetch(`${API_URL}/api/forum/topics/${topicId}/comments`, {
+      const response = await fetch(`/api/forum/topics/${topicId}/comments`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
@@ -447,7 +451,7 @@ const { topic, comments } = topicData;
     if (!confirm(`¿${isPinned ? 'Desfijar' : 'Fijar'} este tema?`)) return;
 
     try {
-      const response = await fetch(`${API_URL}/api/forum/topics/${topicId}/pin`, {
+      const response = await fetch(`/api/forum/topics/${topicId}/pin`, {
         method: 'PATCH',
         credentials: 'include'
       });
@@ -468,7 +472,7 @@ const { topic, comments } = topicData;
     if (!confirm(`¿${isLocked ? 'Desbloquear' : 'Bloquear'} este tema?`)) return;
 
     try {
-      const response = await fetch(`${API_URL}/api/forum/topics/${topicId}/lock`, {
+      const response = await fetch(`/api/forum/topics/${topicId}/lock`, {
         method: 'PATCH',
         credentials: 'include'
       });
@@ -488,7 +492,7 @@ const { topic, comments } = topicData;
     if (!confirm('¿Estás seguro de eliminar este tema? Esta acción no se puede deshacer.')) return;
 
     try {
-      const response = await fetch(`${API_URL}/api/forum/topics/${topicId}`, {
+      const response = await fetch(`/api/forum/topics/${topicId}`, {
         method: 'DELETE',
         credentials: 'include'
       });
@@ -511,7 +515,7 @@ const { topic, comments } = topicData;
       if (!confirm('¿Eliminar este comentario?')) return;
 
       try {
-        const response = await fetch(`${API_URL}/api/forum/comments/${commentId}`, {
+        const response = await fetch(`/api/forum/comments/${commentId}`, {
           method: 'DELETE',
           credentials: 'include'
         });
