@@ -5,7 +5,7 @@ import { PenLine, ChevronRight, Home, FolderOpen, Type, FileText } from '@lucide
 
 const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3000';
 
-// Get user
+// Get user from cookies and verify with API
 const userId = Astro.cookies.get('userId')?.value;
 const userEmail = Astro.cookies.get('userEmail')?.value;
 let user = null;
@@ -13,11 +13,17 @@ let user = null;
 if (userId && userEmail) {
   try {
     const verifyResponse = await fetch(`${API_URL}/api/auth/verify`, {
-      headers: { Cookie: `userId=${userId}; userEmail=${userEmail}` }
+      method: 'GET',
+      headers: {
+        'Cookie': `userId=${userId}; userEmail=${userEmail}`,
+        'Content-Type': 'application/json'
+      }
     });
     if (verifyResponse.ok) {
       const data = await verifyResponse.json();
-      user = data.user;
+      if (data.success && data.user) {
+        user = data.user;
+      }
     }
   } catch (error) {
     console.error('Error verifying user:', error);

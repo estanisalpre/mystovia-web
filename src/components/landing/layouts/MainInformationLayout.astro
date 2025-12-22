@@ -7,6 +7,7 @@ import LatestDeaths from "../store/LatestDeaths.astro"
 import SearchCharacter from "../store/SearchCharacter.astro";
 import StoreCarousel from "../store/StoreCarousel.astro";
 import HighscoresPreview from "../store/HighscoresPreview.astro";
+import GuildsPreview from "../store/GuildsPreview.astro";
 ---
 
 <section class="min-h-screen w-full max-w-[1150px] mx-auto px-4 py-8 bg-transparent">
@@ -38,12 +39,15 @@ import HighscoresPreview from "../store/HighscoresPreview.astro";
             <StoreCarousel />
         </div>
 
-        <!-- ROW 4: Latest Deaths (3 cols) -->
-        <div class="md:col-span-3">
+        <!-- ROW 4: Latest Deaths (2 cols) + Guilds (1 col) -->
+        <div class="md:col-span-2">
             <LatestDeaths />
         </div>
+        <div class="md:col-span-1">
+            <GuildsPreview />
+        </div>
 
-        <!-- ROW 5: News (2 cols) + empty (1 col) -->
+        <!-- ROW 5: Features (3 cols) -->
         <div class="md:col-span-3">
             <FeaturesSection />
         </div>

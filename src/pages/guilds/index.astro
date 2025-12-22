@@ -1,0 +1,280 @@
+---
+import Layout from "@layouts/Layout.astro";
+import { Shield, Users, Crown, ChevronRight, Plus } from '@lucide/astro';
+
+const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3001';
+---
+
+<Layout title="Guilds | Mystovia">
+  <section class="page-container">
+    <!-- Header -->
+    <header class="text-center mb-8">
+      <div class="flex items-center justify-center gap-3 mb-3">
+        <div class="h-px w-16 bg-gradient-to-r from-transparent to-yellow-500/50"></div>
+        <Shield class="w-8 h-8 text-yellow-500" />
+        <div class="h-px w-16 bg-gradient-to-l from-transparent to-yellow-500/50"></div>
+      </div>
+      <h1 class="text-3xl md:text-4xl font-bold text-yellow-500 medieval-font mb-2">Guilds</h1>
+      <p class="text-gray-400">Únete a una hermandad y conquista Mystovia</p>
+    </header>
+
+    <!-- Create Guild Button -->
+    <div class="flex justify-end mb-6">
+      <a href="/guilds/create"
+         class="flex items-center gap-2 px-4 py-2 bg-gradient-to-b from-yellow-600 to-yellow-700 hover:from-yellow-500 hover:to-yellow-600 text-white rounded-lg transition-all border border-yellow-500/30 shadow-[0_0_10px_rgba(234,179,8,0.2)] hover:shadow-[0_0_15px_rgba(234,179,8,0.3)]">
+        <Plus class="w-4 h-4" />
+        <span class="font-semibold">Crear Guild</span>
+      </a>
+    </div>
+
+    <!-- Guilds List -->
+    <div class="relative rounded-xl overflow-hidden"
+         style="background: linear-gradient(to bottom, rgb(31 41 55 / 0.6), rgb(17 24 39 / 0.8)); border: 1px solid rgb(234 179 8 / 0.15);">
+      <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-yellow-500/30 to-transparent"></div>
+
+      <!-- Diamond pattern overlay -->
+      <div class="absolute inset-0 opacity-[0.02] pointer-events-none"
+           style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M30 0L60 30L30 60L0 30z\' fill=\'%23d4af37\' fill-opacity=\'0.4\'/%3E%3C/svg%3E'); background-size: 30px 30px;"></div>
+
+      <!-- Table Header -->
+      <div class="hidden sm:grid grid-cols-12 gap-2 px-4 py-3 text-sm text-yellow-500 font-semibold border-b border-yellow-600/20 bg-black/20">
+        <div class="col-span-5">Guild</div>
+        <div class="col-span-3">Líder</div>
+        <div class="col-span-2 text-center">Miembros</div>
+        <div class="col-span-2 text-center">Creada</div>
+      </div>
+
+      <!-- Loading State -->
+      <div id="loadingState" class="py-12 text-center">
+        <div class="w-8 h-8 border-2 border-yellow-500/30 border-t-yellow-500 rounded-full animate-spin mx-auto mb-3"></div>
+        <p class="text-gray-400">Cargando guilds...</p>
+      </div>
+
+      <!-- Error State -->
+      <div id="errorState" class="hidden py-12 text-center">
+        <Shield class="w-12 h-12 mx-auto text-red-500/50 mb-3" />
+        <p class="text-red-400">Error al cargar las guilds</p>
+      </div>
+
+      <!-- Empty State -->
+      <div id="emptyState" class="hidden py-12 text-center">
+        <Shield class="w-12 h-12 mx-auto text-yellow-500/30 mb-3" />
+        <p class="text-gray-400 mb-4">No hay guilds creadas aún</p>
+        <a href="/guilds/create" class="inline-flex items-center gap-2 text-yellow-500 hover:text-yellow-400 transition-colors">
+          <Plus class="w-4 h-4" />
+          Sé el primero en crear una
+        </a>
+      </div>
+
+      <!-- Guilds List -->
+      <div id="guildsList" class="hidden">
+        <!-- Guilds will be inserted here -->
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div id="pagination" class="hidden flex justify-center items-center gap-2 mt-6">
+      <!-- Pagination will be inserted here -->
+    </div>
+  </section>
+</Layout>
+
+<script is:inline define:vars={{ API_URL }}>
+  window.__GUILDS_API_URL__ = API_URL;
+</script>
+
+<script>
+  const API_URL = (window as any).__GUILDS_API_URL__ || 'http://localhost:3001';
+
+  interface Guild {
+    id: number;
+    name: string;
+    ownerid: number;
+    owner_name: string;
+    owner_level: number;
+    member_count: number;
+    creationdata: number;
+    has_logo: boolean;
+  }
+
+  let currentPage = 1;
+
+  function init() {
+    const params = new URLSearchParams(window.location.search);
+    currentPage = parseInt(params.get('page') || '1');
+    loadGuilds();
+  }
+
+  function formatDate(timestamp: number): string {
+    const date = new Date(timestamp * 1000);
+    return date.toLocaleDateString('es-ES', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  }
+
+  async function loadGuilds() {
+    const loadingState = document.getElementById('loadingState');
+    const errorState = document.getElementById('errorState');
+    const emptyState = document.getElementById('emptyState');
+    const guildsList = document.getElementById('guildsList');
+    const pagination = document.getElementById('pagination');
+
+    loadingState?.classList.remove('hidden');
+    errorState?.classList.add('hidden');
+    emptyState?.classList.add('hidden');
+    guildsList?.classList.add('hidden');
+    pagination?.classList.add('hidden');
+
+    try {
+      const response = await fetch(`${API_URL}/api/guilds?page=${currentPage}&limit=20`);
+
+      if (!response.ok) throw new Error('Failed to fetch');
+
+      const data = await response.json();
+
+      loadingState?.classList.add('hidden');
+
+      if (!data.guilds || data.guilds.length === 0) {
+        emptyState?.classList.remove('hidden');
+        return;
+      }
+
+      if (guildsList) {
+        guildsList.innerHTML = data.guilds.map((guild: Guild) => {
+          return `
+            <a href="/guilds/${guild.id}"
+               class="block sm:grid sm:grid-cols-12 gap-2 px-4 py-4 border-b border-yellow-600/10 transition-all duration-300 hover:bg-yellow-500/5 group">
+              <!-- Desktop Layout -->
+              <div class="hidden sm:flex col-span-5 items-center gap-3">
+                <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-yellow-600/30 to-yellow-800/30 border border-yellow-500/20 flex items-center justify-center overflow-hidden">
+                  ${guild.has_logo
+                    ? `<img src="${API_URL}/api/guilds/${guild.id}/logo" alt="${guild.name}" class="w-full h-full object-cover" />`
+                    : `<span class="text-lg font-bold text-yellow-500">${guild.name[0].toUpperCase()}</span>`
+                  }
+                </div>
+                <span class="text-white font-semibold group-hover:text-yellow-500 transition-colors">${guild.name}</span>
+              </div>
+              <div class="hidden sm:flex col-span-3 items-center gap-2 text-gray-400">
+                <svg class="w-4 h-4 text-yellow-500/70" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M10 0L20 10L10 20L0 10z"/>
+                </svg>
+                ${guild.owner_name || 'Desconocido'}
+              </div>
+              <div class="hidden sm:flex col-span-2 items-center justify-center text-white gap-1">
+                <svg class="w-4 h-4 text-yellow-500/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                </svg>
+                ${guild.member_count}
+              </div>
+              <div class="hidden sm:flex col-span-2 items-center justify-center text-gray-500 text-sm">${formatDate(guild.creationdata)}</div>
+
+              <!-- Mobile Layout -->
+              <div class="sm:hidden">
+                <div class="flex items-center gap-3 mb-2">
+                  <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-yellow-600/30 to-yellow-800/30 border border-yellow-500/20 flex items-center justify-center overflow-hidden">
+                    ${guild.has_logo
+                      ? `<img src="${API_URL}/api/guilds/${guild.id}/logo" alt="${guild.name}" class="w-full h-full object-cover" />`
+                      : `<span class="text-lg font-bold text-yellow-500">${guild.name[0].toUpperCase()}</span>`
+                    }
+                  </div>
+                  <div>
+                    <div class="text-white font-semibold group-hover:text-yellow-500 transition-colors">${guild.name}</div>
+                    <div class="text-gray-500 text-xs">Líder: ${guild.owner_name || 'Desconocido'}</div>
+                  </div>
+                </div>
+                <div class="flex justify-between text-xs text-gray-400 pl-14">
+                  <span>${guild.member_count} miembros</span>
+                  <span>${formatDate(guild.creationdata)}</span>
+                </div>
+              </div>
+            </a>
+          `;
+        }).join('');
+
+        guildsList.classList.remove('hidden');
+      }
+
+      // Pagination
+      if (pagination && data.pagination && data.pagination.totalPages > 1) {
+        const { page, totalPages } = data.pagination;
+        let html = '';
+
+        if (page > 1) {
+          html += `<button class="pagination-btn" data-page="${page - 1}">&laquo;</button>`;
+        }
+
+        const startPage = Math.max(1, page - 2);
+        const endPage = Math.min(totalPages, page + 2);
+
+        if (startPage > 1) {
+          html += `<button class="pagination-btn" data-page="1">1</button>`;
+          if (startPage > 2) html += `<span class="text-gray-500 px-2">...</span>`;
+        }
+
+        for (let i = startPage; i <= endPage; i++) {
+          html += `<button class="pagination-btn ${i === page ? 'active' : ''}" data-page="${i}">${i}</button>`;
+        }
+
+        if (endPage < totalPages) {
+          if (endPage < totalPages - 1) html += `<span class="text-gray-500 px-2">...</span>`;
+          html += `<button class="pagination-btn" data-page="${totalPages}">${totalPages}</button>`;
+        }
+
+        if (page < totalPages) {
+          html += `<button class="pagination-btn" data-page="${page + 1}">&raquo;</button>`;
+        }
+
+        pagination.innerHTML = html;
+        pagination.classList.remove('hidden');
+
+        pagination.querySelectorAll('.pagination-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const target = e.target as HTMLElement;
+            const p = target.dataset.page;
+            if (p) {
+              currentPage = parseInt(p);
+              loadGuilds();
+              const newURL = currentPage > 1 ? `?page=${currentPage}` : window.location.pathname;
+              window.history.replaceState({}, '', newURL);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+          });
+        });
+      }
+
+    } catch (error) {
+      console.error('Error loading guilds:', error);
+      loadingState?.classList.add('hidden');
+      errorState?.classList.remove('hidden');
+    }
+  }
+
+  init();
+  document.addEventListener('astro:page-load', init);
+</script>
+
+<style>
+  .pagination-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    background: linear-gradient(to bottom, rgb(31 41 55 / 0.8), rgb(17 24 39 / 0.9));
+    border: 1px solid rgb(234 179 8 / 0.2);
+    color: rgb(234 179 8);
+    font-weight: 500;
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+
+  .pagination-btn:hover {
+    background: linear-gradient(to bottom, rgb(55 65 81 / 0.8), rgb(31 41 55 / 0.9));
+    border-color: rgb(234 179 8 / 0.4);
+  }
+
+  .pagination-btn.active {
+    background: linear-gradient(to bottom, rgb(234 179 8), rgb(202 138 4));
+    color: black;
+    border-color: rgb(234 179 8);
+  }
+</style>

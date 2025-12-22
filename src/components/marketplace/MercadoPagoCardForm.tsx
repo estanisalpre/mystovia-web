@@ -32,7 +32,6 @@ export default function MercadoPagoCardForm({
   const PUBLIC_KEY = import.meta.env.PUBLIC_MP_PUBLIC_KEY || 'TEST-663376ac-4d90-4b2c-b4bf-940a1e966185';
 
   useEffect(() => {
-    // Load MercadoPago SDK
     const script = document.createElement('script');
     script.src = 'https://sdk.mercadopago.com/js/v2';
     script.async = true;
@@ -49,7 +48,6 @@ export default function MercadoPagoCardForm({
     document.body.appendChild(script);
 
     return () => {
-      // Cleanup
       if (document.body.contains(script)) {
         document.body.removeChild(script);
       }
@@ -79,14 +77,29 @@ export default function MercadoPagoCardForm({
           cardNumber: {
             id: "form-checkout__cardNumber",
             placeholder: "Número de tarjeta",
+            style: {
+              color: "#ffffff",
+              placeholderColor: "#9ca3af",
+              fontSize: "16px",
+            },
           },
           expirationDate: {
             id: "form-checkout__expirationDate",
             placeholder: "MM/AA",
+            style: {
+              color: "#ffffff",
+              placeholderColor: "#9ca3af",
+              fontSize: "16px",
+            },
           },
           securityCode: {
             id: "form-checkout__securityCode",
             placeholder: "CVV",
+            style: {
+              color: "#ffffff",
+              placeholderColor: "#9ca3af",
+              fontSize: "16px",
+            },
           },
           cardholderName: {
             id: "form-checkout__cardholderName",
@@ -246,13 +259,14 @@ export default function MercadoPagoCardForm({
         className={`space-y-3 sm:space-y-4 ${loading ? 'hidden' : ''}`}
       >
         <style>{`
+          /* MercadoPago iframe containers - card number, expiration, CVV */
           .mp-container {
             height: 44px;
             border: 1px solid rgb(202 138 4 / 0.3);
             border-radius: 0.5rem;
             padding: 0.625rem;
             background: linear-gradient(to bottom, rgb(17 24 39 / 0.95), rgb(31 41 55 / 0.9));
-            transition: border-color 0.2s;
+            transition: all 0.3s ease;
           }
           @media (min-width: 640px) {
             .mp-container {
@@ -261,10 +275,12 @@ export default function MercadoPagoCardForm({
             }
           }
           .mp-container:focus-within {
-            border-color: rgb(234 179 8 / 0.5);
-            box-shadow: 0 0 0 2px rgb(234 179 8 / 0.1);
+            border-color: rgb(234 179 8 / 0.6);
+            box-shadow: 0 0 15px rgba(234, 179, 8, 0.15), 0 0 0 2px rgb(234 179 8 / 0.1);
             outline: none;
           }
+
+          /* All form inputs - consistent medieval style */
           #form-checkout__cardholderName,
           #form-checkout__identificationNumber,
           #form-checkout__cardholderEmail,
@@ -275,11 +291,11 @@ export default function MercadoPagoCardForm({
             height: 44px;
             border: 1px solid rgb(202 138 4 / 0.3);
             border-radius: 0.5rem;
-            padding: 0.625rem;
+            padding: 0.625rem 0.75rem;
             background: linear-gradient(to bottom, rgb(17 24 39 / 0.95), rgb(31 41 55 / 0.9));
-            color: #fff;
+            color: #ffffff;
             font-size: 0.875rem;
-            transition: border-color 0.2s;
+            transition: all 0.3s ease;
           }
           @media (min-width: 640px) {
             #form-checkout__cardholderName,
@@ -289,47 +305,82 @@ export default function MercadoPagoCardForm({
             #form-checkout__installments,
             #form-checkout__identificationType {
               height: 48px;
-              padding: 0.75rem;
+              padding: 0.75rem 1rem;
               font-size: 1rem;
             }
           }
+
+          /* Placeholder styling */
+          #form-checkout__cardholderName::placeholder,
+          #form-checkout__identificationNumber::placeholder,
+          #form-checkout__cardholderEmail::placeholder {
+            color: rgb(156 163 175);
+          }
+
+          /* Focus state - medieval golden glow */
           #form-checkout__cardholderName:focus,
           #form-checkout__identificationNumber:focus,
           #form-checkout__cardholderEmail:focus,
           #form-checkout__issuer:focus,
           #form-checkout__installments:focus,
           #form-checkout__identificationType:focus {
-            border-color: rgb(234 179 8 / 0.5);
-            box-shadow: 0 0 0 2px rgb(234 179 8 / 0.1);
+            border-color: rgb(234 179 8 / 0.6);
+            box-shadow: 0 0 15px rgba(234, 179, 8, 0.15), 0 0 0 2px rgb(234 179 8 / 0.1);
             outline: none;
           }
+
+          /* Select dropdown options */
           #form-checkout__issuer option,
           #form-checkout__installments option,
           #form-checkout__identificationType option {
             background-color: rgb(17 24 39);
             color: white;
           }
+
+          /* Progress bar - medieval styled */
           .progress-bar {
             width: 100%;
-            height: 4px;
-            background-color: #1f2937;
-            border-radius: 2px;
+            height: 6px;
+            background: linear-gradient(to right, rgb(31 41 55), rgb(55 65 81));
+            border-radius: 3px;
             overflow: hidden;
+            border: 1px solid rgb(202 138 4 / 0.2);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3);
           }
           .progress-bar[value] {
             appearance: none;
             border: none;
           }
           .progress-bar[value]::-webkit-progress-bar {
-            background-color: #1f2937;
+            background: linear-gradient(to right, rgb(31 41 55), rgb(55 65 81));
+            border-radius: 3px;
           }
           .progress-bar[value]::-webkit-progress-value {
-            background-color: rgb(234 179 8);
+            background: linear-gradient(to right, rgb(202 138 4), rgb(234 179 8));
+            border-radius: 3px;
+            box-shadow: 0 0 10px rgba(234, 179, 8, 0.5);
+            transition: width 0.3s ease;
+          }
+          .progress-bar::-moz-progress-bar {
+            background: linear-gradient(to right, rgb(202 138 4), rgb(234 179 8));
+            border-radius: 3px;
+            box-shadow: 0 0 10px rgba(234, 179, 8, 0.5);
+          }
+
+          /* MercadoPago iframe text color override */
+          .mp-container iframe {
+            color: #ffffff !important;
+          }
+
+          /* Shimmer animation for progress bar */
+          @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
           }
         `}</style>
 
         {/* Card Number */}
-        <div>
+        <div className='text-white'>
           <label className="block text-white font-semibold text-sm sm:text-base mb-1.5 sm:mb-2">Número de Tarjeta</label>
           <div id="form-checkout__cardNumber" className="mp-container"></div>
         </div>
@@ -383,7 +434,15 @@ export default function MercadoPagoCardForm({
         </div>
 
         {/* Progress Bar */}
-        <progress value="0" className="progress-bar">Cargando...</progress>
+        <div className="relative py-2">
+          <progress value="0" className="progress-bar">Cargando...</progress>
+          <div className="absolute inset-0 pointer-events-none opacity-30"
+               style={{
+                 background: 'linear-gradient(90deg, transparent 0%, rgba(234, 179, 8, 0.3) 50%, transparent 100%)',
+                 animation: 'shimmer 2s infinite'
+               }}
+          />
+        </div>
 
         {/* Buttons */}
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 pt-3 sm:pt-4">

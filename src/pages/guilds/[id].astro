@@ -1,0 +1,875 @@
+---
+export const prerender = false;
+
+import Layout from "@layouts/Layout.astro";
+import { Shield, Users, Crown, ChevronRight, Home, UserPlus, LogOut, Mail, Camera, X, UserMinus, ChevronUp, ChevronDown, Trash2 } from '@lucide/astro';
+
+const { id } = Astro.params;
+const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3001';
+
+// Get user from cookies
+const userId = Astro.cookies.get('userId')?.value;
+let user = null;
+let userCharacters: any[] = [];
+
+if (userId) {
+  try {
+    const verifyResponse = await fetch(`${API_URL}/api/auth/verify`, {
+      method: 'GET',
+      headers: { 'Cookie': `userId=${userId}` }
+    });
+    if (verifyResponse.ok) {
+      const data = await verifyResponse.json();
+      if (data.success && data.user) {
+        user = data.user;
+      }
+    }
+
+    // Get user's characters
+    const charsResponse = await fetch(`${API_URL}/api/characters`, {
+      headers: { 'Cookie': `userId=${userId}` }
+    });
+    if (charsResponse.ok) {
+      const charsData = await charsResponse.json();
+      userCharacters = charsData.characters || [];
+    }
+  } catch (error) {
+    console.error('Error verifying user:', error);
+  }
+}
+
+// Fetch guild
+let guildData: any = null;
+let error = null;
+
+try {
+  const response = await fetch(`${API_URL}/api/guilds/${id}`);
+  const data = await response.json();
+
+  if (data.success) {
+    guildData = data.guild;
+  } else {
+    error = data.error || 'Guild no encontrada';
+  }
+} catch (e) {
+  error = 'Error al cargar la guild';
+}
+
+// Check user's relationship to guild
+const isOwner = user && guildData && userCharacters.some((c: any) => c.id === guildData.ownerid);
+const userMemberChar = user && guildData ? guildData.members?.find((m: any) =>
+  userCharacters.some((c: any) => c.id === m.id)
+) : null;
+const isMember = !!userMemberChar;
+const isLeaderOrVice = userMemberChar && (userMemberChar.rank_level === 1 || userMemberChar.rank_level === 2);
+
+// Check if any of user's characters has a pending invite to this guild
+const invitedChar = user && guildData ? guildData.invites?.find((inv: any) =>
+  userCharacters.some((c: any) => c.id === inv.player_id)
+) : null;
+const hasInvite = !!invitedChar;
+
+// Separate members by rank
+const leaders = guildData?.members?.filter((m: any) => m.rank_level === 1) || [];
+const viceLeaders = guildData?.members?.filter((m: any) => m.rank_level === 2) || [];
+const members = guildData?.members?.filter((m: any) => m.rank_level === 3) || [];
+
+function getVocationName(vocationId: number): string {
+  const vocations: Record<number, string> = {
+    0: 'None', 1: 'Sorcerer', 2: 'Druid', 3: 'Paladin', 4: 'Knight',
+    5: 'Master Sorcerer', 6: 'Elder Druid', 7: 'Royal Paladin', 8: 'Elite Knight'
+  };
+  return vocations[vocationId] || 'Unknown';
+}
+
+function formatDate(timestamp: number): string {
+  const date = new Date(timestamp * 1000);
+  return date.toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' });
+}
+---
+
+<Layout title={guildData ? `${guildData.name} | Guilds` : 'Guild | Mystovia'}>
+  <section class="page-container max-w-4xl mx-auto">
+    <!-- Breadcrumb -->
+    <nav class="flex items-center gap-2 text-xs sm:text-sm text-gray-400 mb-6">
+      <a href="/" class="hover:text-yellow-500 transition-colors flex items-center gap-1">
+        <Home class="w-3 h-3" />
+        Inicio
+      </a>
+      <ChevronRight class="w-3 h-3 text-gray-600" />
+      <a href="/guilds" class="hover:text-yellow-500 transition-colors">Guilds</a>
+      <ChevronRight class="w-3 h-3 text-gray-600" />
+      <span class="text-yellow-500">{guildData?.name || 'Guild'}</span>
+    </nav>
+
+    {error ? (
+      <div class="text-center py-12">
+        <Shield class="w-16 h-16 mx-auto text-red-500/50 mb-4" />
+        <h1 class="text-2xl font-bold text-red-400 mb-2">Error</h1>
+        <p class="text-gray-400">{error}</p>
+        <a href="/guilds" class="inline-block mt-4 text-yellow-500 hover:text-yellow-400 transition-colors">
+          Volver a Guilds
+        </a>
+      </div>
+    ) : guildData && (
+      <>
+        {hasInvite && (
+          <div class="mb-6 p-4 rounded-xl bg-gradient-to-r from-green-500/20 to-green-600/10 border border-green-500/30">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div class="flex items-center gap-3">
+                <Mail class="w-6 h-6 text-green-400" />
+                <div>
+                  <p class="text-white font-semibold">Tienes una invitación pendiente</p>
+                  <p class="text-gray-400 text-sm">Tu personaje <span class="text-green-400">{userCharacters.find((c: any) => c.id === invitedChar.player_id)?.name}</span> ha sido invitado a esta guild</p>
+                </div>
+              </div>
+              <div class="flex gap-2 w-full sm:w-auto">
+                <button id="rejectInviteBtn" data-player-id={invitedChar.player_id}
+                        class="flex-1 sm:flex-none px-4 py-2 border border-red-500/30 text-red-400 hover:bg-red-500/10 rounded-lg transition-all text-sm">
+                  Rechazar
+                </button>
+                <button id="acceptInviteBtn" data-player-id={invitedChar.player_id}
+                        class="flex-1 sm:flex-none px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg transition-all text-sm">
+                  Aceptar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div class="relative rounded-xl overflow-hidden mb-6"
+             style="background: linear-gradient(to bottom, rgb(31 41 55 / 0.8), rgb(17 24 39 / 0.9)); border: 1px solid rgb(234 179 8 / 0.2);">
+          <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-yellow-500/50 to-transparent"></div>
+
+          <div class="absolute inset-0 opacity-[0.03] pointer-events-none"
+               style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M30 0L60 30L30 60L0 30z\' fill=\'%23d4af37\' fill-opacity=\'0.4\'/%3E%3C/svg%3E'); background-size: 30px 30px;"></div>
+
+          <div class="relative z-10 p-6">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+              <div class="relative group">
+                <div id="guildLogo" class="w-20 h-20 rounded-xl bg-gradient-to-br from-yellow-600/40 to-yellow-800/40 border-2 border-yellow-500/30 flex items-center justify-center shadow-lg overflow-hidden">
+                  {guildData.has_logo ? (
+                    <img src={`${API_URL}/api/guilds/${id}/logo`} alt={guildData.name} class="w-full h-full object-cover" />
+                  ) : (
+                    <span class="text-4xl font-bold text-yellow-500">{guildData.name[0].toUpperCase()}</span>
+                  )}
+                </div>
+                {isOwner && (
+                  <button id="uploadLogoBtn"
+                          class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center rounded-xl cursor-pointer">
+                    <Camera class="w-6 h-6 text-white" />
+                  </button>
+                )}
+              </div>
+
+              <div class="flex-1">
+                <h1 class="text-2xl sm:text-3xl font-bold text-yellow-500 medieval-font">{guildData.name}</h1>
+                <div class="flex flex-wrap items-center gap-3 mt-2 text-sm text-gray-400">
+                  <span class="flex items-center gap-1">
+                    <Crown class="w-4 h-4 text-yellow-500/70" />
+                    Líder: <a href={`/character-information?name=${encodeURIComponent(guildData.owner_name)}`} class="text-yellow-500 hover:text-yellow-400">{guildData.owner_name}</a>
+                  </span>
+                  <span class="flex items-center gap-1">
+                    <Users class="w-4 h-4 text-yellow-500/70" />
+                    {guildData.members?.length || 0} miembros
+                  </span>
+                </div>
+                <p class="mt-2 text-gray-500 text-sm">Fundada el {formatDate(guildData.creationdata)}</p>
+              </div>
+
+              <!-- Actions for owner -->
+              {isOwner && (
+                <div class="flex gap-2">
+                  <button id="deleteGuildBtn"
+                          class="flex items-center gap-2 px-4 py-2 bg-red-600/80 hover:bg-red-500 text-white rounded-lg transition-all text-sm">
+                    <Trash2 class="w-4 h-4" />
+                    Eliminar Guild
+                  </button>
+                </div>
+              )}
+
+              <!-- Actions for members (not owner) -->
+              {isMember && !isOwner && (
+                <div class="flex gap-2">
+                  <button id="leaveGuildBtn" data-player-id={userMemberChar?.id} class="flex items-center gap-2 px-4 py-2 bg-red-600/80 hover:bg-red-500 text-white rounded-lg transition-all text-sm">
+                    <LogOut class="w-4 h-4" />
+                    Abandonar
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {isOwner && (
+          <div id="logoModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="document.getElementById('logoModal').classList.add('hidden')"></div>
+            <div class="relative w-full max-w-md rounded-xl overflow-hidden"
+                 style="background: linear-gradient(to bottom, rgb(31 41 55), rgb(17 24 39)); border: 1px solid rgb(234 179 8 / 0.2);">
+              <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-yellow-500/50 to-transparent"></div>
+              <div class="p-6">
+                <h3 class="text-xl font-bold text-yellow-500 medieval-font mb-4">Cambiar Logo de Guild</h3>
+
+                <div id="logoPreviewContainer" class="mb-4">
+                  <div id="logoDropZone" class="border-2 border-dashed border-yellow-500/30 rounded-lg p-8 text-center cursor-pointer hover:border-yellow-500/50 transition-colors">
+                    <Camera class="w-12 h-12 mx-auto text-yellow-500/50 mb-2" />
+                    <p class="text-gray-400 text-sm">Haz clic o arrastra una imagen</p>
+                    <p class="text-gray-500 text-xs mt-1">PNG, JPG o GIF (max. 500KB)</p>
+                  </div>
+                  <div id="logoPreview" class="hidden">
+                    <img id="logoPreviewImg" src="" alt="Preview" class="w-32 h-32 mx-auto rounded-lg object-cover border-2 border-yellow-500/30" />
+                    <button id="removePreview" class="mt-2 text-red-400 hover:text-red-300 text-sm flex items-center gap-1 mx-auto">
+                      <X class="w-4 h-4" />
+                      Quitar
+                    </button>
+                  </div>
+                </div>
+
+                <input type="file" id="logoInput" accept="image/png,image/jpeg,image/gif" class="hidden" />
+
+                <div id="logoError" class="hidden mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm"></div>
+
+                <div class="flex gap-3">
+                  <button type="button" onclick="document.getElementById('logoModal').classList.add('hidden')" class="flex-1 px-4 py-2 border border-gray-600 text-gray-400 hover:text-white rounded-lg transition-all">
+                    Cancelar
+                  </button>
+                  <button id="saveLogo" class="flex-1 px-4 py-2 bg-yellow-600 hover:bg-yellow-500 text-white rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                    Guardar Logo
+                  </button>
+                </div>
+
+                {guildData.has_logo && (
+                  <button id="deleteLogo" class="w-full mt-3 px-4 py-2 border border-red-500/30 text-red-400 hover:bg-red-500/10 rounded-lg transition-all text-sm">
+                    Eliminar Logo Actual
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {isLeaderOrVice && (
+          <div id="inviteModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="document.getElementById('inviteModal').classList.add('hidden')"></div>
+            <div class="relative w-full max-w-md rounded-xl overflow-hidden"
+                 style="background: linear-gradient(to bottom, rgb(31 41 55), rgb(17 24 39)); border: 1px solid rgb(234 179 8 / 0.2);">
+              <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-yellow-500/50 to-transparent"></div>
+              <div class="p-6">
+                <h3 class="text-xl font-bold text-yellow-500 medieval-font mb-4">Invitar Jugador</h3>
+                <form id="inviteForm">
+                  <label class="block text-gray-400 text-sm mb-2">Nombre del personaje</label>
+                  <input type="text" id="invitePlayerName" class="form-input w-full mb-4" placeholder="Nombre del personaje" required />
+                  <div id="inviteError" class="hidden mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-lg text-red-400 text-sm"></div>
+                  <div class="flex gap-3">
+                    <button type="button" onclick="document.getElementById('inviteModal').classList.add('hidden')" class="flex-1 px-4 py-2 border border-gray-600 text-gray-400 hover:text-white rounded-lg transition-all">
+                      Cancelar
+                    </button>
+                    <button type="submit" class="flex-1 px-4 py-2 bg-yellow-600 hover:bg-yellow-500 text-white rounded-lg transition-all">
+                      Enviar Invitación
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div class="relative rounded-xl overflow-hidden"
+             style="background: linear-gradient(to bottom, rgb(31 41 55 / 0.6), rgb(17 24 39 / 0.8)); border: 1px solid rgb(234 179 8 / 0.15);">
+          <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-yellow-500/30 to-transparent"></div>
+
+          <div class="border-b border-yellow-600/20 bg-black/20">
+            <div class="flex items-center justify-between px-4 py-3">
+              <h2 class="text-lg font-bold text-yellow-500 medieval-font flex items-center gap-2">
+                <Users class="w-5 h-5" />
+                Miembros ({guildData.members?.length || 0})
+              </h2>
+              {isLeaderOrVice && (
+                <button onclick="document.getElementById('inviteModal').classList.remove('hidden')"
+                        class="flex items-center gap-1 text-sm text-yellow-500 hover:text-yellow-400 transition-colors">
+                  <UserPlus class="w-4 h-4" />
+                  Invitar
+                </button>
+              )}
+            </div>
+
+            <div class="flex border-t border-yellow-600/10">
+              <button id="tab-leaders" class="member-tab flex-1 px-4 py-2 text-sm font-medium text-yellow-500 border-b-2 border-yellow-500 bg-yellow-500/5 transition-all">
+                <span class="flex items-center justify-center gap-1">
+                  <Crown class="w-4 h-4" />
+                  Leaders ({leaders.length})
+                </span>
+              </button>
+              <button id="tab-viceleaders" class="member-tab flex-1 px-4 py-2 text-sm font-medium text-gray-400 border-b-2 border-transparent hover:text-yellow-500/70 transition-all">
+                <span class="flex items-center justify-center gap-1">
+                  <Shield class="w-4 h-4" />
+                  Vice Leaders ({viceLeaders.length})
+                </span>
+              </button>
+              <button id="tab-members" class="member-tab flex-1 px-4 py-2 text-sm font-medium text-gray-400 border-b-2 border-transparent hover:text-yellow-500/70 transition-all">
+                <span class="flex items-center justify-center gap-1">
+                  <Users class="w-4 h-4" />
+                  Members ({members.length})
+                </span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Tab Content: Leaders -->
+          <div id="content-leaders" class="tab-content">
+            {leaders.length > 0 ? (
+              <div class="divide-y divide-yellow-600/10">
+                {leaders.map((member: any) => (
+                  <div class="flex items-center gap-3 px-4 py-3 hover:bg-yellow-500/5 transition-colors group">
+                    <a href={`/character-information?name=${encodeURIComponent(member.name)}`} class="flex items-center gap-3 flex-1 min-w-0">
+                      <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-yellow-600/30 to-yellow-800/30 border border-yellow-500/30 flex items-center justify-center">
+                        <span class="text-sm font-bold text-yellow-500">{member.name[0].toUpperCase()}</span>
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2">
+                          <span class="text-white font-semibold group-hover:text-yellow-500 transition-colors">{member.name}</span>
+                          <Crown class="w-4 h-4 text-yellow-500" />
+                        </div>
+                        <div class="text-gray-500 text-xs">
+                          {getVocationName(member.vocation)} · Level {member.level}
+                        </div>
+                      </div>
+                    </a>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div class="py-8 text-center text-gray-400">
+                No hay leaders en esta guild
+              </div>
+            )}
+          </div>
+
+          <!-- Tab Content: Vice Leaders -->
+          <div id="content-viceleaders" class="tab-content hidden">
+            {viceLeaders.length > 0 ? (
+              <div class="divide-y divide-yellow-600/10">
+                {viceLeaders.map((member: any) => (
+                  <div class="flex items-center gap-3 px-4 py-3 hover:bg-yellow-500/5 transition-colors group">
+                    <a href={`/character-information?name=${encodeURIComponent(member.name)}`} class="flex items-center gap-3 flex-1 min-w-0">
+                      <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-600/30 to-blue-800/30 border border-blue-500/30 flex items-center justify-center">
+                        <span class="text-sm font-bold text-blue-400">{member.name[0].toUpperCase()}</span>
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2">
+                          <span class="text-white font-semibold group-hover:text-yellow-500 transition-colors">{member.name}</span>
+                          <Shield class="w-4 h-4 text-blue-400" />
+                        </div>
+                        <div class="text-gray-500 text-xs">
+                          {getVocationName(member.vocation)} · Level {member.level}
+                        </div>
+                      </div>
+                    </a>
+                    {isOwner && (
+                      <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button class="change-rank-btn p-2 text-gray-400 hover:text-gray-300 hover:bg-gray-500/10 rounded transition-colors"
+                                data-player-id={member.id}
+                                data-new-rank="3"
+                                title="Degradar a Member">
+                          <ChevronDown class="w-4 h-4" />
+                        </button>
+                        <button class="kick-member-btn p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded transition-colors"
+                                data-player-id={member.id}
+                                data-player-name={member.name}
+                                title="Expulsar">
+                          <UserMinus class="w-4 h-4" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div class="py-8 text-center text-gray-400">
+                No hay vice leaders en esta guild
+              </div>
+            )}
+          </div>
+
+          <!-- Tab Content: Members -->
+          <div id="content-members" class="tab-content hidden">
+            {members.length > 0 ? (
+              <div class="divide-y divide-yellow-600/10">
+                {members.map((member: any) => (
+                  <div class="flex items-center gap-3 px-4 py-3 hover:bg-yellow-500/5 transition-colors group">
+                    <a href={`/character-information?name=${encodeURIComponent(member.name)}`} class="flex items-center gap-3 flex-1 min-w-0">
+                      <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-gray-700 to-gray-800 border border-gray-600/50 flex items-center justify-center">
+                        <span class="text-sm font-bold text-gray-400">{member.name[0].toUpperCase()}</span>
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <div class="flex items-center gap-2">
+                          <span class="text-white font-semibold group-hover:text-yellow-500 transition-colors">{member.name}</span>
+                        </div>
+                        <div class="text-gray-500 text-xs">
+                          {getVocationName(member.vocation)} · Level {member.level}
+                        </div>
+                      </div>
+                    </a>
+                    {isLeaderOrVice && (
+                      <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        {isOwner && (
+                          <button class="change-rank-btn p-2 text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 rounded transition-colors"
+                                  data-player-id={member.id}
+                                  data-new-rank="2"
+                                  title="Promover a Vice Leader">
+                            <ChevronUp class="w-4 h-4" />
+                          </button>
+                        )}
+                        <button class="kick-member-btn p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded transition-colors"
+                                data-player-id={member.id}
+                                data-player-name={member.name}
+                                title="Expulsar">
+                          <UserMinus class="w-4 h-4" />
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div class="py-8 text-center text-gray-400">
+                No hay members en esta guild
+              </div>
+            )}
+          </div>
+        </div>
+
+        <!-- Pending Invites (visible to leaders/vice leaders) -->
+        {isLeaderOrVice && guildData.invites && guildData.invites.length > 0 && (
+          <div class="relative rounded-xl overflow-hidden mt-6"
+               style="background: linear-gradient(to bottom, rgb(31 41 55 / 0.6), rgb(17 24 39 / 0.8)); border: 1px solid rgb(234 179 8 / 0.15);">
+            <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-yellow-500/30 to-transparent"></div>
+
+            <div class="px-4 py-3 border-b border-yellow-600/20 bg-black/20">
+              <h2 class="text-lg font-bold text-yellow-500 medieval-font flex items-center gap-2">
+                <Mail class="w-5 h-5" />
+                Invitaciones Pendientes ({guildData.invites.length})
+              </h2>
+            </div>
+
+            <div class="divide-y divide-yellow-600/10">
+              {guildData.invites.map((invite: any) => (
+                <div class="flex items-center justify-between px-4 py-3 group">
+                  <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-gray-700 to-gray-800 border border-gray-600/50 flex items-center justify-center">
+                      <span class="text-xs font-bold text-gray-400">{invite.player_name?.[0]?.toUpperCase() || '?'}</span>
+                    </div>
+                    <div>
+                      <span class="text-white">{invite.player_name}</span>
+                      <span class="text-gray-500 text-xs ml-2">Level {invite.player_level}</span>
+                    </div>
+                  </div>
+                  <button class="cancel-invite-btn text-red-400 hover:text-red-300 text-sm"
+                          data-player-id={invite.player_id}>
+                    Cancelar
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </>
+    )}
+  </section>
+</Layout>
+
+<script is:inline define:vars={{ API_URL, guildId: id, userMemberCharId: userMemberChar?.id, invitedCharId: invitedChar?.player_id }}>
+  window.__GUILD_API_URL__ = API_URL;
+  window.__GUILD_ID__ = guildId;
+  window.__USER_MEMBER_CHAR_ID__ = userMemberCharId;
+  window.__INVITED_CHAR_ID__ = invitedCharId;
+</script>
+
+<script>
+  const API_URL = (window as any).__GUILD_API_URL__ || 'http://localhost:3001';
+  const guildId = (window as any).__GUILD_ID__;
+  const userMemberCharId = (window as any).__USER_MEMBER_CHAR_ID__;
+  const invitedCharId = (window as any).__INVITED_CHAR_ID__;
+
+  let selectedLogo: string | null = null;
+
+  function init() {
+    // Tab switching
+    const tabs = document.querySelectorAll('.member-tab');
+    const contents = document.querySelectorAll('.tab-content');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const tabId = tab.id.replace('tab-', '');
+
+        // Update tab styles
+        tabs.forEach(t => {
+          t.classList.remove('text-yellow-500', 'border-yellow-500', 'bg-yellow-500/5');
+          t.classList.add('text-gray-400', 'border-transparent');
+        });
+        tab.classList.remove('text-gray-400', 'border-transparent');
+        tab.classList.add('text-yellow-500', 'border-yellow-500', 'bg-yellow-500/5');
+
+        // Show/hide content
+        contents.forEach(c => c.classList.add('hidden'));
+        document.getElementById(`content-${tabId}`)?.classList.remove('hidden');
+      });
+    });
+
+    // Accept invite - NO confirm
+    const acceptBtn = document.getElementById('acceptInviteBtn');
+    acceptBtn?.addEventListener('click', async () => {
+      const playerId = invitedCharId;
+      if (!playerId) return;
+
+      try {
+        const response = await fetch(`${API_URL}/api/guilds/${guildId}/accept`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ playerId })
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          window.location.reload();
+        } else {
+          showToast(data.error || 'Error al aceptar la invitación', 'error');
+        }
+      } catch (error) {
+        showToast('Error al aceptar la invitación', 'error');
+      }
+    });
+
+    // Reject invite - NO confirm
+    const rejectBtn = document.getElementById('rejectInviteBtn');
+    rejectBtn?.addEventListener('click', async () => {
+      const playerId = invitedCharId;
+      if (!playerId) return;
+
+      try {
+        const response = await fetch(`${API_URL}/api/guilds/${guildId}/reject`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ playerId })
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          window.location.reload();
+        } else {
+          showToast(data.error || 'Error al rechazar la invitación', 'error');
+        }
+      } catch (error) {
+        showToast('Error al rechazar la invitación', 'error');
+      }
+    });
+
+    // Delete guild - direct action
+    const deleteGuildBtn = document.getElementById('deleteGuildBtn');
+    deleteGuildBtn?.addEventListener('click', async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/guilds/${guildId}`, {
+          method: 'DELETE',
+          credentials: 'include'
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          window.location.href = '/guilds';
+        } else {
+          showToast(data.error || 'Error al eliminar la guild', 'error');
+        }
+      } catch (error) {
+        showToast('Error al eliminar la guild', 'error');
+      }
+    });
+
+    // Leave guild - NO confirm
+    const leaveBtn = document.getElementById('leaveGuildBtn');
+    leaveBtn?.addEventListener('click', async () => {
+      const playerId = userMemberCharId;
+      if (!playerId) return;
+
+      try {
+        const response = await fetch(`${API_URL}/api/guilds/${guildId}/leave`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ playerId })
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          window.location.href = '/guilds';
+        } else {
+          showToast(data.error || 'Error al abandonar la guild', 'error');
+        }
+      } catch (error) {
+        showToast('Error al abandonar la guild', 'error');
+      }
+    });
+
+    // Change rank - NO confirm
+    document.querySelectorAll('.change-rank-btn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const target = e.currentTarget as HTMLElement;
+        const playerId = target.dataset.playerId;
+        const newRank = parseInt(target.dataset.newRank || '0');
+
+        try {
+          const response = await fetch(`${API_URL}/api/guilds/${guildId}/change-rank`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ playerId: parseInt(playerId || '0'), newRankLevel: newRank })
+          });
+
+          const data = await response.json();
+          if (data.success) {
+            window.location.reload();
+          } else {
+            showToast(data.error || 'Error al cambiar el rango', 'error');
+          }
+        } catch (error) {
+          showToast('Error al cambiar el rango', 'error');
+        }
+      });
+    });
+
+    // Kick member - NO confirm
+    document.querySelectorAll('.kick-member-btn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const target = e.currentTarget as HTMLElement;
+        const playerId = target.dataset.playerId;
+
+        try {
+          const response = await fetch(`${API_URL}/api/guilds/${guildId}/kick`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ playerId: parseInt(playerId || '0') })
+          });
+
+          const data = await response.json();
+          if (data.success) {
+            window.location.reload();
+          } else {
+            showToast(data.error || 'Error al expulsar al miembro', 'error');
+          }
+        } catch (error) {
+          showToast('Error al expulsar al miembro', 'error');
+        }
+      });
+    });
+
+    // Cancel invite - NO confirm
+    document.querySelectorAll('.cancel-invite-btn').forEach(btn => {
+      btn.addEventListener('click', async (e) => {
+        const target = e.currentTarget as HTMLElement;
+        const playerId = target.dataset.playerId;
+
+        try {
+          const response = await fetch(`${API_URL}/api/guilds/${guildId}/cancel-invite`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ playerId: parseInt(playerId || '0') })
+          });
+
+          const data = await response.json();
+          if (data.success) {
+            window.location.reload();
+          } else {
+            showToast(data.error || 'Error al cancelar la invitación', 'error');
+          }
+        } catch (error) {
+          showToast('Error al cancelar la invitación', 'error');
+        }
+      });
+    });
+
+    // Invite form
+    const inviteForm = document.getElementById('inviteForm');
+    const inviteError = document.getElementById('inviteError');
+    inviteForm?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const playerName = (document.getElementById('invitePlayerName') as HTMLInputElement)?.value;
+
+      if (!playerName) return;
+
+      inviteError?.classList.add('hidden');
+
+      try {
+        const response = await fetch(`${API_URL}/api/guilds/${guildId}/invite`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ playerName })
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          document.getElementById('inviteModal')?.classList.add('hidden');
+          window.location.reload();
+        } else {
+          if (inviteError) {
+            inviteError.textContent = data.error || 'Error al enviar la invitación';
+            inviteError.classList.remove('hidden');
+          }
+        }
+      } catch (error) {
+        if (inviteError) {
+          inviteError.textContent = 'Error al enviar la invitación';
+          inviteError.classList.remove('hidden');
+        }
+      }
+    });
+
+    // Logo upload
+    const uploadLogoBtn = document.getElementById('uploadLogoBtn');
+    const logoModal = document.getElementById('logoModal');
+    const logoInput = document.getElementById('logoInput') as HTMLInputElement;
+    const logoDropZone = document.getElementById('logoDropZone');
+    const logoPreview = document.getElementById('logoPreview');
+    const logoPreviewImg = document.getElementById('logoPreviewImg') as HTMLImageElement;
+    const removePreview = document.getElementById('removePreview');
+    const saveLogo = document.getElementById('saveLogo') as HTMLButtonElement;
+    const deleteLogo = document.getElementById('deleteLogo');
+    const logoError = document.getElementById('logoError');
+
+    uploadLogoBtn?.addEventListener('click', () => {
+      logoModal?.classList.remove('hidden');
+    });
+
+    logoDropZone?.addEventListener('click', () => {
+      logoInput?.click();
+    });
+
+    logoDropZone?.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      logoDropZone.classList.add('border-yellow-500');
+    });
+
+    logoDropZone?.addEventListener('dragleave', () => {
+      logoDropZone.classList.remove('border-yellow-500');
+    });
+
+    logoDropZone?.addEventListener('drop', (e) => {
+      e.preventDefault();
+      logoDropZone.classList.remove('border-yellow-500');
+      const files = (e as DragEvent).dataTransfer?.files;
+      if (files && files.length > 0) {
+        handleLogoFile(files[0]);
+      }
+    });
+
+    logoInput?.addEventListener('change', () => {
+      if (logoInput.files && logoInput.files.length > 0) {
+        handleLogoFile(logoInput.files[0]);
+      }
+    });
+
+    function handleLogoFile(file: File) {
+      logoError?.classList.add('hidden');
+
+      if (!['image/png', 'image/jpeg', 'image/gif'].includes(file.type)) {
+        showLogoError('Solo se permiten imágenes PNG, JPEG o GIF');
+        return;
+      }
+
+      if (file.size > 500 * 1024) {
+        showLogoError('La imagen no debe superar 500KB');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        selectedLogo = e.target?.result as string;
+        if (logoPreviewImg) {
+          logoPreviewImg.src = selectedLogo;
+        }
+        logoDropZone?.classList.add('hidden');
+        logoPreview?.classList.remove('hidden');
+        if (saveLogo) saveLogo.disabled = false;
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function showLogoError(message: string) {
+      if (logoError) {
+        logoError.textContent = message;
+        logoError.classList.remove('hidden');
+      }
+    }
+
+    function showToast(message: string, type: 'success' | 'error') {
+      // Simple toast - you can enhance this later
+      const toast = document.createElement('div');
+      toast.className = `fixed bottom-4 right-4 px-4 py-2 rounded-lg text-white z-50 ${type === 'error' ? 'bg-red-600' : 'bg-green-600'}`;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+    }
+
+    removePreview?.addEventListener('click', () => {
+      selectedLogo = null;
+      if (logoPreviewImg) logoPreviewImg.src = '';
+      logoPreview?.classList.add('hidden');
+      logoDropZone?.classList.remove('hidden');
+      if (saveLogo) saveLogo.disabled = true;
+      if (logoInput) logoInput.value = '';
+    });
+
+    saveLogo?.addEventListener('click', async () => {
+      if (!selectedLogo) return;
+
+      saveLogo.disabled = true;
+      saveLogo.textContent = 'Guardando...';
+
+      try {
+        const response = await fetch(`${API_URL}/api/guilds/${guildId}/logo`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ logo: selectedLogo })
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          window.location.reload();
+        } else {
+          showLogoError(data.error || 'Error al subir el logo');
+          saveLogo.disabled = false;
+          saveLogo.textContent = 'Guardar Logo';
+        }
+      } catch (error) {
+        showLogoError('Error al subir el logo');
+        saveLogo.disabled = false;
+        saveLogo.textContent = 'Guardar Logo';
+      }
+    });
+
+    deleteLogo?.addEventListener('click', async () => {
+      try {
+        const response = await fetch(`${API_URL}/api/guilds/${guildId}/logo`, {
+          method: 'DELETE',
+          credentials: 'include'
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          window.location.reload();
+        } else {
+          showToast(data.error || 'Error al eliminar el logo', 'error');
+        }
+      } catch (error) {
+        showToast('Error al eliminar el logo', 'error');
+      }
+    });
+  }
+
+  init();
+  document.addEventListener('astro:page-load', init);
+</script>
