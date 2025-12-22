@@ -54,11 +54,11 @@ export const authenticateToken = async (req: Request, res: Response, next: NextF
     const userId = req.cookies?.userId;
 
     // Debug logging for production issues
-    if (process.env.NODE_ENV === 'production') {
+    /* if (process.env.NODE_ENV === 'production') {
       console.log('[Auth Debug] Cookies received:', Object.keys(req.cookies || {}));
       console.log('[Auth Debug] UserId cookie:', userId ? 'present' : 'missing');
       console.log('[Auth Debug] Origin:', req.headers.origin);
-    }
+    } */
 
     if (!userId) {
       return res.status(401).json({
