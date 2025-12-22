@@ -16,7 +16,7 @@ interface MarketItem {
   description: string | null;
   price: number;
   image_url: string | null;
-  category: 'set_with_weapon' | 'set_without_weapon' | 'item';
+  category: 'knight' | 'paladin' | 'sorcerer' | 'druid' | 'item';
   is_active: boolean;
   stock: number;
   featured: boolean;
@@ -189,8 +189,10 @@ export default function AdminMarketplace() {
             className="bg-gray-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="all">All Categories</option>
-            <option value="set_with_weapon">Sets con Arma</option>
-            <option value="set_without_weapon">Sets sin Arma</option>
+            <option value="knight">Knight</option>
+            <option value="paladin">Paladin</option>
+            <option value="sorcerer">Sorcerer</option>
+            <option value="druid">Druid</option>
             <option value="item">Items</option>
           </select>
 

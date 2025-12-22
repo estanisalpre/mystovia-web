@@ -56,12 +56,19 @@ export default function ItemFormModal({
   useEffect(() => {
     if (isOpen && item) {
       // Editing existing item
+      // Map old category values to new ones
+      const validCategories = ['knight', 'paladin', 'sorcerer', 'druid', 'item'];
+      let category = item.category;
+      if (!validCategories.includes(category)) {
+        // Default to 'item' if category is from old schema
+        category = 'item';
+      }
       setFormData({
         name: item.name,
         description: item.description || '',
         price: item.price.toString(),
         image_url: item.image_url || '',
-        category: item.category,
+        category: category as 'knight' | 'paladin' | 'sorcerer' | 'druid' | 'item',
         stock: item.stock.toString(),
         featured: item.featured,
         is_active: item.is_active

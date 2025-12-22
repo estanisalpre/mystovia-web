@@ -1,6 +1,53 @@
 import { Request, Response } from 'express';
 import db from '../config/database.js';
 
+const VOCATION_NAMES: Record<number, string> = {
+  0: 'None',
+  1: 'Sorcerer',
+  2: 'Druid',
+  3: 'Paladin',
+  4: 'Knight',
+  5: 'Master Sorcerer',
+  6: 'Elder Druid',
+  7: 'Royal Paladin',
+  8: 'Elite Knight'
+};
+
+export const getOnlinePlayers = async (req: Request, res: Response) => {
+  try {
+    const limit = parseInt(req.query.limit as string) || 0;
+
+    let query = `
+      SELECT id, name, level, vocation
+      FROM players
+      WHERE online = 1 AND deleted = 0
+      ORDER BY name ASC
+    `;
+
+    if (limit > 0) {
+      query += ` LIMIT ${limit}`;
+    }
+
+    const [players] = await db.query(query) as any[];
+
+    const formattedPlayers = players.map((player: any) => ({
+      id: player.id,
+      name: player.name,
+      level: player.level,
+      vocation: VOCATION_NAMES[player.vocation] || 'Unknown'
+    }));
+
+    res.json({
+      success: true,
+      players: formattedPlayers,
+      total: formattedPlayers.length
+    });
+  } catch (error) {
+    console.error('Error fetching online players:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
 export const getServerStats = async (req: Request, res: Response) => {
   try {
     // Total de jugadores registrados

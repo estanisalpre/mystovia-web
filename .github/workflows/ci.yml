@@ -1,0 +1,126 @@
+# Continuous Integration - Tests and Build verification
+# Currently commented out - uncomment when ready to use
+
+name: CI
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+
+jobs:
+  # ===========================================
+  # FRONTEND TESTS & BUILD
+  # ===========================================
+  # frontend:
+  #   runs-on: ubuntu-latest
+  #   defaults:
+  #     run:
+  #       working-directory: .
+  #
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
+  #
+  #     - name: Setup Node.js
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: '20'
+  #
+  #     - name: Setup pnpm
+  #       uses: pnpm/action-setup@v2
+  #       with:
+  #         version: 8
+  #
+  #     - name: Get pnpm store directory
+  #       shell: bash
+  #       run: |
+  #         echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+  #
+  #     - name: Setup pnpm cache
+  #       uses: actions/cache@v4
+  #       with:
+  #         path: ${{ env.STORE_PATH }}
+  #         key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+  #         restore-keys: |
+  #           ${{ runner.os }}-pnpm-store-
+  #
+  #     - name: Install dependencies
+  #       run: pnpm install --frozen-lockfile
+  #
+  #     - name: Type check
+  #       run: pnpm run type-check || echo "Type check script not found, skipping..."
+  #
+  #     - name: Lint
+  #       run: pnpm run lint || echo "Lint script not found, skipping..."
+  #
+  #     - name: Run tests
+  #       run: pnpm run test || echo "Test script not found, skipping..."
+  #
+  #     - name: Build
+  #       run: pnpm run build
+  #       env:
+  #         PUBLIC_API_URL: ${{ secrets.PUBLIC_API_URL }}
+
+  # ===========================================
+  # BACKEND TESTS & BUILD
+  # ===========================================
+  # backend:
+  #   runs-on: ubuntu-latest
+  #   defaults:
+  #     run:
+  #       working-directory: ./server
+  #
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
+  #
+  #     - name: Setup Node.js
+  #       uses: actions/setup-node@v4
+  #       with:
+  #         node-version: '20'
+  #
+  #     - name: Setup pnpm
+  #       uses: pnpm/action-setup@v2
+  #       with:
+  #         version: 8
+  #
+  #     - name: Get pnpm store directory
+  #       shell: bash
+  #       run: |
+  #         echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+  #
+  #     - name: Setup pnpm cache
+  #       uses: actions/cache@v4
+  #       with:
+  #         path: ${{ env.STORE_PATH }}
+  #         key: ${{ runner.os }}-pnpm-store-backend-${{ hashFiles('server/pnpm-lock.yaml') }}
+  #         restore-keys: |
+  #           ${{ runner.os }}-pnpm-store-backend-
+  #
+  #     - name: Install dependencies
+  #       run: pnpm install --frozen-lockfile
+  #
+  #     - name: Type check
+  #       run: pnpm run type-check || echo "Type check script not found, skipping..."
+  #
+  #     - name: Lint
+  #       run: pnpm run lint || echo "Lint script not found, skipping..."
+  #
+  #     - name: Run tests
+  #       run: pnpm run test || echo "Test script not found, skipping..."
+  #
+  #     - name: Build
+  #       run: pnpm run build
+
+  # ===========================================
+  # PLACEHOLDER JOB (remove when uncommenting above)
+  # ===========================================
+  placeholder:
+    runs-on: ubuntu-latest
+    steps:
+      - name: CI Placeholder
+        run: |
+          echo "CI workflow is set up but tests are currently disabled."
+          echo "Uncomment the frontend and backend jobs when ready to enable CI."

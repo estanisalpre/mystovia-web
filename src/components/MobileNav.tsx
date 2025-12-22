@@ -159,6 +159,14 @@ export default function MobileNav() {
                     {t('nav.highscores')}
                   </a>
                   <a
+                    href="/online"
+                    onClick={closeMenu}
+                    className="flex items-center gap-3 text-gray-300 hover:text-yellow-500 transition-colors py-3 px-4 rounded-lg hover:bg-white/5 group"
+                  >
+                    <span className="w-1.5 h-1.5 rounded-full bg-gray-600 group-hover:bg-yellow-500 transition-colors" />
+                    {t('nav.online')}
+                  </a>
+                  <a
                     href="/latest-deaths"
                     onClick={closeMenu}
                     className="flex items-center gap-3 text-gray-300 hover:text-yellow-500 transition-colors py-3 px-4 rounded-lg hover:bg-white/5 group"
