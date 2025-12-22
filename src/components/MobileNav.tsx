@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Store, Menu, X, Gamepad2, Users, HelpCircle } from 'lucide-react';
 import HeaderAuth from './HeaderAuth';
 import '../i18n';
-import { openDownloadModal } from './DownloadModal';
+//import { openDownloadModal } from './DownloadModal';
 
 export default function MobileNav() {
   const { t } = useTranslation();
