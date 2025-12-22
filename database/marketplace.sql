@@ -96,7 +96,7 @@ CREATE TABLE IF NOT EXISTS `payment_logs` (
 
 -- Sets de ejemplo
 INSERT INTO `market_items` (`name`, `description`, `price`, `category`, `featured`, `items_json`, `weapon_options`) VALUES
-('Knight Starter Pack', 'El set perfecto para comenzar tu aventura como Knight. Incluye equipo completo sin arma.', 399.00, 'set_without_weapon', 1,
+('Knight Starter Pack', 'El set perfecto para comenzar tu aventura como Knight. Incluye equipo completo sin arma.', 399.00, 'knight', 1,
   JSON_ARRAY(
     JSON_OBJECT('itemId', 2160, 'count', 100, 'name', 'Crystal Coin'),
     JSON_OBJECT('itemId', 2463, 'count', 1, 'name', 'Plate Armor'),
@@ -105,7 +105,7 @@ INSERT INTO `market_items` (`name`, `description`, `price`, `category`, `feature
   ),
   NULL
 ),
-('Paladin Starter Pack + Weapon', 'Todo lo que necesitas para empezar como Paladin. Incluye set completo y arma a elección.', 499.00, 'set_with_weapon', 1,
+('Paladin Starter Pack + Weapon', 'Todo lo que necesitas para empezar como Paladin. Incluye set completo y arma a elección.', 499.00, 'paladin', 1,
   JSON_ARRAY(
     JSON_OBJECT('itemId', 2160, 'count', 100, 'name', 'Crystal Coin'),
     JSON_OBJECT('itemId', 2464, 'count', 1, 'name', 'Chain Armor'),
@@ -119,7 +119,7 @@ INSERT INTO `market_items` (`name`, `description`, `price`, `category`, `feature
     JSON_OBJECT('itemId', 8851, 'name', 'Royal Crossbow')
   )
 ),
-('Mage Starter Pack', 'Set ideal para Sorcerer y Druid sin arma mágica.', 399.00, 'set_without_weapon', 1,
+('Mage Starter Pack', 'Set ideal para Sorcerer y Druid sin arma mágica.', 399.00, 'sorcerer', 1,
   JSON_ARRAY(
     JSON_OBJECT('itemId', 2160, 'count', 100, 'name', 'Crystal Coin'),
     JSON_OBJECT('itemId', 2656, 'count', 1, 'name', 'Blue Robe'),

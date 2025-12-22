@@ -31,6 +31,7 @@ export default function HeaderNav() {
         <a href="/forum" className="nav-link"><span className="opacity-0">Forum</span></a>
         <a href="/guilds" className="nav-link"><span className="opacity-0">Guilds</span></a>
         <a href="/highscores" className="nav-link"><span className="opacity-0">Highscores</span></a>
+        <a href="/online" className="nav-link"><span className="opacity-0">Online</span></a>
         <a href="/latest-deaths" className="nav-link"><span className="opacity-0">Deaths</span></a>
         <button className="nav-link"><span className="opacity-0">Downloads</span></button>
         <a href="/rules" className="nav-link"><span className="opacity-0">Rules</span></a>
@@ -47,6 +48,7 @@ export default function HeaderNav() {
       <a href="/forum" className="nav-link">{t('nav.forum')}</a>
       <a href="/guilds" className="nav-link">{t('nav.guilds')}</a>
       <a href="/highscores" className="nav-link">{t('nav.highscores')}</a>
+      <a href="/online" className="nav-link">{t('nav.online')}</a>
       <a href="/latest-deaths" className="nav-link">{t('nav.latestDeaths')}</a>
       <button onClick={handleDownloadClick} className="nav-link cursor-pointer">{t('nav.downloads')}</button>
       <a href="/rules" className="nav-link">{t('nav.rules')}</a>
