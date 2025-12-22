@@ -26,7 +26,6 @@ function formatVotes(votes: number): string {
 }
 
 const { id } = Astro.params;
-const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3000';
 
 // For internal SSR calls, use localhost with the same port (same Express server)
 const INTERNAL_API_URL = `http://localhost:${process.env.PORT || 3000}`;

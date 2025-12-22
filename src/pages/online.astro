@@ -2,7 +2,8 @@
 import Layout from "@layouts/Layout.astro";
 import { Users, ChevronRight, Home } from '@lucide/astro';
 
-const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3001';
+// Use internal URL for SSR to avoid timeout on Render
+const INTERNAL_API_URL = `http://localhost:${process.env.PORT || 3000}`;
 
 interface Player {
   id: number;
@@ -15,7 +16,7 @@ let players: Player[] = [];
 let total = 0;
 
 try {
-  const response = await fetch(`${API_URL}/api/server/online`);
+  const response = await fetch(`${INTERNAL_API_URL}/api/server/online`);
   if (response.ok) {
     const data = await response.json();
     players = data.players || [];

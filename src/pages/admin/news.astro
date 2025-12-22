@@ -2,14 +2,15 @@
 import Layout from '../../layouts/Layout.astro';
 import { hasPermission } from '../../utils/permissions';
 
-const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3000';
+// Use internal URL for SSR to avoid timeout on Render
+const INTERNAL_API_URL = `http://localhost:${process.env.PORT || 3000}`;
 
 const accessToken = Astro.cookies.get('accessToken')?.value;
 let user = null;
 
 if (accessToken) {
   try {
-    const verifyResponse = await fetch(`${API_URL}/api/auth/verify`, {
+    const verifyResponse = await fetch(`${INTERNAL_API_URL}/api/auth/verify`, {
       headers: { Cookie: `accessToken=${accessToken}` }
     });
     if (verifyResponse.ok) {
@@ -32,10 +33,10 @@ let categoriesData;
 
 try {
   const [newsResponse, categoriesResponse] = await Promise.all([
-    fetch(`${API_URL}/api/news/admin/all?page=${page}&limit=20`, {
+    fetch(`${INTERNAL_API_URL}/api/news/admin/all?page=${page}&limit=20`, {
       headers: { Cookie: `accessToken=${accessToken}` }
     }),
-    fetch(`${API_URL}/api/news/categories`)
+    fetch(`${INTERNAL_API_URL}/api/news/categories`)
   ]);
 
   newsData = await newsResponse.json();

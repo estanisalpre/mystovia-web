@@ -2,14 +2,15 @@
 import Layout from '../../layouts/Layout.astro';
 import { hasPermission } from '../../utils/permissions';
 
-const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3000';
+// Use internal URL for SSR to avoid timeout on Render
+const INTERNAL_API_URL = `http://localhost:${process.env.PORT || 3000}`;
 
 const accessToken = Astro.cookies.get('accessToken')?.value;
 let user = null;
 
 if (accessToken) {
   try {
-    const verifyResponse = await fetch(`${API_URL}/api/auth/verify`, {
+    const verifyResponse = await fetch(`${INTERNAL_API_URL}/api/auth/verify`, {
       headers: { Cookie: `accessToken=${accessToken}` }
     });
     if (verifyResponse.ok) {
@@ -29,7 +30,7 @@ if (!hasPermission(user?.groupId, 'manage_forum')) {
 let categoriesData;
 
 try {
-  const response = await fetch(`${API_URL}/api/forum/categories`);
+  const response = await fetch(`${INTERNAL_API_URL}/api/forum/categories`);
   categoriesData = await response.json();
 } catch (error) {
   console.error('Error fetching data:', error);

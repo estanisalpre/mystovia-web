@@ -12,7 +12,8 @@ import StatsCard from "@c/admin/StatsCard.astro";
 import ModalButton from "@c/admin/ModalButton.astro";
 import HeaderComponent from "@components/shared/HeaderComponent.astro";
 
-const API_URL = import.meta.env.PUBLIC_API_URL || "http://localhost:3000";
+// Use internal URL for SSR to avoid timeout on Render
+const INTERNAL_API_URL = `http://localhost:${process.env.PORT || 3000}`;
 
 /* ⏸️ JWT DESACTIVADO TEMPORALMENTE
 const accessToken = Astro.cookies.get("accessToken")?.value;
@@ -24,7 +25,7 @@ let user = null;
 
 if (userId && userEmail) {
   try {
-    const verifyResponse = await fetch(`${API_URL}/api/auth/verify`, {
+    const verifyResponse = await fetch(`${INTERNAL_API_URL}/api/auth/verify`, {
       headers: { Cookie: `userId=${userId}; userEmail=${userEmail}` },
     });
     if (verifyResponse.ok) {
@@ -42,7 +43,7 @@ if (!hasPermission(user?.groupId, "view_admin_panel")) {
 
 let stats = null;
 try {
-  const response = await fetch(`${API_URL}/api/admin/users/stats`, {
+  const response = await fetch(`${INTERNAL_API_URL}/api/admin/users/stats`, {
     headers: { Cookie: `userId=${userId}; userEmail=${userEmail}` },
   });
   const data = await response.json();

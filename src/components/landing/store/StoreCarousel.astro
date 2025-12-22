@@ -1,5 +1,6 @@
 ---
-const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3000';
+// For internal SSR calls, use localhost (same Express server)
+const INTERNAL_API_URL = `http://localhost:${process.env.PORT || 3000}`;
 
 interface Item {
   id: number;
@@ -13,7 +14,7 @@ interface Item {
 let items: Item[] = [];
 
 try {
-  const response = await fetch(`${API_URL}/api/marketplace/items`);
+  const response = await fetch(`${INTERNAL_API_URL}/api/marketplace/items`);
   if (response.ok) {
     const data = await response.json();
     items = data.items?.slice(0, 10) || [];

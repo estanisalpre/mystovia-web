@@ -5,7 +5,9 @@ import Layout from "@layouts/Layout.astro";
 import { Shield, Users, Crown, ChevronRight, Home, UserPlus, LogOut, Mail, Camera, X, UserMinus, ChevronUp, ChevronDown, Trash2 } from '@lucide/astro';
 
 const { id } = Astro.params;
-const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3001';
+
+// Use internal URL for SSR to avoid timeout on Render
+const INTERNAL_API_URL = `http://localhost:${process.env.PORT || 3000}`;
 
 // Get user from cookies
 const userId = Astro.cookies.get('userId')?.value;
@@ -14,7 +16,7 @@ let userCharacters: any[] = [];
 
 if (userId) {
   try {
-    const verifyResponse = await fetch(`${API_URL}/api/auth/verify`, {
+    const verifyResponse = await fetch(`${INTERNAL_API_URL}/api/auth/verify`, {
       method: 'GET',
       headers: { 'Cookie': `userId=${userId}` }
     });
@@ -26,7 +28,7 @@ if (userId) {
     }
 
     // Get user's characters
-    const charsResponse = await fetch(`${API_URL}/api/characters`, {
+    const charsResponse = await fetch(`${INTERNAL_API_URL}/api/characters`, {
       headers: { 'Cookie': `userId=${userId}` }
     });
     if (charsResponse.ok) {
@@ -43,7 +45,7 @@ let guildData: any = null;
 let error = null;
 
 try {
-  const response = await fetch(`${API_URL}/api/guilds/${id}`);
+  const response = await fetch(`${INTERNAL_API_URL}/api/guilds/${id}`);
   const data = await response.json();
 
   if (data.success) {

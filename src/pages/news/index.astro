@@ -6,9 +6,9 @@ import { Newspaper, Eye, Heart, Calendar } from '@lucide/astro';
 const page = parseInt(Astro.url.searchParams.get('page') || '1');
 const categoryId = Astro.url.searchParams.get('category');
 
-// Fetch news from API
-const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3000';
-const newsUrl = `${API_URL}/api/news?page=${page}&limit=9${categoryId ? `&categoryId=${categoryId}` : ''}`;
+// Fetch news from API - use internal URL for SSR to avoid timeout on Render
+const INTERNAL_API_URL = `http://localhost:${process.env.PORT || 3000}`;
+const newsUrl = `${INTERNAL_API_URL}/api/news?page=${page}&limit=9${categoryId ? `&categoryId=${categoryId}` : ''}`;
 
 let newsData;
 let categoriesData;
@@ -16,7 +16,7 @@ let categoriesData;
 try {
   const [newsResponse, categoriesResponse] = await Promise.all([
     fetch(newsUrl),
-    fetch(`${API_URL}/api/news/categories`)
+    fetch(`${INTERNAL_API_URL}/api/news/categories`)
   ]);
 
   newsData = await newsResponse.json();

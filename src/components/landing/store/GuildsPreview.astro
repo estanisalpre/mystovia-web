@@ -1,7 +1,8 @@
 ---
 import { Shield, Users, Crown, ChevronRight } from '@lucide/astro';
 
-const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3001';
+// For internal SSR calls, use localhost (same Express server)
+const INTERNAL_API_URL = `http://localhost:${process.env.PORT || 3000}`;
 
 interface Guild {
   id: number;
@@ -15,7 +16,7 @@ interface Guild {
 let guilds: Guild[] = [];
 
 try {
-  const response = await fetch(`${API_URL}/api/guilds/top?limit=5`);
+  const response = await fetch(`${INTERNAL_API_URL}/api/guilds/top?limit=5`);
   if (response.ok) {
     const data = await response.json();
     guilds = data.guilds || [];

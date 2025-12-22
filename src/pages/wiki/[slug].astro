@@ -4,12 +4,14 @@ export const prerender = false;
 import Layout from '../../layouts/Layout.astro';
 
 const { slug } = Astro.params;
-const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3000';
+
+// Use internal URL for SSR to avoid timeout on Render
+const INTERNAL_API_URL = `http://localhost:${process.env.PORT || 3000}`;
 
 let articleData;
 
 try {
-  const response = await fetch(`${API_URL}/api/wiki/articles/${slug}`);
+  const response = await fetch(`${INTERNAL_API_URL}/api/wiki/articles/${slug}`);
   articleData = await response.json();
 
   if (!articleData.success) {
