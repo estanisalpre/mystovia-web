@@ -274,49 +274,34 @@ function formatDate(timestamp: number): string {
           </div>
         )}
 
-        <div class="relative rounded-xl overflow-hidden"
-             style="background: linear-gradient(to bottom, rgb(31 41 55 / 0.6), rgb(17 24 39 / 0.8)); border: 1px solid rgb(234 179 8 / 0.15);">
-          <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-yellow-500/30 to-transparent"></div>
+        <!-- Members Header with Invite Button -->
+        <div class="flex items-center justify-between mb-4">
+          <h2 class="text-xl font-bold text-yellow-500 medieval-font flex items-center gap-2">
+            <Users class="w-5 h-5" />
+            Miembros ({guildData.members?.length || 0})
+          </h2>
+          {isLeaderOrVice && (
+            <button onclick="document.getElementById('inviteModal').classList.remove('hidden')"
+                    class="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-black bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-lg hover:from-yellow-400 hover:to-yellow-500 transition-all">
+              <UserPlus class="w-4 h-4" />
+              Invitar
+            </button>
+          )}
+        </div>
 
-          <div class="border-b border-yellow-600/20 bg-black/20">
-            <div class="flex items-center justify-between px-4 py-3">
-              <h2 class="text-lg font-bold text-yellow-500 medieval-font flex items-center gap-2">
-                <Users class="w-5 h-5" />
-                Miembros ({guildData.members?.length || 0})
-              </h2>
-              {isLeaderOrVice && (
-                <button onclick="document.getElementById('inviteModal').classList.remove('hidden')"
-                        class="flex items-center gap-1 text-sm text-yellow-500 hover:text-yellow-400 transition-colors">
-                  <UserPlus class="w-4 h-4" />
-                  Invitar
-                </button>
-              )}
+        <div class="space-y-4">
+          <!-- Leaders Section -->
+          <div class="relative rounded-xl overflow-hidden"
+               style="background: linear-gradient(to bottom, rgb(31 41 55 / 0.6), rgb(17 24 39 / 0.8)); border: 1px solid rgb(234 179 8 / 0.25);">
+            <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-yellow-500/50 to-transparent"></div>
+
+            <div class="px-4 py-3 border-b border-yellow-600/20 bg-yellow-500/5">
+              <h3 class="text-base font-bold text-yellow-500 flex items-center gap-2">
+                <Crown class="w-4 h-4" />
+                Leaders ({leaders.length})
+              </h3>
             </div>
 
-            <div class="flex border-t border-yellow-600/10">
-              <button id="tab-leaders" class="member-tab flex-1 px-4 py-2 text-sm font-medium text-yellow-500 border-b-2 border-yellow-500 bg-yellow-500/5 transition-all">
-                <span class="flex items-center justify-center gap-1">
-                  <Crown class="w-4 h-4" />
-                  Leaders ({leaders.length})
-                </span>
-              </button>
-              <button id="tab-viceleaders" class="member-tab flex-1 px-4 py-2 text-sm font-medium text-gray-400 border-b-2 border-transparent hover:text-yellow-500/70 transition-all">
-                <span class="flex items-center justify-center gap-1">
-                  <Shield class="w-4 h-4" />
-                  Vice Leaders ({viceLeaders.length})
-                </span>
-              </button>
-              <button id="tab-members" class="member-tab flex-1 px-4 py-2 text-sm font-medium text-gray-400 border-b-2 border-transparent hover:text-yellow-500/70 transition-all">
-                <span class="flex items-center justify-center gap-1">
-                  <Users class="w-4 h-4" />
-                  Members ({members.length})
-                </span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Tab Content: Leaders -->
-          <div id="content-leaders" class="tab-content">
             {leaders.length > 0 ? (
               <div class="divide-y divide-yellow-600/10">
                 {leaders.map((member: any) => (
@@ -339,25 +324,35 @@ function formatDate(timestamp: number): string {
                 ))}
               </div>
             ) : (
-              <div class="py-8 text-center text-gray-400">
+              <div class="py-6 text-center text-gray-500 text-sm">
                 No hay leaders en esta guild
               </div>
             )}
           </div>
 
-          <!-- Tab Content: Vice Leaders -->
-          <div id="content-viceleaders" class="tab-content hidden">
+          <!-- Vice Leaders Section -->
+          <div class="relative rounded-xl overflow-hidden"
+               style="background: linear-gradient(to bottom, rgb(31 41 55 / 0.6), rgb(17 24 39 / 0.8)); border: 1px solid rgb(59 130 246 / 0.2);">
+            <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-500/40 to-transparent"></div>
+
+            <div class="px-4 py-3 border-b border-blue-600/20 bg-blue-500/5">
+              <h3 class="text-base font-bold text-blue-400 flex items-center gap-2">
+                <Shield class="w-4 h-4" />
+                Vice Leaders ({viceLeaders.length})
+              </h3>
+            </div>
+
             {viceLeaders.length > 0 ? (
-              <div class="divide-y divide-yellow-600/10">
+              <div class="divide-y divide-blue-600/10">
                 {viceLeaders.map((member: any) => (
-                  <div class="flex items-center gap-3 px-4 py-3 hover:bg-yellow-500/5 transition-colors group">
+                  <div class="flex items-center gap-3 px-4 py-3 hover:bg-blue-500/5 transition-colors group">
                     <a href={`/character-information?name=${encodeURIComponent(member.name)}`} class="flex items-center gap-3 flex-1 min-w-0">
                       <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-600/30 to-blue-800/30 border border-blue-500/30 flex items-center justify-center">
                         <span class="text-sm font-bold text-blue-400">{member.name[0].toUpperCase()}</span>
                       </div>
                       <div class="flex-1 min-w-0">
                         <div class="flex items-center gap-2">
-                          <span class="text-white font-semibold group-hover:text-yellow-500 transition-colors">{member.name}</span>
+                          <span class="text-white font-semibold group-hover:text-blue-400 transition-colors">{member.name}</span>
                           <Shield class="w-4 h-4 text-blue-400" />
                         </div>
                         <div class="text-gray-500 text-xs">
@@ -385,25 +380,35 @@ function formatDate(timestamp: number): string {
                 ))}
               </div>
             ) : (
-              <div class="py-8 text-center text-gray-400">
+              <div class="py-6 text-center text-gray-500 text-sm">
                 No hay vice leaders en esta guild
               </div>
             )}
           </div>
 
-          <!-- Tab Content: Members -->
-          <div id="content-members" class="tab-content hidden">
+          <!-- Members Section -->
+          <div class="relative rounded-xl overflow-hidden"
+               style="background: linear-gradient(to bottom, rgb(31 41 55 / 0.6), rgb(17 24 39 / 0.8)); border: 1px solid rgb(107 114 128 / 0.2);">
+            <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gray-500/30 to-transparent"></div>
+
+            <div class="px-4 py-3 border-b border-gray-600/20 bg-gray-500/5">
+              <h3 class="text-base font-bold text-gray-300 flex items-center gap-2">
+                <Users class="w-4 h-4" />
+                Members ({members.length})
+              </h3>
+            </div>
+
             {members.length > 0 ? (
-              <div class="divide-y divide-yellow-600/10">
+              <div class="divide-y divide-gray-600/10">
                 {members.map((member: any) => (
-                  <div class="flex items-center gap-3 px-4 py-3 hover:bg-yellow-500/5 transition-colors group">
+                  <div class="flex items-center gap-3 px-4 py-3 hover:bg-gray-500/5 transition-colors group">
                     <a href={`/character-information?name=${encodeURIComponent(member.name)}`} class="flex items-center gap-3 flex-1 min-w-0">
                       <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-gray-700 to-gray-800 border border-gray-600/50 flex items-center justify-center">
                         <span class="text-sm font-bold text-gray-400">{member.name[0].toUpperCase()}</span>
                       </div>
                       <div class="flex-1 min-w-0">
                         <div class="flex items-center gap-2">
-                          <span class="text-white font-semibold group-hover:text-yellow-500 transition-colors">{member.name}</span>
+                          <span class="text-white font-semibold group-hover:text-gray-300 transition-colors">{member.name}</span>
                         </div>
                         <div class="text-gray-500 text-xs">
                           {getVocationName(member.vocation)} · Level {member.level}
@@ -432,7 +437,7 @@ function formatDate(timestamp: number): string {
                 ))}
               </div>
             ) : (
-              <div class="py-8 text-center text-gray-400">
+              <div class="py-6 text-center text-gray-500 text-sm">
                 No hay members en esta guild
               </div>
             )}
@@ -478,15 +483,14 @@ function formatDate(timestamp: number): string {
   </section>
 </Layout>
 
-<script is:inline define:vars={{ API_URL, guildId: id, userMemberCharId: userMemberChar?.id, invitedCharId: invitedChar?.player_id }}>
-  window.__GUILD_API_URL__ = API_URL;
+<script is:inline define:vars={{ guildId: id, userMemberCharId: userMemberChar?.id, invitedCharId: invitedChar?.player_id }}>
   window.__GUILD_ID__ = guildId;
   window.__USER_MEMBER_CHAR_ID__ = userMemberCharId;
   window.__INVITED_CHAR_ID__ = invitedCharId;
 </script>
 
 <script>
-  const API_URL = (window as any).__GUILD_API_URL__ || 'http://localhost:3001';
+  // Use relative URLs for same-origin requests (avoids cross-domain cookie issues)
   const guildId = (window as any).__GUILD_ID__;
   const userMemberCharId = (window as any).__USER_MEMBER_CHAR_ID__;
   const invitedCharId = (window as any).__INVITED_CHAR_ID__;
@@ -494,28 +498,6 @@ function formatDate(timestamp: number): string {
   let selectedLogo: string | null = null;
 
   function init() {
-    // Tab switching
-    const tabs = document.querySelectorAll('.member-tab');
-    const contents = document.querySelectorAll('.tab-content');
-
-    tabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        const tabId = tab.id.replace('tab-', '');
-
-        // Update tab styles
-        tabs.forEach(t => {
-          t.classList.remove('text-yellow-500', 'border-yellow-500', 'bg-yellow-500/5');
-          t.classList.add('text-gray-400', 'border-transparent');
-        });
-        tab.classList.remove('text-gray-400', 'border-transparent');
-        tab.classList.add('text-yellow-500', 'border-yellow-500', 'bg-yellow-500/5');
-
-        // Show/hide content
-        contents.forEach(c => c.classList.add('hidden'));
-        document.getElementById(`content-${tabId}`)?.classList.remove('hidden');
-      });
-    });
-
     // Accept invite - NO confirm
     const acceptBtn = document.getElementById('acceptInviteBtn');
     acceptBtn?.addEventListener('click', async () => {
@@ -523,7 +505,7 @@ function formatDate(timestamp: number): string {
       if (!playerId) return;
 
       try {
-        const response = await fetch(`${API_URL}/api/guilds/${guildId}/accept`, {
+        const response = await fetch(`/api/guilds/${guildId}/accept`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
@@ -548,7 +530,7 @@ function formatDate(timestamp: number): string {
       if (!playerId) return;
 
       try {
-        const response = await fetch(`${API_URL}/api/guilds/${guildId}/reject`, {
+        const response = await fetch(`/api/guilds/${guildId}/reject`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
@@ -570,7 +552,7 @@ function formatDate(timestamp: number): string {
     const deleteGuildBtn = document.getElementById('deleteGuildBtn');
     deleteGuildBtn?.addEventListener('click', async () => {
       try {
-        const response = await fetch(`${API_URL}/api/guilds/${guildId}`, {
+        const response = await fetch(`/api/guilds/${guildId}`, {
           method: 'DELETE',
           credentials: 'include'
         });
@@ -593,7 +575,7 @@ function formatDate(timestamp: number): string {
       if (!playerId) return;
 
       try {
-        const response = await fetch(`${API_URL}/api/guilds/${guildId}/leave`, {
+        const response = await fetch(`/api/guilds/${guildId}/leave`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
@@ -619,7 +601,7 @@ function formatDate(timestamp: number): string {
         const newRank = parseInt(target.dataset.newRank || '0');
 
         try {
-          const response = await fetch(`${API_URL}/api/guilds/${guildId}/change-rank`, {
+          const response = await fetch(`/api/guilds/${guildId}/change-rank`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
@@ -645,7 +627,7 @@ function formatDate(timestamp: number): string {
         const playerId = target.dataset.playerId;
 
         try {
-          const response = await fetch(`${API_URL}/api/guilds/${guildId}/kick`, {
+          const response = await fetch(`/api/guilds/${guildId}/kick`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
@@ -671,7 +653,7 @@ function formatDate(timestamp: number): string {
         const playerId = target.dataset.playerId;
 
         try {
-          const response = await fetch(`${API_URL}/api/guilds/${guildId}/cancel-invite`, {
+          const response = await fetch(`/api/guilds/${guildId}/cancel-invite`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
@@ -702,7 +684,7 @@ function formatDate(timestamp: number): string {
       inviteError?.classList.add('hidden');
 
       try {
-        const response = await fetch(`${API_URL}/api/guilds/${guildId}/invite`, {
+        const response = await fetch(`/api/guilds/${guildId}/invite`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
@@ -829,7 +811,7 @@ function formatDate(timestamp: number): string {
       saveLogo.textContent = 'Guardando...';
 
       try {
-        const response = await fetch(`${API_URL}/api/guilds/${guildId}/logo`, {
+        const response = await fetch(`/api/guilds/${guildId}/logo`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
@@ -853,7 +835,7 @@ function formatDate(timestamp: number): string {
 
     deleteLogo?.addEventListener('click', async () => {
       try {
-        const response = await fetch(`${API_URL}/api/guilds/${guildId}/logo`, {
+        const response = await fetch(`/api/guilds/${guildId}/logo`, {
           method: 'DELETE',
           credentials: 'include'
         });

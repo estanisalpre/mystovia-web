@@ -1,7 +1,7 @@
 {
-  "name": "otserver-monorepo",
-  "version": "1.0.0",
-  "description": "",
+  "name": "mystovia-web",
+  "version": "0.1.0",
+  "description": "Mystovia web is a website for the Mystovia MMORPG game, providing information, community features, and resources for players.",
   "type": "module",
   "main": "index.js",
   "scripts": {

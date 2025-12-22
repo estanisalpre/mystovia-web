@@ -18,6 +18,9 @@ const page = parseInt(Astro.url.searchParams.get('page') || '1');
 
 const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3000';
 
+// For internal SSR calls, use localhost with the same port (same Express server)
+const INTERNAL_API_URL = `http://localhost:${process.env.PORT || 3000}`;
+
 // Get user from cookies and verify with API
 const userId = Astro.cookies.get('userId')?.value;
 const userEmail = Astro.cookies.get('userEmail')?.value;
@@ -25,7 +28,8 @@ let user = null;
 
 if (userId && userEmail) {
   try {
-    const verifyResponse = await fetch(`${API_URL}/api/auth/verify`, {
+    // Use internal URL for SSR verification (same server, no cross-origin issues)
+    const verifyResponse = await fetch(`${INTERNAL_API_URL}/api/auth/verify`, {
       method: 'GET',
       headers: {
         'Cookie': `userId=${userId}; userEmail=${userEmail}`,
@@ -51,8 +55,8 @@ let categoryData;
 
 try {
   const [topicsResponse, categoriesResponse] = await Promise.all([
-    fetch(`${API_URL}/api/forum/categories/${id}/topics?page=${page}&limit=20`),
-    fetch(`${API_URL}/api/forum/categories`)
+    fetch(`${INTERNAL_API_URL}/api/forum/categories/${id}/topics?page=${page}&limit=20`),
+    fetch(`${INTERNAL_API_URL}/api/forum/categories`)
   ]);
 
   topicsData = await topicsResponse.json();

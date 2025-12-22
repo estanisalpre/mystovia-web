@@ -5,6 +5,9 @@ import { PenLine, ChevronRight, Home, FolderOpen, Type, FileText } from '@lucide
 
 const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3000';
 
+// For internal SSR calls, use localhost with the same port (same Express server)
+const INTERNAL_API_URL = `http://localhost:${process.env.PORT || 3000}`;
+
 // Get user from cookies and verify with API
 const userId = Astro.cookies.get('userId')?.value;
 const userEmail = Astro.cookies.get('userEmail')?.value;
@@ -12,7 +15,8 @@ let user = null;
 
 if (userId && userEmail) {
   try {
-    const verifyResponse = await fetch(`${API_URL}/api/auth/verify`, {
+    // Use internal URL for SSR verification (same server, no cross-origin issues)
+    const verifyResponse = await fetch(`${INTERNAL_API_URL}/api/auth/verify`, {
       method: 'GET',
       headers: {
         'Cookie': `userId=${userId}; userEmail=${userEmail}`,
@@ -39,7 +43,7 @@ if (!hasPermission(user?.groupId, 'write_forum')) {
 let categoriesData;
 
 try {
-  const response = await fetch(`${API_URL}/api/forum/categories`);
+  const response = await fetch(`${INTERNAL_API_URL}/api/forum/categories`);
   categoriesData = await response.json();
 } catch (error) {
   console.error('Error fetching categories:', error);
@@ -203,8 +207,6 @@ const selectedCategory = Astro.url.searchParams.get('category');
 </Layout>
 
 <script>
-  const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3000';
-
   const form = document.getElementById('topicForm') as HTMLFormElement;
   const categorySelect = document.getElementById('categoryId') as HTMLSelectElement;
   const titleInput = document.getElementById('title') as HTMLInputElement;
@@ -235,7 +237,8 @@ const selectedCategory = Astro.url.searchParams.get('category');
     `;
 
     try {
-      const response = await fetch(`${API_URL}/api/forum/topics`, {
+      // Use relative URL for same-origin requests (avoids cross-domain cookie issues)
+      const response = await fetch('/api/forum/topics', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',

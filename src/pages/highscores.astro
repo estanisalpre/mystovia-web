@@ -27,10 +27,6 @@ import Layout from "@layouts/Layout.astro";
             <option value="2">Druid</option>
             <option value="3">Paladin</option>
             <option value="4">Knight</option>
-            <option value="5">Master Sorcerer</option>
-            <option value="6">Elder Druid</option>
-            <option value="7">Royal Paladin</option>
-            <option value="8">Elite Knight</option>
           </select>
         </div>
 
@@ -38,7 +34,6 @@ import Layout from "@layouts/Layout.astro";
         <div>
           <label class="form-label">Categoría</label>
           <select id="categoryFilter" class="form-input w-full">
-            <option value="level">Nivel</option>
             <option value="experience">Experiencia</option>
             <option value="magiclevel">Magic Level</option>
             <option value="skill_fist">Fist Fighting</option>
@@ -192,10 +187,6 @@ import Layout from "@layouts/Layout.astro";
       2: 'Druid',
       3: 'Paladin',
       4: 'Knight',
-      5: 'Master Sorcerer',
-      6: 'Elder Druid',
-      7: 'Royal Paladin',
-      8: 'Elite Knight'
     };
     return vocations[vocationId] || 'Unknown';
   }
