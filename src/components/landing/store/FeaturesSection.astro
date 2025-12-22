@@ -1,11 +1,12 @@
 ---
-const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3000';
+// For internal SSR calls, use localhost (same Express server)
+const INTERNAL_API_URL = `http://localhost:${process.env.PORT || 3000}`;
 
 let news: any[] = [];
 let hasMoreNews = false;
 
 try {
-  const response = await fetch(`${API_URL}/api/news?page=1&limit=4`);
+  const response = await fetch(`${INTERNAL_API_URL}/api/news?page=1&limit=4`);
   if (response.ok) {
     const data = await response.json();
     news = data.news || [];

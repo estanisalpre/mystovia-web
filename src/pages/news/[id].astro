@@ -6,14 +6,16 @@ import LikeButton from '../../components/LikeButton.astro';
 
 const { id } = Astro.params;
 
+// Use internal URL for SSR to avoid timeout on Render
+const INTERNAL_API_URL = `http://localhost:${process.env.PORT || 3000}`;
+
 // Get user from cookies
 const accessToken = Astro.cookies.get('accessToken')?.value;
 let user = null;
 
 if (accessToken) {
   try {
-    const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3000';
-    const verifyResponse = await fetch(`${API_URL}/api/auth/verify`, {
+    const verifyResponse = await fetch(`${INTERNAL_API_URL}/api/auth/verify`, {
       headers: {
         Cookie: `accessToken=${accessToken}`
       }
@@ -29,11 +31,10 @@ if (accessToken) {
 }
 
 // Fetch news
-const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3000';
 let newsData;
 
 try {
-  const response = await fetch(`${API_URL}/api/news/${id}`);
+  const response = await fetch(`${INTERNAL_API_URL}/api/news/${id}`);
   newsData = await response.json();
 
   if (!response.ok) {
