@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { X, Plus, Trash2, AlertCircle } from 'lucide-react';
 
-const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3001';
+const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3301';
 
 interface GameItem {
   itemId: number | string;

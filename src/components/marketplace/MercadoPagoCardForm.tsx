@@ -158,7 +158,7 @@ export default function MercadoPagoCardForm({
               } = cardFormData;
 
               // Send payment to backend
-              const response = await fetch(`${import.meta.env.PUBLIC_API_URL || 'http://localhost:3001'}/api/marketplace/process-payment`, {
+              const response = await fetch(`${import.meta.env.PUBLIC_API_URL || 'http://localhost:3301'}/api/marketplace/process-payment`, {
                 method: 'POST',
                 credentials: 'include',
                 headers: {

@@ -27,7 +27,7 @@ import AccountManagement from '../components/account/AccountManagement';
   const desc = document.getElementById('accountDesc');
   if (desc) desc.textContent = t('account.description', lang);
 
-  const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3001';
+  const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3301';
 
   async function checkAuth() {
     try {

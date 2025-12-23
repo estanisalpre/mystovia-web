@@ -7,12 +7,13 @@ export interface ServerStats {
   serverVersion: string | number;
 }
 
+// API URL for client-side requests
+const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3301';
+
 export const useServerStats = () => {
   const [stats, setStats] = useState<ServerStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
-  const API_URL = import.meta.env.PUBLIC_API_URL;
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -30,9 +31,9 @@ export const useServerStats = () => {
     };
 
     fetchStats();
-    const interval = setInterval(fetchStats, 60000); 
+    const interval = setInterval(fetchStats, 60000);
     return () => clearInterval(interval);
-  }, [API_URL]);
+  }, []);
 
   return { stats, loading, error };
 };

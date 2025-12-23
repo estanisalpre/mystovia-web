@@ -19,7 +19,12 @@ import OnlinePreview from "../store/OnlinePreview.astro";
             <SearchCharacter />
         </div>
 
-        <!-- ROW 1: Server Info (2 cols) + Login (1 col) - items-start prevents stretching -->
+        <!-- ROW 1: News (full width) -->
+        <div class="md:col-span-3">
+            <FeaturesSection />
+        </div>
+
+        <!-- ROW 2: Server Info (2 cols) + Login (1 col) - items-start prevents stretching -->
         <div class="md:col-span-2">
             <ServerInfo />
         </div>
@@ -27,7 +32,7 @@ import OnlinePreview from "../store/OnlinePreview.astro";
             <LoginComponent />
         </div>
 
-        <!-- ROW 2: Highscores (2 cols) + News (1 col) -->
+        <!-- ROW 3: Highscores (2 cols) + Server Stats (1 col) -->
         <div class="md:col-span-2">
             <HighscoresPreview />
         </div>
@@ -35,12 +40,12 @@ import OnlinePreview from "../store/OnlinePreview.astro";
             <ServerStats client:load />
         </div>
 
-        <!-- ROW 3: Store Carousel (3 cols) -->
+        <!-- ROW 4: Store Carousel (3 cols) -->
         <div class="md:col-span-3">
             <StoreCarousel />
         </div>
 
-        <!-- ROW 4: Latest Deaths (2 cols) + Online Players (1 col) -->
+        <!-- ROW 5: Latest Deaths (2 cols) + Online Players (1 col) -->
         <div class="md:col-span-2">
             <LatestDeaths />
         </div>
@@ -48,14 +53,9 @@ import OnlinePreview from "../store/OnlinePreview.astro";
             <OnlinePreview />
         </div>
 
-        <!-- ROW 5: Guilds (full width) -->
+        <!-- ROW 6: Guilds (full width) -->
         <div class="md:col-span-3">
             <GuildsPreview />
-        </div>
-
-        <!-- ROW 5: Features (3 cols) -->
-        <div class="md:col-span-3">
-            <FeaturesSection />
         </div>
     </div>
 </section>

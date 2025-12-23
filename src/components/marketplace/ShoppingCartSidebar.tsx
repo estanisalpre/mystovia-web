@@ -4,7 +4,7 @@ import { X, ShoppingCart, Trash2, CreditCard } from 'lucide-react';
 import CheckoutModal from './CheckoutModal';
 import '../../i18n';
 
-const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3001';
+const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3301';
 
 interface CartItem {
   id: number;
