@@ -64,6 +64,22 @@ if (userId && userEmail) {
 const canWriteForum = hasPermission(user?.groupId, 'write_forum');
 const canManageForum = hasPermission(user?.groupId, 'manage_forum');
 
+// Get user characters
+let userCharacters: any[] = [];
+if (userId) {
+  try {
+    const charactersResponse = await fetch(`${INTERNAL_API_URL}/api/characters`, {
+      headers: { Cookie: `userId=${userId}` }
+    });
+    if (charactersResponse.ok) {
+      const data = await charactersResponse.json();
+      userCharacters = data.characters || [];
+    }
+  } catch (error) {
+    console.error('Error fetching user characters:', error);
+  }
+}
+
 // Fetch topic
 let topicData;
 
@@ -294,16 +310,55 @@ const { topic, comments } = topicData;
             Agregar Respuesta
           </h3>
 
-          <form id="commentForm">
+          <form id="commentForm" class="space-y-4">
+            <!-- Character Select -->
+            <div class="space-y-2">
+              <label class="flex items-center gap-2 text-sm font-semibold text-gray-300">
+                <User class="w-4 h-4 text-yellow-500/70" />
+                Responder como
+              </label>
+              <div class="relative">
+                <select
+                  id="commentCharacterId"
+                  class="w-full px-4 py-3 bg-gray-800/80 border border-gray-700/50 rounded-lg text-white focus:outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/30 transition-all appearance-none cursor-pointer"
+                  required
+                >
+                  {userCharacters.length === 0 ? (
+                    <option value="">No tienes personajes</option>
+                  ) : (
+                    <>
+                      <option value="">Selecciona un personaje</option>
+                      {userCharacters.map((char: any) => (
+                        <option value={char.id}>
+                          {char.name} - Nivel {char.level} {char.vocation}
+                        </option>
+                      ))}
+                    </>
+                  )}
+                </select>
+                <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                  <ChevronRight class="w-4 h-4 text-gray-400 rotate-90" />
+                </div>
+              </div>
+              {userCharacters.length === 0 && (
+                <p class="text-xs text-yellow-500/70 flex items-center gap-1">
+                  <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                  </svg>
+                  Necesitas crear un personaje para responder
+                </p>
+              )}
+            </div>
+
             <textarea
               id="commentContent"
-              class="w-full px-4 py-3 bg-gray-800/80 border border-gray-700/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/30 transition-all resize-none"
+              class="w-full px-4 py-3 bg-gray-800/80 border border-gray-700/50 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/30 transition-all resize-y"
               placeholder="Escribe tu respuesta..."
               rows="4"
               required
             ></textarea>
 
-            <div class="flex justify-end mt-4">
+            <div class="flex justify-end">
               <button
                 type="submit"
                 id="submitCommentBtn"
@@ -396,14 +451,20 @@ const { topic, comments } = topicData;
 
   // Comment form
   const commentForm = document.getElementById('commentForm');
+  const commentCharacterSelect = document.getElementById('commentCharacterId');
   const commentContent = document.getElementById('commentContent');
   const submitCommentBtn = document.getElementById('submitCommentBtn');
 
   commentForm?.addEventListener('submit', async (e) => {
     e.preventDefault();
 
+    const characterId = commentCharacterSelect?.value;
     const content = commentContent.value.trim();
-    if (!content) return;
+
+    if (!characterId || !content) {
+      alert('Por favor selecciona un personaje y escribe tu respuesta');
+      return;
+    }
 
     submitCommentBtn.disabled = true;
     const originalContent = submitCommentBtn.innerHTML;
@@ -420,7 +481,7 @@ const { topic, comments } = topicData;
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ content })
+        body: JSON.stringify({ characterId: parseInt(characterId), content })
       });
 
       const data = await response.json();

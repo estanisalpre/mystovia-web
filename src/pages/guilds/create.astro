@@ -4,7 +4,7 @@ export const prerender = false;
 import Layout from "@layouts/Layout.astro";
 import { Shield, ChevronRight, Home, Crown, AlertCircle } from '@lucide/astro';
 
-const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3001';
+const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3301';
 
 // Get user from cookies
 const userId = Astro.cookies.get('userId')?.value;

@@ -102,13 +102,21 @@ const publishedDate = new Date(newsItem.published_at).toLocaleDateString('es-ES'
 
       <!-- Image Header -->
       {newsItem.image_url && (
-        <div class="relative h-64 sm:h-80 md:h-96 overflow-hidden">
+        <div class="relative h-64 sm:h-80 md:h-96 overflow-hidden group/header">
           <img
             src={newsItem.image_url}
             alt={newsItem.title}
-            class="w-full h-full object-cover"
+            class="w-full h-full object-cover cursor-zoom-in clickable-image"
+            data-full-src={newsItem.image_url}
           />
-          <div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/50 to-transparent"></div>
+          <div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/50 to-transparent pointer-events-none"></div>
+
+          <!-- Zoom indicator on hover -->
+          <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover/header:opacity-100 transition-opacity pointer-events-none">
+            <div class="bg-black/50 backdrop-blur-sm rounded-full p-3">
+              <Eye class="w-6 h-6 text-white" />
+            </div>
+          </div>
 
           <!-- Category badge on image -->
           {newsItem.category_name && (
@@ -138,12 +146,12 @@ const publishedDate = new Date(newsItem.published_at).toLocaleDateString('es-ES'
         <!-- Meta Info Bar -->
         <div class="flex flex-wrap items-center justify-between gap-4 mb-8 pb-6 border-b border-yellow-600/20">
           <div class="flex flex-wrap items-center gap-4 sm:gap-6 text-sm text-gray-400">
-            <!-- Author -->
+            <!-- Author - Always show Staff Mystovia -->
             <span class="flex items-center gap-2">
               <div class="w-8 h-8 rounded-full bg-yellow-500/20 border border-yellow-500/30 flex items-center justify-center">
                 <User class="w-4 h-4 text-yellow-500" />
               </div>
-              <span class="text-white font-medium">{newsItem.author_name}</span>
+              <span class="text-white font-medium">Staff Mystovia</span>
             </span>
 
             <!-- Date -->
@@ -213,6 +221,39 @@ const publishedDate = new Date(newsItem.published_at).toLocaleDateString('es-ES'
   </section>
 </Layout>
 
+<!-- Image Viewer Modal -->
+<div id="imageViewerModal" class="fixed inset-0 z-[9999] hidden">
+  <!-- Backdrop -->
+  <div id="imageViewerBackdrop" class="absolute inset-0 bg-black/95 backdrop-blur-sm cursor-zoom-out"></div>
+
+  <!-- Image Container -->
+  <div class="absolute inset-0 flex items-center justify-center p-4 pointer-events-none">
+    <img id="imageViewerImg" src="" alt="" class="max-w-full max-h-full object-contain pointer-events-auto cursor-zoom-out transition-transform duration-200" />
+  </div>
+
+  <!-- Close Button -->
+  <button id="imageViewerClose" class="absolute top-4 right-4 w-10 h-10 rounded-full bg-black/50 border border-white/20 text-white hover:bg-black/70 flex items-center justify-center transition-all">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+    </svg>
+  </button>
+
+  <!-- Zoom Controls -->
+  <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-black/50 rounded-full px-4 py-2">
+    <button id="zoomOut" class="w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center text-white transition-all">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"/>
+      </svg>
+    </button>
+    <span id="zoomLevel" class="text-white text-sm min-w-[50px] text-center">100%</span>
+    <button id="zoomIn" class="w-8 h-8 rounded-full hover:bg-white/10 flex items-center justify-center text-white transition-all">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+      </svg>
+    </button>
+  </div>
+</div>
+
 <script define:vars={{ newsTitle: newsItem.title }}>
   function shareNews(platform) {
     const url = encodeURIComponent(window.location.href);
@@ -242,6 +283,121 @@ const publishedDate = new Date(newsItem.published_at).toLocaleDateString('es-ES'
   // Make functions global
   window.shareNews = shareNews;
   window.copyLink = copyLink;
+
+  // ============================================
+  // IMAGE VIEWER WITH ZOOM
+  // ============================================
+  const modal = document.getElementById('imageViewerModal');
+  const modalImg = document.getElementById('imageViewerImg');
+  const backdrop = document.getElementById('imageViewerBackdrop');
+  const closeBtn = document.getElementById('imageViewerClose');
+  const zoomInBtn = document.getElementById('zoomIn');
+  const zoomOutBtn = document.getElementById('zoomOut');
+  const zoomLevelSpan = document.getElementById('zoomLevel');
+
+  let currentZoom = 1;
+  const minZoom = 0.5;
+  const maxZoom = 3;
+  const zoomStep = 0.25;
+
+  function openImageViewer(src) {
+    if (!modal || !modalImg) return;
+    modalImg.src = src;
+    modalImg.alt = 'Imagen ampliada';
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    currentZoom = 1;
+    updateZoom();
+  }
+
+  function closeImageViewer() {
+    if (!modal) return;
+    modal.classList.add('hidden');
+    document.body.style.overflow = '';
+    currentZoom = 1;
+  }
+
+  function updateZoom() {
+    if (!modalImg || !zoomLevelSpan) return;
+    modalImg.style.transform = `scale(${currentZoom})`;
+    zoomLevelSpan.textContent = `${Math.round(currentZoom * 100)}%`;
+  }
+
+  function zoomIn() {
+    if (currentZoom < maxZoom) {
+      currentZoom = Math.min(maxZoom, currentZoom + zoomStep);
+      updateZoom();
+    }
+  }
+
+  function zoomOut() {
+    if (currentZoom > minZoom) {
+      currentZoom = Math.max(minZoom, currentZoom - zoomStep);
+      updateZoom();
+    }
+  }
+
+  // Event listeners for image viewer
+  backdrop?.addEventListener('click', closeImageViewer);
+  closeBtn?.addEventListener('click', closeImageViewer);
+  modalImg?.addEventListener('click', closeImageViewer);
+  zoomInBtn?.addEventListener('click', zoomIn);
+  zoomOutBtn?.addEventListener('click', zoomOut);
+
+  // Close on Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) {
+      closeImageViewer();
+    }
+  });
+
+  // Mouse wheel zoom
+  modal?.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    if (e.deltaY < 0) {
+      zoomIn();
+    } else {
+      zoomOut();
+    }
+  });
+
+  // ============================================
+  // CONVERT IMGUR URLS AND MAKE IMAGES CLICKABLE
+  // ============================================
+  function convertImgurUrl(url) {
+    // Convert i.imgur.com/xxx.png to proper format
+    const imgurRegex = /i\.imgur\.com\/([a-zA-Z0-9]+)\.(\w+)/;
+    const match = url.match(imgurRegex);
+    if (match) {
+      return `https://i.imgur.com/${match[1]}.${match[2]}`;
+    }
+    return url;
+  }
+
+  // Process all images in news content
+  document.querySelectorAll('.news-content img').forEach(img => {
+    // Convert imgur URLs
+    const originalSrc = img.getAttribute('src') || '';
+    const convertedSrc = convertImgurUrl(originalSrc);
+    if (convertedSrc !== originalSrc) {
+      img.src = convertedSrc;
+    }
+
+    // Make image clickable for zoom
+    img.classList.add('cursor-zoom-in', 'hover:opacity-90', 'transition-opacity');
+    img.style.cursor = 'zoom-in';
+    img.addEventListener('click', () => {
+      openImageViewer(img.src);
+    });
+  });
+
+  // Process header image and any other clickable images
+  document.querySelectorAll('.clickable-image').forEach(img => {
+    img.addEventListener('click', () => {
+      const fullSrc = img.dataset.fullSrc || img.src;
+      openImageViewer(fullSrc);
+    });
+  });
 </script>
 
 <style>

@@ -2,7 +2,7 @@
 import Layout from "@layouts/Layout.astro";
 import { Shield, Users, Crown, ChevronRight, Plus } from '@lucide/astro';
 
-const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3001';
+const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3301';
 ---
 
 <Layout title="Guilds | Mystovia">
@@ -84,7 +84,7 @@ const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3001';
 </script>
 
 <script>
-  const API_URL = (window as any).__GUILDS_API_URL__ || 'http://localhost:3001';
+  const API_URL = (window as any).__GUILDS_API_URL__ || 'http://localhost:3301';
 
   interface Guild {
     id: number;

@@ -1,5 +1,5 @@
 // API Base URL
-const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3000';
+const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3301';
 
 // Helper para hacer requests
 async function apiRequest(endpoint: string, options: RequestInit = {}) {

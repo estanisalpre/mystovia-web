@@ -33,12 +33,12 @@ export async function createSingleProductPreference(
   // Documentation: https://www.mercadopago.com.ar/developers/es/reference/preferences/_checkout_preferences/post
 
   const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:4321';
-  const backendUrl = process.env.BACKEND_URL || 'http://localhost:3001';
+  const backendUrl = process.env.BACKEND_URL || 'http://localhost:3301';
 
-  console.log('🔧 Creating MercadoPago preference with:');
+  /* console.log('🔧 Creating MercadoPago preference with:');
   console.log('  Frontend URL:', frontendUrl);
   console.log('  Backend URL (webhook):', backendUrl);
-  console.log('  Notification URL:', `${backendUrl}/api/marketplace/mp/webhook`);
+  console.log('  Notification URL:', `${backendUrl}/api/marketplace/mp/webhook`); */
 
   const preferenceBody: any = {
     items: [

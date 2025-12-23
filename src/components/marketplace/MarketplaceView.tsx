@@ -5,7 +5,7 @@ import ItemCard from './ItemCard';
 import WeaponSelectionModal from './WeaponSelectionModal';
 import '../../i18n';
 
-const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3001';
+const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3301';
 
 interface GameItem {
   itemId: number | string;

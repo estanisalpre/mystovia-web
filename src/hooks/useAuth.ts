@@ -1,8 +1,6 @@
 import { login as apiLogin, register as apiRegister } from '../utils/api';
 
 export async function useAuth(endpoint: string, data: Record<string, any>) {
-  console.warn('useAuth is deprecated. Please use functions from src/utils/api.ts instead.');
-
   if (endpoint === 'login') {
     return apiLogin(data.email, data.password);
   } else if (endpoint === 'register') {
@@ -13,9 +11,10 @@ export async function useAuth(endpoint: string, data: Record<string, any>) {
     return result;
   }
 
-  const API_URL = import.meta.env.PUBLIC_API_URL;
+  const INTERNAL_API_URL = `http://localhost:${process.env.PORT || 3301}`;
+
   try {
-    const response = await fetch(`${API_URL}/api/auth/${endpoint}`, {
+    const response = await fetch(`${INTERNAL_API_URL}/api/auth/${endpoint}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include", 
