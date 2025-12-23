@@ -19,19 +19,24 @@ const router = Router();
 // ============================================
 router.get('/', getNews);
 router.get('/categories', getNewsCategories);
+
+// ============================================
+// RUTAS DE ADMINISTRACIÓN (requieren permisos)
+// IMPORTANTE: Estas rutas deben estar ANTES de /:newsId para evitar conflictos
+// ============================================
+router.get('/admin/all', authenticateToken, checkPermission(['manage_news']), getAllNewsAdmin);
+router.post('/admin/create', authenticateToken, checkPermission(['manage_news']), createNews);
+router.put('/admin/:newsId', authenticateToken, checkPermission(['manage_news']), updateNews);
+router.delete('/admin/:newsId', authenticateToken, checkPermission(['manage_news']), deleteNews);
+
+// ============================================
+// RUTAS PÚBLICAS CON PARÁMETRO (al final para evitar conflictos)
+// ============================================
 router.get('/:newsId', getNewsById);
 
 // ============================================
 // RUTAS PROTEGIDAS (requieren autenticación)
 // ============================================
 router.post('/:newsId/like', authenticateToken, checkPermission(['like_news']), likeNews);
-
-// ============================================
-// RUTAS DE ADMINISTRACIÓN (requieren permisos)
-// ============================================
-router.get('/admin/all', authenticateToken, checkPermission(['manage_news']), getAllNewsAdmin);
-router.post('/admin/create', authenticateToken, checkPermission(['manage_news']), createNews);
-router.put('/admin/:newsId', authenticateToken, checkPermission(['manage_news']), updateNews);
-router.delete('/admin/:newsId', authenticateToken, checkPermission(['manage_news']), deleteNews);
 
 export default router;

@@ -3,7 +3,7 @@ import Layout from '../../layouts/Layout.astro';
 import { hasPermission } from '../../utils/permissions';
 
 // Use internal URL for SSR to avoid timeout on Render
-const INTERNAL_API_URL = `http://localhost:${process.env.PORT || 3000}`;
+const INTERNAL_API_URL = `http://localhost:${process.env.PORT || 3301}`;
 
 const accessToken = Astro.cookies.get('accessToken')?.value;
 let user = null;

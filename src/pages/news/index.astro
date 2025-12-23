@@ -7,7 +7,7 @@ const page = parseInt(Astro.url.searchParams.get('page') || '1');
 const categoryId = Astro.url.searchParams.get('category');
 
 // Fetch news from API - use internal URL for SSR to avoid timeout on Render
-const INTERNAL_API_URL = `http://localhost:${process.env.PORT || 3000}`;
+const INTERNAL_API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3301';
 const newsUrl = `${INTERNAL_API_URL}/api/news?page=${page}&limit=9${categoryId ? `&categoryId=${categoryId}` : ''}`;
 
 let newsData;

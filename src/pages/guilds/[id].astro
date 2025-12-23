@@ -7,7 +7,7 @@ import { Shield, Users, Crown, ChevronRight, Home, UserPlus, LogOut, Mail, Camer
 const { id } = Astro.params;
 
 // Use internal URL for SSR to avoid timeout on Render
-const INTERNAL_API_URL = `http://localhost:${process.env.PORT || 3000}`;
+const INTERNAL_API_URL = `http://localhost:${process.env.PORT || 3301}`;
 
 // Get user from cookies
 const userId = Astro.cookies.get('userId')?.value;
