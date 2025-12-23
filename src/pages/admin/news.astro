@@ -1,17 +1,18 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import { hasPermission } from '../../utils/permissions';
+import { Newspaper, Plus, ArrowLeft, Eye, Heart, Calendar, Edit, Trash2, ExternalLink } from '@lucide/astro';
 
 // Use internal URL for SSR to avoid timeout on Render
-const INTERNAL_API_URL = `http://localhost:${process.env.PORT || 3000}`;
+const INTERNAL_API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3301';
 
-const accessToken = Astro.cookies.get('accessToken')?.value;
+const userId = Astro.cookies.get('userId')?.value;
 let user = null;
 
-if (accessToken) {
+if (userId) {
   try {
     const verifyResponse = await fetch(`${INTERNAL_API_URL}/api/auth/verify`, {
-      headers: { Cookie: `accessToken=${accessToken}` }
+      headers: { Cookie: `userId=${userId}` }
     });
     if (verifyResponse.ok) {
       const data = await verifyResponse.json();
@@ -34,7 +35,7 @@ let categoriesData;
 try {
   const [newsResponse, categoriesResponse] = await Promise.all([
     fetch(`${INTERNAL_API_URL}/api/news/admin/all?page=${page}&limit=20`, {
-      headers: { Cookie: `accessToken=${accessToken}` }
+      headers: { Cookie: `userId=${userId}` }
     }),
     fetch(`${INTERNAL_API_URL}/api/news/categories`)
   ]);
@@ -53,126 +54,482 @@ const { categories } = categoriesData;
 
 <Layout title="Admin - Noticias">
   <section class="page-container">
-    <div class="flex justify-between items-center mb-6">
-      <h1 class="text-3xl font-bold">📰 Gestión de Noticias</h1>
-      <div class="flex gap-2">
-        <button @click="showCreateModal = true" class="btn btn-primary">+ Nueva Noticia</button>
-        <a href="/admin" class="btn btn-ghost">← Volver</a>
+    <!-- Header -->
+    <header class="mb-8">
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <div class="flex items-center gap-3 mb-2">
+            <div class="w-10 h-10 rounded-lg bg-yellow-500/20 border border-yellow-500/30 flex items-center justify-center">
+              <Newspaper class="w-5 h-5 text-yellow-500" />
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-bold text-yellow-500 medieval-font">Gestión de Noticias</h1>
+          </div>
+          <p class="text-gray-400 text-sm">Administra las noticias y actualizaciones del servidor</p>
+        </div>
+        <div class="flex gap-3">
+          <button id="openCreateModal"
+                  class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-black bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-lg hover:from-yellow-400 hover:to-yellow-500 transition-all shadow-lg shadow-yellow-500/20">
+            <Plus class="w-4 h-4" />
+            Nueva Noticia
+          </button>
+          <a href="/admin"
+             class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-lg border border-yellow-600/30 text-yellow-500 hover:bg-yellow-500/10 hover:border-yellow-500/50 transition-all">
+            <ArrowLeft class="w-4 h-4" />
+            Volver
+          </a>
+        </div>
+      </div>
+    </header>
+
+    <!-- Stats Bar -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+      <div class="relative rounded-xl p-4 overflow-hidden"
+           style="background: linear-gradient(to bottom, rgb(31 41 55 / 0.6), rgb(17 24 39 / 0.8)); border: 1px solid rgb(234 179 8 / 0.15);">
+        <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-yellow-500/30 to-transparent"></div>
+        <p class="text-gray-400 text-xs mb-1">Total Noticias</p>
+        <p class="text-2xl font-bold text-yellow-500 medieval-font">{pagination.total || news.length}</p>
+      </div>
+      <div class="relative rounded-xl p-4 overflow-hidden"
+           style="background: linear-gradient(to bottom, rgb(31 41 55 / 0.6), rgb(17 24 39 / 0.8)); border: 1px solid rgb(34 197 94 / 0.15);">
+        <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-green-500/30 to-transparent"></div>
+        <p class="text-gray-400 text-xs mb-1">Publicadas</p>
+        <p class="text-2xl font-bold text-green-500 medieval-font">{news.filter((n: any) => n.is_published).length}</p>
+      </div>
+      <div class="relative rounded-xl p-4 overflow-hidden"
+           style="background: linear-gradient(to bottom, rgb(31 41 55 / 0.6), rgb(17 24 39 / 0.8)); border: 1px solid rgb(251 146 60 / 0.15);">
+        <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-orange-500/30 to-transparent"></div>
+        <p class="text-gray-400 text-xs mb-1">Borradores</p>
+        <p class="text-2xl font-bold text-orange-500 medieval-font">{news.filter((n: any) => !n.is_published).length}</p>
+      </div>
+      <div class="relative rounded-xl p-4 overflow-hidden"
+           style="background: linear-gradient(to bottom, rgb(31 41 55 / 0.6), rgb(17 24 39 / 0.8)); border: 1px solid rgb(139 92 246 / 0.15);">
+        <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-purple-500/30 to-transparent"></div>
+        <p class="text-gray-400 text-xs mb-1">Categorías</p>
+        <p class="text-2xl font-bold text-purple-500 medieval-font">{categories.length}</p>
       </div>
     </div>
 
-    <div class="overflow-x-auto">
-      <table class="table table-zebra">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Título</th>
-            <th>Categoría</th>
-            <th>Autor</th>
-            <th>Estado</th>
-            <th>Vistas</th>
-            <th>Likes</th>
-            <th>Fecha</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {news.map((item: any) => (
-            <tr>
-              <td>{item.id}</td>
-              <td class="max-w-xs truncate">{item.title}</td>
-              <td><span class="badge badge-primary badge-sm">{item.category_name || 'Sin categoría'}</span></td>
-              <td>{item.author_name}</td>
-              <td>
-                <span class={`badge ${item.is_published ? 'badge-success' : 'badge-warning'}`}>
-                  {item.is_published ? 'Publicada' : 'Borrador'}
-                </span>
-              </td>
-              <td>{item.views_count}</td>
-              <td>{item.likes_count}</td>
-              <td>{new Date(item.created_at).toLocaleDateString('es-ES')}</td>
-              <td>
-                <div class="flex gap-2">
-                  <a href={`/news/${item.id}`} class="btn btn-xs btn-info" target="_blank">Ver</a>
-                  <button onclick={`editNewsItem(${item.id}, ${JSON.stringify(JSON.stringify(item))})`} class="btn btn-xs btn-warning">Editar</button>
-                  <button onclick={`deleteNewsItem(${item.id})`} class="btn btn-xs btn-error">Eliminar</button>
+    <!-- News Table -->
+    <div class="relative rounded-xl overflow-hidden"
+         style="background: linear-gradient(to bottom, rgb(17 24 39 / 0.95), rgb(0 0 0 / 0.9));">
+      <!-- Diamond pattern overlay -->
+      <div class="absolute inset-0 opacity-[0.02] pointer-events-none"
+           style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M30 0L60 30L30 60L0 30z\' fill=\'%23d4af37\' fill-opacity=\'0.4\'/%3E%3C/svg%3E'); background-size: 30px 30px;"></div>
+      <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-yellow-500/40 to-transparent"></div>
+      <div class="absolute inset-0 rounded-xl border border-yellow-600/20 pointer-events-none"></div>
+
+      <!-- Table Header -->
+      <div class="hidden lg:grid grid-cols-12 gap-4 px-6 py-4 text-sm text-yellow-500 font-semibold border-b border-yellow-600/20 bg-black/30">
+        <div class="col-span-1">ID</div>
+        <div class="col-span-4">Título</div>
+        <div class="col-span-1">Categoría</div>
+        <div class="col-span-1">Estado</div>
+        <div class="col-span-1 text-center">Vistas</div>
+        <div class="col-span-1 text-center">Likes</div>
+        <div class="col-span-1">Fecha</div>
+        <div class="col-span-2 text-center">Acciones</div>
+      </div>
+
+      <!-- Table Body -->
+      <div class="divide-y divide-yellow-600/10">
+        {news.length === 0 ? (
+          <div class="py-12 text-center">
+            <Newspaper class="w-12 h-12 mx-auto text-yellow-500/30 mb-3" />
+            <p class="text-gray-400">No hay noticias creadas aún</p>
+            <button id="openCreateModalEmpty"
+                    class="mt-4 inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-black bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-lg hover:from-yellow-400 hover:to-yellow-500 transition-all">
+              <Plus class="w-4 h-4" />
+              Crear primera noticia
+            </button>
+          </div>
+        ) : (
+          news.map((item: any) => (
+            <div class="lg:grid lg:grid-cols-12 lg:gap-4 px-4 sm:px-6 py-4 hover:bg-yellow-500/5 transition-colors">
+              <!-- Mobile View -->
+              <div class="lg:hidden space-y-3">
+                <div class="flex items-start justify-between gap-3">
+                  <div class="flex-1 min-w-0">
+                    <p class="text-white font-semibold truncate">{item.title}</p>
+                    <div class="flex items-center gap-2 mt-1">
+                      <span class={`text-xs px-2 py-0.5 rounded ${item.is_published ? 'bg-green-500/20 text-green-400 border border-green-500/30' : 'bg-orange-500/20 text-orange-400 border border-orange-500/30'}`}>
+                        {item.is_published ? 'Publicada' : 'Borrador'}
+                      </span>
+                      {item.category_name && (
+                        <span class="text-xs px-2 py-0.5 rounded bg-yellow-500/20 text-yellow-500 border border-yellow-500/30">
+                          {item.category_name}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <span class="text-xs text-gray-500">#{item.id}</span>
                 </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-4 text-xs text-gray-400">
+                    <span class="flex items-center gap-1">
+                      <Eye class="w-3 h-3" /> {item.views_count}
+                    </span>
+                    <span class="flex items-center gap-1">
+                      <Heart class="w-3 h-3" /> {item.likes_count}
+                    </span>
+                    <span class="flex items-center gap-1">
+                      <Calendar class="w-3 h-3" /> {new Date(item.created_at).toLocaleDateString('es-ES')}
+                    </span>
+                  </div>
+                  <div class="flex gap-2">
+                    <a href={`/news/${item.id}`} target="_blank"
+                       class="w-8 h-8 rounded-lg border border-blue-500/30 text-blue-400 hover:bg-blue-500/10 flex items-center justify-center transition-all">
+                      <ExternalLink class="w-4 h-4" />
+                    </a>
+                    <button data-edit-id={item.id} data-edit-json={JSON.stringify(item)}
+                            class="edit-btn w-8 h-8 rounded-lg border border-yellow-500/30 text-yellow-500 hover:bg-yellow-500/10 flex items-center justify-center transition-all">
+                      <Edit class="w-4 h-4" />
+                    </button>
+                    <button data-delete-id={item.id}
+                            class="delete-btn w-8 h-8 rounded-lg border border-red-500/30 text-red-400 hover:bg-red-500/10 flex items-center justify-center transition-all">
+                      <Trash2 class="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Desktop View -->
+              <div class="hidden lg:contents">
+                <div class="col-span-1 text-gray-500 text-sm self-center">#{item.id}</div>
+                <div class="col-span-4 self-center">
+                  <p class="text-white font-medium truncate">{item.title}</p>
+                  <p class="text-gray-500 text-xs mt-0.5">Por {item.author_name}</p>
+                </div>
+                <div class="col-span-1 self-center">
+                  {item.category_name ? (
+                    <span class="text-xs px-2 py-1 rounded bg-yellow-500/20 text-yellow-500 border border-yellow-500/30">
+                      {item.category_name}
+                    </span>
+                  ) : (
+                    <span class="text-gray-500 text-xs">-</span>
+                  )}
+                </div>
+                <div class="col-span-1 self-center">
+                  <span class={`text-xs px-2 py-1 rounded ${item.is_published ? 'bg-green-500/20 text-green-400 border border-green-500/30' : 'bg-orange-500/20 text-orange-400 border border-orange-500/30'}`}>
+                    {item.is_published ? 'Publicada' : 'Borrador'}
+                  </span>
+                </div>
+                <div class="col-span-1 self-center text-center">
+                  <span class="flex items-center justify-center gap-1 text-gray-400 text-sm">
+                    <Eye class="w-3.5 h-3.5 text-yellow-500/70" />
+                    {item.views_count}
+                  </span>
+                </div>
+                <div class="col-span-1 self-center text-center">
+                  <span class="flex items-center justify-center gap-1 text-gray-400 text-sm">
+                    <Heart class="w-3.5 h-3.5 text-yellow-500/70" />
+                    {item.likes_count}
+                  </span>
+                </div>
+                <div class="col-span-1 self-center text-gray-400 text-sm">
+                  {new Date(item.created_at).toLocaleDateString('es-ES')}
+                </div>
+                <div class="col-span-2 self-center flex items-center justify-center gap-2">
+                  <a href={`/news/${item.id}`} target="_blank"
+                     class="w-8 h-8 rounded-lg border border-blue-500/30 text-blue-400 hover:bg-blue-500/10 flex items-center justify-center transition-all"
+                     title="Ver">
+                    <ExternalLink class="w-4 h-4" />
+                  </a>
+                  <button data-edit-id={item.id} data-edit-json={JSON.stringify(item)}
+                          class="edit-btn w-8 h-8 rounded-lg border border-yellow-500/30 text-yellow-500 hover:bg-yellow-500/10 flex items-center justify-center transition-all"
+                          title="Editar">
+                    <Edit class="w-4 h-4" />
+                  </button>
+                  <button data-delete-id={item.id}
+                          class="delete-btn w-8 h-8 rounded-lg border border-red-500/30 text-red-400 hover:bg-red-500/10 flex items-center justify-center transition-all"
+                          title="Eliminar">
+                    <Trash2 class="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
     </div>
 
+    <!-- Pagination -->
     {pagination.totalPages > 1 && (
-      <div class="flex justify-center gap-2 mt-6">
+      <div class="flex items-center justify-center gap-2 mt-6">
         {page > 1 && (
-          <a href={`/admin/news?page=${page - 1}`} class="btn btn-outline">Anterior</a>
+          <a href={`/admin/news?page=${page - 1}`}
+             class="px-4 py-2 text-sm font-medium rounded-lg border border-yellow-600/30 text-yellow-500 hover:bg-yellow-500/10 transition-all">
+            Anterior
+          </a>
         )}
-        <span class="btn btn-ghost">Página {page} de {pagination.totalPages}</span>
+        <span class="px-4 py-2 text-sm text-gray-400">
+          Página {page} de {pagination.totalPages}
+        </span>
         {page < pagination.totalPages && (
-          <a href={`/admin/news?page=${page + 1}`} class="btn btn-outline">Siguiente</a>
+          <a href={`/admin/news?page=${page + 1}`}
+             class="px-4 py-2 text-sm font-medium rounded-lg border border-yellow-600/30 text-yellow-500 hover:bg-yellow-500/10 transition-all">
+            Siguiente
+          </a>
         )}
       </div>
     )}
+  </section>
 
-    <!-- Modal Create/Edit -->
-    <div x-data="newsModal()" x-show="showCreateModal || editingNews" class="modal modal-open" x-cloak>
-      <div class="modal-box max-w-4xl">
-        <h3 class="font-bold text-lg mb-4" x-text="editingNews ? 'Editar Noticia' : 'Nueva Noticia'"></h3>
+  <!-- Modal Backdrop -->
+  <div id="modalBackdrop" class="modal-backdrop hidden"></div>
 
-        <form @submit.prevent="saveNews()">
-          <div class="form-control mb-4">
-            <label class="label"><span class="label-text">Categoría</span></label>
-            <select x-model="formData.categoryId" class="select select-bordered">
-              <option value="">Sin categoría</option>
-              {categories.map((cat: any) => (
-                <option value={cat.id}>{cat.name}</option>
-              ))}
-            </select>
+  <!-- Create/Edit Modal -->
+  <div id="newsModal" class="modal-container hidden">
+    <div class="modal-wrapper">
+      <div class="modal-content max-w-3xl">
+      <!-- Diamond pattern overlay -->
+      <div class="absolute inset-0 opacity-[0.02] pointer-events-none"
+           style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M30 0L60 30L30 60L0 30z\' fill=\'%23d4af37\' fill-opacity=\'0.4\'/%3E%3C/svg%3E'); background-size: 30px 30px;"></div>
+      <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-yellow-500/60 to-transparent"></div>
+      <div class="absolute inset-0 rounded-xl border border-yellow-600/20 pointer-events-none"></div>
+
+      <!-- Modal Header -->
+      <div class="relative z-10 px-6 py-4 border-b border-yellow-600/20 bg-black/30">
+        <h3 id="modalTitle" class="text-xl font-bold text-yellow-500 medieval-font">Nueva Noticia</h3>
+        <p class="text-gray-400 text-sm mt-1">Completa los campos para crear o editar una noticia</p>
+      </div>
+
+      <!-- Modal Body -->
+      <form id="newsForm" class="relative z-10 p-6 space-y-5 max-h-[60vh] overflow-y-auto">
+        <input type="hidden" id="editingNewsId" value="">
+
+        <!-- Category -->
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-2">Categoría</label>
+          <select id="categoryId" class="form-input w-full">
+            <option value="">Sin categoría</option>
+            {categories.map((cat: any) => (
+              <option value={cat.id}>{cat.name}</option>
+            ))}
+          </select>
+        </div>
+
+        <!-- Title -->
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-2">Título <span class="text-red-400">*</span></label>
+          <input type="text" id="newsTitle" required
+                 class="form-input w-full"
+                 placeholder="Escribe el título de la noticia..." />
+        </div>
+
+        <!-- Image URL -->
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-2">URL de Imagen</label>
+          <input type="url" id="imageUrl"
+                 class="form-input w-full"
+                 placeholder="https://ejemplo.com/imagen.jpg" />
+          <p class="text-xs text-gray-500 mt-1">Opcional. Se mostrará como cabecera de la noticia.</p>
+        </div>
+
+        <!-- Content -->
+        <div>
+          <label class="block text-sm font-medium text-gray-300 mb-2">Contenido <span class="text-red-400">*</span></label>
+          <textarea id="newsContent" required rows="8"
+                    class="form-input w-full resize-none"
+                    placeholder="Escribe el contenido de la noticia... (soporta HTML)"></textarea>
+          <p class="text-xs text-gray-500 mt-1">Puedes usar HTML para dar formato al contenido.</p>
+        </div>
+
+        <!-- Publish Toggle -->
+        <div class="flex items-center gap-3 p-4 rounded-lg border border-yellow-600/20 bg-yellow-500/5">
+          <input type="checkbox" id="isPublished"
+                 class="w-5 h-5 rounded border-yellow-600/50 bg-gray-800 text-yellow-500 focus:ring-yellow-500/50 focus:ring-offset-0" />
+          <div>
+            <label for="isPublished" class="text-sm font-medium text-white cursor-pointer">Publicar inmediatamente</label>
+            <p class="text-xs text-gray-400">Si no marcas esta opción, la noticia se guardará como borrador.</p>
           </div>
+        </div>
+      </form>
 
-          <div class="form-control mb-4">
-            <label class="label"><span class="label-text">Título</span></label>
-            <input type="text" x-model="formData.title" class="input input-bordered" required />
+      <!-- Modal Footer -->
+      <div class="relative z-10 px-6 py-4 border-t border-yellow-600/20 bg-black/30 flex flex-col sm:flex-row gap-3 sm:justify-end">
+        <button id="cancelModal" type="button"
+                class="px-5 py-2.5 text-sm font-semibold rounded-lg border border-yellow-600/30 text-gray-300 hover:text-white hover:bg-white/5 transition-all order-2 sm:order-1">
+          Cancelar
+        </button>
+        <button id="saveNews" type="button"
+                class="px-5 py-2.5 text-sm font-semibold text-black bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-lg hover:from-yellow-400 hover:to-yellow-500 transition-all flex items-center justify-center gap-2 order-1 sm:order-2">
+          <span id="saveText">Guardar Noticia</span>
+          <span id="saveSpinner" class="hidden w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin"></span>
+        </button>
+      </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div id="deleteModal" class="modal-container hidden">
+    <div class="modal-wrapper">
+      <div class="modal-content max-w-md p-6" style="border: 1px solid rgba(239, 68, 68, 0.3);">
+        <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-red-500/60 to-transparent"></div>
+
+        <div class="text-center relative z-10">
+          <div class="w-16 h-16 rounded-full bg-red-500/20 border border-red-500/30 flex items-center justify-center mx-auto mb-4">
+            <Trash2 class="w-8 h-8 text-red-400" />
           </div>
+          <h3 class="text-xl font-bold text-white mb-2">¿Eliminar noticia?</h3>
+          <p class="text-gray-400 text-sm mb-6">Esta acción no se puede deshacer. La noticia será eliminada permanentemente.</p>
 
-          <div class="form-control mb-4">
-            <label class="label"><span class="label-text">URL de Imagen</span></label>
-            <input type="url" x-model="formData.imageUrl" class="input input-bordered" />
-          </div>
+          <input type="hidden" id="deleteNewsId" value="">
 
-          <div class="form-control mb-4">
-            <label class="label"><span class="label-text">Contenido</span></label>
-            <textarea x-model="formData.content" class="textarea textarea-bordered h-64" required></textarea>
-          </div>
-
-          <div class="form-control mb-6">
-            <label class="label cursor-pointer justify-start gap-3">
-              <input type="checkbox" x-model="formData.isPublished" class="checkbox" />
-              <span class="label-text">Publicar inmediatamente</span>
-            </label>
-          </div>
-
-          <div class="modal-action">
-            <button type="submit" class="btn btn-primary" :disabled="loading">
-              <span x-show="!loading">Guardar</span>
-              <span x-show="loading" class="loading loading-spinner"></span>
+          <div class="flex gap-3 justify-center">
+            <button id="cancelDelete"
+                    class="px-5 py-2.5 text-sm font-semibold rounded-lg border border-gray-600 text-gray-300 hover:bg-white/5 transition-all">
+              Cancelar
             </button>
-            <button type="button" @click="closeModal()" class="btn">Cancelar</button>
+            <button id="confirmDelete"
+                    class="px-5 py-2.5 text-sm font-semibold text-white bg-red-600 rounded-lg hover:bg-red-500 transition-all flex items-center gap-2">
+              <Trash2 class="w-4 h-4" />
+              Eliminar
+            </button>
           </div>
-        </form>
+        </div>
       </div>
     </div>
   </div>
 </Layout>
 
 <script>
-  async function deleteNewsItem(newsId: number) {
-    if (!confirm('¿Eliminar esta noticia?')) return;
+  // API URL for client-side requests
+  const API_BASE = import.meta.env.PUBLIC_API_URL || 'http://localhost:3301';
+
+  // DOM Elements
+  const modalBackdrop = document.getElementById('modalBackdrop');
+  const newsModal = document.getElementById('newsModal');
+  const deleteModal = document.getElementById('deleteModal');
+  const modalTitle = document.getElementById('modalTitle');
+  const saveNewsBtn = document.getElementById('saveNews');
+  const saveText = document.getElementById('saveText');
+  const saveSpinner = document.getElementById('saveSpinner');
+
+  // Form fields
+  const editingNewsId = document.getElementById('editingNewsId') as HTMLInputElement;
+  const categoryId = document.getElementById('categoryId') as HTMLSelectElement;
+  const newsTitle = document.getElementById('newsTitle') as HTMLInputElement;
+  const imageUrl = document.getElementById('imageUrl') as HTMLInputElement;
+  const newsContent = document.getElementById('newsContent') as HTMLTextAreaElement;
+  const isPublished = document.getElementById('isPublished') as HTMLInputElement;
+
+  // Open modal functions
+  function openModal(isEdit = false, news: any = null) {
+    if (isEdit && news) {
+      modalTitle!.textContent = 'Editar Noticia';
+      editingNewsId.value = news.id;
+      categoryId.value = news.category_id || '';
+      newsTitle.value = news.title;
+      imageUrl.value = news.image_url || '';
+      newsContent.value = news.content;
+      isPublished.checked = news.is_published === 1;
+    } else {
+      modalTitle!.textContent = 'Nueva Noticia';
+      editingNewsId.value = '';
+      categoryId.value = '';
+      newsTitle.value = '';
+      imageUrl.value = '';
+      newsContent.value = '';
+      isPublished.checked = false;
+    }
+
+    modalBackdrop?.classList.remove('hidden');
+    newsModal?.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    modalBackdrop?.classList.add('hidden');
+    newsModal?.classList.add('hidden');
+    deleteModal?.classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+
+  // Event listeners for opening modals
+  document.getElementById('openCreateModal')?.addEventListener('click', () => openModal(false));
+  document.getElementById('openCreateModalEmpty')?.addEventListener('click', () => openModal(false));
+
+  // Edit buttons
+  document.querySelectorAll('.edit-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const newsJson = (btn as HTMLElement).dataset.editJson;
+      if (newsJson) {
+        const news = JSON.parse(newsJson);
+        openModal(true, news);
+      }
+    });
+  });
+
+  // Delete buttons
+  document.querySelectorAll('.delete-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const deleteId = (btn as HTMLElement).dataset.deleteId;
+      if (deleteId) {
+        (document.getElementById('deleteNewsId') as HTMLInputElement).value = deleteId;
+        modalBackdrop?.classList.remove('hidden');
+        deleteModal?.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      }
+    });
+  });
+
+  // Close modals
+  document.getElementById('cancelModal')?.addEventListener('click', closeModal);
+  document.getElementById('cancelDelete')?.addEventListener('click', closeModal);
+  modalBackdrop?.addEventListener('click', closeModal);
+
+  // Save news
+  saveNewsBtn?.addEventListener('click', async () => {
+    if (!newsTitle.value.trim() || !newsContent.value.trim()) {
+      alert('Por favor completa los campos obligatorios.');
+      return;
+    }
+
+    saveText?.classList.add('hidden');
+    saveSpinner?.classList.remove('hidden');
+    (saveNewsBtn as HTMLButtonElement).disabled = true;
 
     try {
-      const response = await fetch(`/api/news/admin/${newsId}`, {
+      const isEditing = editingNewsId.value !== '';
+      const url = isEditing ? `${API_BASE}/api/news/admin/${editingNewsId.value}` : `${API_BASE}/api/news/admin/create`;
+      const method = isEditing ? 'PUT' : 'POST';
+
+      const response = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({
+          categoryId: categoryId.value || null,
+          title: newsTitle.value,
+          imageUrl: imageUrl.value || null,
+          content: newsContent.value,
+          isPublished: isPublished.checked
+        })
+      });
+
+      if (response.ok) {
+        window.location.reload();
+      } else {
+        const data = await response.json();
+        alert(data.error || 'Error al guardar la noticia');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      alert('Error al guardar la noticia');
+    } finally {
+      saveText?.classList.remove('hidden');
+      saveSpinner?.classList.add('hidden');
+      (saveNewsBtn as HTMLButtonElement).disabled = false;
+    }
+  });
+
+  // Confirm delete
+  document.getElementById('confirmDelete')?.addEventListener('click', async () => {
+    const deleteId = (document.getElementById('deleteNewsId') as HTMLInputElement).value;
+
+    try {
+      const response = await fetch(`${API_BASE}/api/news/admin/${deleteId}`, {
         method: 'DELETE',
         credentials: 'include'
       });
@@ -180,93 +537,80 @@ const { categories } = categoriesData;
       if (response.ok) {
         window.location.reload();
       } else {
-        alert('Error al eliminar');
+        alert('Error al eliminar la noticia');
       }
     } catch (error) {
       console.error('Error:', error);
-      alert('Error al eliminar');
+      alert('Error al eliminar la noticia');
     }
-  }
+  });
 
-  function editNewsItem(newsId: number, newsJson: string) {
-    const news = JSON.parse(newsJson);
-    // Disparar evento personalizado para Alpine.js
-    window.dispatchEvent(new CustomEvent('edit-news', { detail: news }));
-  }
-
-  function newsModal() {
-    return {
-      showCreateModal: false,
-      editingNews: null as any,
-      loading: false,
-      formData: {
-        categoryId: '',
-        title: '',
-        imageUrl: '',
-        content: '',
-        isPublished: false
-      },
-
-      init() {
-        // Escuchar evento de edición
-        window.addEventListener('edit-news', ((event: CustomEvent) => {
-          const news = event.detail;
-          this.editingNews = news;
-          this.formData = {
-            categoryId: news.category_id || '',
-            title: news.title,
-            imageUrl: news.image_url || '',
-            content: news.content,
-            isPublished: news.is_published === 1
-          };
-        }) as EventListener);
-      },
-
-      closeModal() {
-        this.showCreateModal = false;
-        this.editingNews = null;
-        this.formData = {
-          categoryId: '',
-          title: '',
-          imageUrl: '',
-          content: '',
-          isPublished: false
-        };
-      },
-
-      async saveNews() {
-        this.loading = true;
-
-        try {
-          const url = this.editingNews
-            ? `/api/news/admin/${(this.editingNews as any).id}`
-            : '/api/news/admin/create';
-
-          const method = this.editingNews ? 'PUT' : 'POST';
-
-          const response = await fetch(url, {
-            method,
-            headers: { 'Content-Type': 'application/json' },
-            credentials: 'include',
-            body: JSON.stringify(this.formData)
-          });
-
-          if (response.ok) {
-            window.location.reload();
-          } else {
-            alert('Error al guardar');
-          }
-        } catch (error) {
-          console.error('Error:', error);
-          alert('Error al guardar');
-        } finally {
-          this.loading = false;
-        }
-      }
-    };
-  }
+  // Close modal on escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeModal();
+  });
 </script>
 
 <style>
-  [x-cloak] { display: none !important; }
+  /* Modal backdrop - covers everything */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(4px);
+    z-index: 9998;
+  }
+
+  /* Modal container - fixed positioning with high z-index */
+  .modal-container {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    overflow-y: auto;
+  }
+
+  /* Modal wrapper - centers the modal */
+  .modal-wrapper {
+    display: flex;
+    min-height: 100%;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+
+  /* Modal content box */
+  .modal-content {
+    position: relative;
+    width: 100%;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    background: linear-gradient(to bottom, rgb(17 24 39 / 0.98), rgb(0 0 0 / 0.95));
+    border: 1px solid rgba(234, 179, 8, 0.2);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  }
+
+  .form-input {
+    background: rgba(17, 24, 39, 0.8);
+    border: 1px solid rgba(234, 179, 8, 0.2);
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    color: white;
+    font-size: 0.875rem;
+    transition: all 0.2s;
+  }
+
+  .form-input:focus {
+    outline: none;
+    border-color: rgba(234, 179, 8, 0.5);
+    box-shadow: 0 0 0 3px rgba(234, 179, 8, 0.1);
+  }
+
+  .form-input::placeholder {
+    color: #6b7280;
+  }
+
+  .form-input option {
+    background: #111827;
+    color: white;
+  }
 </style>

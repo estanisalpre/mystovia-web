@@ -17,7 +17,7 @@ const { id } = Astro.params;
 const page = parseInt(Astro.url.searchParams.get('page') || '1');
 
 // For internal SSR calls, use localhost with the same port (same Express server)
-const INTERNAL_API_URL = `http://localhost:${process.env.PORT || 3000}`;
+const INTERNAL_API_URL = `http://localhost:${process.env.PORT || 3301}`;
 
 // Get user from cookies and verify with API
 const userId = Astro.cookies.get('userId')?.value;

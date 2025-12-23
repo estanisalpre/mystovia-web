@@ -3,22 +3,21 @@ export const prerender = false;
 
 import Layout from '../../layouts/Layout.astro';
 import LikeButton from '../../components/LikeButton.astro';
+import { ArrowLeft, User, Calendar, Eye, Heart } from '@lucide/astro';
 
 const { id } = Astro.params;
 
 // Use internal URL for SSR to avoid timeout on Render
-const INTERNAL_API_URL = `http://localhost:${process.env.PORT || 3000}`;
+const INTERNAL_API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3301';
 
 // Get user from cookies
-const accessToken = Astro.cookies.get('accessToken')?.value;
+const userId = Astro.cookies.get('userId')?.value;
 let user = null;
 
-if (accessToken) {
+if (userId) {
   try {
     const verifyResponse = await fetch(`${INTERNAL_API_URL}/api/auth/verify`, {
-      headers: {
-        Cookie: `accessToken=${accessToken}`
-      }
+      headers: { Cookie: `userId=${userId}` }
     });
 
     if (verifyResponse.ok) {
@@ -46,68 +45,121 @@ try {
 }
 
 const { news: newsItem } = newsData;
+
+// Format date
+const publishedDate = new Date(newsItem.published_at).toLocaleDateString('es-ES', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric'
+});
 ---
 
 <Layout title={newsItem.title}>
-  <div class="container mx-auto px-4 py-8 max-w-4xl">
+  <section class="page-container max-w-4xl mx-auto">
     <!-- Breadcrumb -->
-    <div class="text-sm breadcrumbs mb-4">
-      <ul>
-        <li><a href="/">Inicio</a></li>
-        <li><a href="/news">Noticias</a></li>
-        <li>{newsItem.title}</li>
-      </ul>
-    </div>
+    <nav class="flex items-center gap-2 text-sm text-gray-400 mb-6">
+      <a href="/" class="hover:text-yellow-500 transition-colors">Inicio</a>
+      <span class="text-yellow-500/50">/</span>
+      <a href="/news" class="hover:text-yellow-500 transition-colors">Noticias</a>
+      <span class="text-yellow-500/50">/</span>
+      <span class="text-yellow-500 truncate max-w-[200px]">{newsItem.title}</span>
+    </nav>
 
-    <!-- Article -->
-    <article class="bg-base-100 rounded-lg shadow-xl overflow-hidden">
+    <!-- Article Container -->
+    <article class="relative rounded-xl overflow-hidden"
+             style="background: linear-gradient(to bottom, rgb(17 24 39 / 0.95), rgb(0 0 0 / 0.9));">
+      <!-- Diamond pattern overlay -->
+      <div class="absolute inset-0 opacity-[0.03] pointer-events-none"
+           style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M30 0L60 30L30 60L0 30z\' fill=\'%23d4af37\' fill-opacity=\'0.4\'/%3E%3C/svg%3E'); background-size: 30px 30px;"></div>
+
+      <!-- Top golden line -->
+      <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-yellow-500/60 to-transparent"></div>
+
+      <!-- Border -->
+      <div class="absolute inset-0 rounded-xl border border-yellow-600/20 pointer-events-none"></div>
+
+      <!-- Corner ornaments -->
+      <div class="absolute top-3 left-3 w-6 h-6 opacity-30 pointer-events-none">
+        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
+          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
+        </svg>
+      </div>
+      <div class="absolute top-3 right-3 w-6 h-6 opacity-30 pointer-events-none" style="transform: scaleX(-1);">
+        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
+          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
+        </svg>
+      </div>
+      <div class="absolute bottom-3 left-3 w-6 h-6 opacity-30 pointer-events-none" style="transform: scaleY(-1);">
+        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
+          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
+        </svg>
+      </div>
+      <div class="absolute bottom-3 right-3 w-6 h-6 opacity-30 pointer-events-none" style="transform: scale(-1);">
+        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
+          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
+        </svg>
+      </div>
+
+      <!-- Image Header -->
       {newsItem.image_url && (
-        <figure class="w-full h-96 overflow-hidden">
+        <div class="relative h-64 sm:h-80 md:h-96 overflow-hidden">
           <img
             src={newsItem.image_url}
             alt={newsItem.title}
             class="w-full h-full object-cover"
           />
-        </figure>
+          <div class="absolute inset-0 bg-gradient-to-t from-gray-900 via-gray-900/50 to-transparent"></div>
+
+          <!-- Category badge on image -->
+          {newsItem.category_name && (
+            <div class="absolute top-4 left-4">
+              <span class="inline-block text-xs font-semibold bg-yellow-500/90 text-black px-3 py-1.5 rounded-lg">
+                {newsItem.category_name}
+              </span>
+            </div>
+          )}
+        </div>
       )}
 
-      <div class="p-8">
-        <!-- Category -->
-        {newsItem.category_name && (
-          <div class="badge badge-primary mb-4">{newsItem.category_name}</div>
+      <!-- Content -->
+      <div class="relative z-10 p-6 sm:p-8 md:p-10">
+        <!-- Category (if no image) -->
+        {!newsItem.image_url && newsItem.category_name && (
+          <span class="inline-block text-xs font-semibold bg-yellow-500/20 text-yellow-500 px-3 py-1.5 rounded-lg border border-yellow-500/30 mb-4">
+            {newsItem.category_name}
+          </span>
         )}
 
         <!-- Title -->
-        <h1 class="text-4xl font-bold mb-4">{newsItem.title}</h1>
+        <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-white medieval-font mb-6 leading-tight">
+          {newsItem.title}
+        </h1>
 
-        <!-- Meta info -->
-        <div class="flex items-center justify-between mb-6 pb-6 border-b border-base-300">
-          <div class="flex items-center gap-4 text-sm text-base-content/60">
-            <span class="flex items-center gap-1">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-              </svg>
-              {newsItem.author_name}
+        <!-- Meta Info Bar -->
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-8 pb-6 border-b border-yellow-600/20">
+          <div class="flex flex-wrap items-center gap-4 sm:gap-6 text-sm text-gray-400">
+            <!-- Author -->
+            <span class="flex items-center gap-2">
+              <div class="w-8 h-8 rounded-full bg-yellow-500/20 border border-yellow-500/30 flex items-center justify-center">
+                <User class="w-4 h-4 text-yellow-500" />
+              </div>
+              <span class="text-white font-medium">{newsItem.author_name}</span>
             </span>
-            <span class="flex items-center gap-1">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-              </svg>
-              {new Date(newsItem.published_at).toLocaleDateString('es-ES', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-              })}
+
+            <!-- Date -->
+            <span class="flex items-center gap-2">
+              <Calendar class="w-4 h-4 text-yellow-500/70" />
+              <span>{publishedDate}</span>
             </span>
-            <span class="flex items-center gap-1">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-              </svg>
-              {newsItem.views_count} vistas
+
+            <!-- Views -->
+            <span class="flex items-center gap-2">
+              <Eye class="w-4 h-4 text-yellow-500/70" />
+              <span>{newsItem.views_count} vistas</span>
             </span>
           </div>
 
+          <!-- Like Button -->
           <LikeButton
             newsId={newsItem.id}
             initialLikes={newsItem.likes_count}
@@ -116,37 +168,220 @@ const { news: newsItem } = newsData;
           />
         </div>
 
-        <!-- Content -->
-        <div class="prose prose-lg max-w-none" set:html={newsItem.content}></div>
+        <!-- Article Content -->
+        <div class="news-content prose prose-lg max-w-none">
+          <Fragment set:html={newsItem.content} />
+        </div>
+
+        <!-- Footer Decoration -->
+        <div class="flex items-center justify-center gap-3 mt-10 pt-8 border-t border-yellow-600/20">
+          <div class="h-px w-12 sm:w-20 bg-gradient-to-r from-transparent to-yellow-500/50"></div>
+          <svg class="w-4 h-4 text-yellow-500/50" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M10 0L20 10L10 20L0 10z"/>
+          </svg>
+          <div class="h-px w-12 sm:w-20 bg-gradient-to-l from-transparent to-yellow-500/50"></div>
+        </div>
       </div>
     </article>
 
-    <!-- Back button -->
-    <div class="mt-8">
-      <a href="/news" class="btn btn-outline">
-        ← Volver a Noticias
+    <!-- Navigation -->
+    <div class="mt-8 flex flex-col sm:flex-row gap-4 justify-between">
+      <a href="/news"
+         class="inline-flex items-center justify-center gap-2 px-5 py-3 text-sm font-semibold rounded-lg border border-yellow-600/30 text-yellow-500 hover:bg-yellow-500/10 hover:border-yellow-500/50 transition-all">
+        <ArrowLeft class="w-4 h-4" />
+        Volver a Noticias
       </a>
+
+      <!-- Share buttons placeholder -->
+      <div class="flex items-center gap-2">
+        <span class="text-sm text-gray-500">Compartir:</span>
+        <button onclick="shareNews('twitter')"
+                class="w-9 h-9 rounded-lg border border-yellow-600/30 text-gray-400 hover:text-yellow-500 hover:border-yellow-500/50 flex items-center justify-center transition-all">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+        </button>
+        <button onclick="shareNews('facebook')"
+                class="w-9 h-9 rounded-lg border border-yellow-600/30 text-gray-400 hover:text-yellow-500 hover:border-yellow-500/50 flex items-center justify-center transition-all">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+        </button>
+        <button onclick="copyLink()"
+                class="w-9 h-9 rounded-lg border border-yellow-600/30 text-gray-400 hover:text-yellow-500 hover:border-yellow-500/50 flex items-center justify-center transition-all"
+                title="Copiar enlace">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/></svg>
+        </button>
+      </div>
     </div>
-  </div>
+  </section>
 </Layout>
 
+<script define:vars={{ newsTitle: newsItem.title }}>
+  function shareNews(platform) {
+    const url = encodeURIComponent(window.location.href);
+    const title = encodeURIComponent(newsTitle);
+
+    let shareUrl = '';
+    if (platform === 'twitter') {
+      shareUrl = `https://twitter.com/intent/tweet?url=${url}&text=${title}`;
+    } else if (platform === 'facebook') {
+      shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+    }
+
+    window.open(shareUrl, '_blank', 'width=600,height=400');
+  }
+
+  function copyLink() {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+      // Show a simple toast
+      const toast = document.createElement('div');
+      toast.className = 'fixed bottom-4 right-4 bg-yellow-500 text-black px-4 py-2 rounded-lg font-medium z-50 animate-fade-in';
+      toast.textContent = '¡Enlace copiado!';
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 2000);
+    });
+  }
+
+  // Make functions global
+  window.shareNews = shareNews;
+  window.copyLink = copyLink;
+</script>
+
 <style>
-  .prose {
-    color: inherit;
+  /* News content styling */
+  .news-content {
+    color: #d1d5db;
+    line-height: 1.8;
   }
 
-  .prose h1,
-  .prose h2,
-  .prose h3,
-  .prose h4 {
-    color: inherit;
+  .news-content :global(h1),
+  .news-content :global(h2),
+  .news-content :global(h3),
+  .news-content :global(h4),
+  .news-content :global(h5),
+  .news-content :global(h6) {
+    color: #fbbf24;
+    font-weight: 700;
+    margin-top: 1.5em;
+    margin-bottom: 0.75em;
   }
 
-  .prose a {
-    color: hsl(var(--p));
+  .news-content :global(h1) { font-size: 1.875rem; }
+  .news-content :global(h2) { font-size: 1.5rem; }
+  .news-content :global(h3) { font-size: 1.25rem; }
+
+  .news-content :global(p) {
+    margin-bottom: 1em;
   }
 
-  .prose a:hover {
-    color: hsl(var(--pf));
+  .news-content :global(a) {
+    color: #fbbf24;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    transition: all 0.2s;
+  }
+
+  .news-content :global(a:hover) {
+    color: #fcd34d;
+  }
+
+  .news-content :global(ul),
+  .news-content :global(ol) {
+    margin: 1em 0;
+    padding-left: 1.5em;
+  }
+
+  .news-content :global(li) {
+    margin-bottom: 0.5em;
+  }
+
+  .news-content :global(ul li) {
+    list-style-type: disc;
+  }
+
+  .news-content :global(ol li) {
+    list-style-type: decimal;
+  }
+
+  .news-content :global(blockquote) {
+    border-left: 4px solid rgba(251, 191, 36, 0.5);
+    padding-left: 1em;
+    margin: 1.5em 0;
+    font-style: italic;
+    color: #9ca3af;
+    background: rgba(251, 191, 36, 0.05);
+    padding: 1em;
+    border-radius: 0.5rem;
+  }
+
+  .news-content :global(code) {
+    background: rgba(251, 191, 36, 0.1);
+    padding: 0.2em 0.4em;
+    border-radius: 0.25rem;
+    font-size: 0.875em;
+    color: #fcd34d;
+  }
+
+  .news-content :global(pre) {
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(251, 191, 36, 0.2);
+    padding: 1em;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+    margin: 1.5em 0;
+  }
+
+  .news-content :global(pre code) {
+    background: transparent;
+    padding: 0;
+  }
+
+  .news-content :global(img) {
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.5rem;
+    margin: 1.5em 0;
+    border: 1px solid rgba(251, 191, 36, 0.2);
+  }
+
+  .news-content :global(hr) {
+    border: none;
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(251, 191, 36, 0.3), transparent);
+    margin: 2em 0;
+  }
+
+  .news-content :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5em 0;
+  }
+
+  .news-content :global(th),
+  .news-content :global(td) {
+    border: 1px solid rgba(251, 191, 36, 0.2);
+    padding: 0.75em;
+    text-align: left;
+  }
+
+  .news-content :global(th) {
+    background: rgba(251, 191, 36, 0.1);
+    color: #fbbf24;
+    font-weight: 600;
+  }
+
+  .news-content :global(strong) {
+    color: #fff;
+    font-weight: 600;
+  }
+
+  .news-content :global(em) {
+    font-style: italic;
+  }
+
+  @keyframes fade-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .animate-fade-in {
+    animation: fade-in 0.3s ease-out;
   }
 </style>

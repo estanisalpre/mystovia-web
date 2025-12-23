@@ -35,7 +35,7 @@ dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 // console.log('  MP_ACCESS_TOKEN:', process.env.MP_ACCESS_TOKEN ? '✓ Set' : '✗ Not set');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3301;
 
 const allowedOrigins = [
   process.env.FRONTEND_URL || 'http://localhost:4321',

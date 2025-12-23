@@ -2,7 +2,7 @@
 import { Shield, Users, Crown, ChevronRight } from '@lucide/astro';
 
 // For internal SSR calls, use localhost (same Express server)
-const INTERNAL_API_URL = `http://localhost:${process.env.PORT || 3000}`;
+const INTERNAL_API_URL = `http://localhost:${process.env.PORT || 3301}`;
 
 interface Guild {
   id: number;
@@ -80,7 +80,7 @@ try {
               <!-- Guild Emblem -->
               <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-yellow-600/30 to-yellow-800/30 border border-yellow-500/20 flex items-center justify-center flex-shrink-0 overflow-hidden">
                 {guild.has_logo ? (
-                  <img src={`${API_URL}/api/guilds/${guild.id}/logo`} alt={guild.name} class="w-full h-full object-cover" />
+                  <img src={`${INTERNAL_API_URL}/api/guilds/${guild.id}/logo`} alt={guild.name} class="w-full h-full object-cover" />
                 ) : (
                   <span class="text-sm font-bold text-yellow-500">{guild.name[0].toUpperCase()}</span>
                 )}
