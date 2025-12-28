@@ -6,7 +6,11 @@ import SubmitBtn from "@lib/components/ui/SubmitBtn.astro";
 const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3301';
 ---
 
-<Layout title="Informacion del personaje">
+<Layout
+  title="Información del Personaje"
+  description="Busca y consulta información de cualquier personaje en Mystovia. Nivel, vocación, guild, estadísticas y más."
+  keywords="buscar personaje mystovia, informacion jugador tibia, estadisticas personaje, perfil jugador"
+>
   <section class="page-container flex justify-center">
     <div class="max-w-2xl w-full mx-auto space-y-6">
       <!-- Search Bar - Always visible -->
@@ -84,14 +88,20 @@ const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3301';
 <script>
   import { t, getStoredLanguage } from '../i18n/translations';
 
-  const API_URL = (window as any).__API_URL__ || 'http://localhost:3301';
+  declare global {
+    interface Window {
+      __API_URL__?: string;
+    }
+  }
+
+  const API_URL = window.__API_URL__ || 'http://localhost:3301';
 
   function initCharacterPage() {
     const lang = getStoredLanguage();
 
-    const loadingState = document.getElementById("loadingState");
-    const errorState = document.getElementById("errorState");
-    const characterInfo = document.getElementById("characterInfo");
+    const loadingState = document.getElementById("loadingState")!;
+    const errorState = document.getElementById("errorState")!;
+    const characterInfo = document.getElementById("characterInfo")!;
     const errorTitle = document.getElementById("errorTitle");
     const errorMessage = document.getElementById("errorMessage");
     const deathsList = document.getElementById("deathsList");

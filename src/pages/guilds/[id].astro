@@ -92,7 +92,11 @@ function formatDate(timestamp: number): string {
 }
 ---
 
-<Layout title={guildData ? `${guildData.name} | Guilds` : 'Guild | Mystovia'}>
+<Layout
+  title={guildData ? guildData.name : 'Guild'}
+  description={guildData ? `Información de la guild ${guildData.name} en Mystovia. Miembros, líderes y estadísticas de la hermandad.` : 'Información de guild en Mystovia.'}
+  keywords="guild mystovia, hermandad tibia, clan tibia, miembros guild"
+>
   <section class="page-container max-w-4xl mx-auto">
     <!-- Breadcrumb -->
     <nav class="flex items-center gap-2 text-xs sm:text-sm text-gray-400 mb-6">

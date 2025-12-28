@@ -101,7 +101,11 @@ try {
 const { topic, comments } = topicData;
 ---
 
-<Layout title={`${topic.title} | Foro Mystovia`}>
+<Layout
+  title={topic.title}
+  description={`Lee y participa en: ${topic.title}. Discusión de la comunidad de Mystovia.`}
+  keywords="tema foro mystovia, discusion comunidad, post tibia server"
+>
   <section class="page-container max-w-5xl mx-auto">
     <!-- Breadcrumb -->
     <nav class="flex items-center gap-2 text-xs sm:text-sm text-gray-400 mb-4 sm:mb-6 flex-wrap">

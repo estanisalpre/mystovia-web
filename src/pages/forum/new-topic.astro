@@ -57,7 +57,11 @@ const { categories } = categoriesData;
 const selectedCategory = Astro.url.searchParams.get('category');
 ---
 
-<Layout title="Crear Nuevo Tema | Mystovia">
+<Layout
+  title="Crear Nuevo Tema"
+  description="Crea un nuevo tema en el foro de Mystovia. Comparte tus ideas, dudas o sugerencias con la comunidad."
+  keywords="crear tema foro, nuevo post mystovia, publicar foro tibia"
+>
   <section class="page-container max-w-3xl mx-auto">
     <!-- Breadcrumb -->
     <nav class="flex items-center gap-2 text-xs sm:text-sm text-gray-400 mb-4 sm:mb-6">

@@ -57,7 +57,12 @@ const publishedDate = new Date(newsItem.published_at).toLocaleDateString('es-ES'
 });
 ---
 
-<Layout title={newsItem.title}>
+<Layout
+  title={newsItem.title}
+  description={newsItem.excerpt || `Lee la noticia: ${newsItem.title}. Información oficial del servidor Mystovia.`}
+  keywords="noticias mystovia, actualizacion tibia server, anuncio oficial"
+  ogType="article"
+>
   <section class="page-container max-w-4xl mx-auto">
     <!-- Breadcrumb -->
     <nav class="flex items-center gap-2 text-sm text-gray-400 mb-6">

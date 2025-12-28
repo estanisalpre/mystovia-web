@@ -74,7 +74,11 @@ try {
 const { topics, pagination } = topicsData;
 ---
 
-<Layout title={categoryData.name}>
+<Layout
+  title={categoryData.name}
+  description={`Temas de ${categoryData.name} en el foro de Mystovia. Participa en las discusiones de la comunidad.`}
+  keywords={`foro ${categoryData.name.toLowerCase()}, categoria foro mystovia, discusiones tibia`}
+>
   <section class="page-container">
     <!-- Breadcrumb -->
     <nav class="flex items-center gap-2 text-xs sm:text-sm text-gray-400 mb-4 sm:mb-6">

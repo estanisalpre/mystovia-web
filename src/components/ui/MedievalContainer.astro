@@ -39,9 +39,9 @@ const {
   lineAnimate = false,
   class: className = '',
   style = ''
-} = Astro.props;
+} = Astro.props as Props;
 
-const variantStyles = {
+const variantStyles: Record<NonNullable<Props['variant']>, string> = {
   default: 'relative rounded-xl overflow-hidden',
   card: 'relative rounded-xl overflow-hidden p-4 sm:p-6',
   modal: 'relative rounded-xl md:rounded-2xl overflow-hidden',

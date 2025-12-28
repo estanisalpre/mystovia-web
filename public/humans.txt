@@ -1,0 +1,17 @@
+/* TEAM */
+Name: Mystovia Team
+Site: https://www.mystovia.online
+Location: Worldwide
+
+/* SITE */
+Last update: 2025/12/28
+Language: Spanish / English
+Standards: HTML5, CSS3, JavaScript
+Components: Astro, React, TailwindCSS
+Software: VSCode, Git
+
+/* THANKS */
+Open Tibia Server Community
+Astro Framework
+TailwindCSS
+Lucide Icons
