@@ -4,7 +4,7 @@
 # If you have found a security vulnerability, please report it to us.
 
 Contact: https://mystovia.online/forum
-Contact: mailto:martinprevite.93@hotmail.com
+Contact: mailto:martin.previte93@hotmail.com
 
 # Preferred Languages
 Preferred-Languages: es, en
