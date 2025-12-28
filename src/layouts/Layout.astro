@@ -123,6 +123,15 @@ const defaultStructuredData = {
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 
+  <!-- Google Analytics (gtag.js) -->
+  <script is:inline async src="https://www.googletagmanager.com/gtag/js?id=G-H5XM6MN4TP"></script>
+  <script is:inline>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-H5XM6MN4TP');
+  </script>
+
   <ViewTransitions/>
 </head>
 <body class="min-h-screen text-white flex flex-col">
@@ -130,7 +139,7 @@ const defaultStructuredData = {
   <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TFN73ND4"
   height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <!-- End Google Tag Manager (noscript) -->
-   
+
   <Header />
   <SearchBarFixed />
   <main class="relative flex-1 bg-cover bg-center bg-fixed md:pt-[50px]"
