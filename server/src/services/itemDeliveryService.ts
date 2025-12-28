@@ -43,7 +43,7 @@ export async function deliverItemsToInbox(
     const playerName = players[0].name;
     const accountId = players[0].account_id;
 
-    console.log(`Delivering items to player: ${playerName} (ID: ${playerId})`);
+    //console.log(`Delivering items to player: ${playerName} (ID: ${playerId})`);
 
     // In TFS, items are typically stored in player_depotitems table
     // We need to find the inbox container ID for this player
@@ -80,7 +80,7 @@ export async function deliverItemsToInbox(
         [playerId, storageKey, 1] // value = 1 means "delivered"
       );
 
-      console.log(`Stored delivery record in player_storage with key: ${storageKey}`);
+      //console.log(`Stored delivery record in player_storage with key: ${storageKey}`);
     }
 
     // Create a delivery log entry in a custom table
@@ -109,8 +109,8 @@ export async function deliverItemsToInbox(
 
     await connection.commit();
 
-    console.log(`✅ Successfully delivered items for order ${orderId} to player ${playerName}`);
-    console.log(`Items:`, items);
+    //console.log(`✅ Successfully delivered items for order ${orderId} to player ${playerName}`);
+    //console.log(`Items:`, items);
 
     return true;
   } catch (error) {
@@ -137,7 +137,7 @@ export async function deliverItemsToDepot(
   try {
     await connection.beginTransaction();
 
-    console.log(`📦 Queueing ${items.length} items for delivery to player ${playerId}...`);
+    //console.log(`📦 Queueing ${items.length} items for delivery to player ${playerId}...`);
 
     // NOTE: We do NOT insert into player_depotitems directly
     // The TFS Lua script (marketplace_delivery.lua) will handle the actual item delivery
@@ -198,8 +198,8 @@ export async function deliverItemsToDepot(
 
     await connection.commit();
 
-    console.log(`✅ Successfully queued ${items.length} items for delivery to player ${playerId}!`);
-    console.log(`   Items will be delivered automatically when the player logs in to the game.`);
+    //console.log(`✅ Successfully queued ${items.length} items for delivery to player ${playerId}!`);
+    //console.log(`   Items will be delivered automatically when the player logs in to the game.`);
     return true;
   } catch (error) {
     await connection.rollback();

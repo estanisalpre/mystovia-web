@@ -59,7 +59,7 @@ export const getAllMarketItems = async (req: Request, res: Response) => {
 export const createMarketItem = async (req: Request, res: Response) => {
   try {
     // Debug: Log the incoming request body
-    console.log('📦 Creating market item - Request body:', JSON.stringify(req.body, null, 2));
+    //console.log('📦 Creating market item - Request body:', JSON.stringify(req.body, null, 2));
 
     const {
       name,
@@ -73,7 +73,7 @@ export const createMarketItem = async (req: Request, res: Response) => {
     } = req.body as CreateMarketItemRequest;
 
     // Debug: Log extracted image_url
-    console.log('🖼️ Extracted image_url:', image_url);
+    //console.log('🖼️ Extracted image_url:', image_url);
 
     // Validation
     if (!name || !price || !category || !items_json) {
@@ -323,39 +323,74 @@ export const toggleMarketItemStatus = async (req: Request, res: Response) => {
 
 /**
  * Get all orders with details
- * Admin only
+ * Admin only - supports pagination and search
  */
 export const getAllOrders = async (req: Request, res: Response) => {
   try {
-    const { status, limit = 100 } = req.query;
+    const { status, search, page = 1, limit = 20 } = req.query;
+    const offset = (Number(page) - 1) * Number(limit);
 
-    let query = `
-      SELECT
-        o.*,
-        a.email as account_email,
-        p.name as player_name,
-        COUNT(oi.id) as total_items
+    let baseQuery = `
       FROM orders o
       LEFT JOIN accounts a ON o.account_id = a.id
       LEFT JOIN players p ON o.player_id = p.id
-      LEFT JOIN order_items oi ON o.id = oi.order_id
       WHERE 1=1
     `;
     const params: any[] = [];
 
-    if (status) {
-      query += ' AND o.status = ?';
+    if (status && status !== 'all') {
+      baseQuery += ' AND o.status = ?';
       params.push(status);
     }
 
-    query += ' GROUP BY o.id ORDER BY o.created_at DESC LIMIT ?';
-    params.push(Number(limit));
+    if (search) {
+      baseQuery += ' AND (a.email LIKE ? OR p.name LIKE ? OR o.id = ?)';
+      const searchTerm = `%${search}%`;
+      params.push(searchTerm, searchTerm, Number(search) || 0);
+    }
 
-    const [orders] = await db.query(query, params) as any[];
+    // Count total orders
+    const [countResult] = await db.query(
+      `SELECT COUNT(DISTINCT o.id) as total ${baseQuery}`,
+      params
+    ) as any[];
+    const total = countResult[0].total;
+
+    // Get orders with pagination
+    const [orders] = await db.query(
+      `SELECT
+        o.*,
+        a.email as account_email,
+        p.name as player_name,
+        (SELECT COUNT(*) FROM order_items WHERE order_id = o.id) as total_items
+      ${baseQuery}
+      ORDER BY o.created_at DESC
+      LIMIT ? OFFSET ?`,
+      [...params, Number(limit), offset]
+    ) as any[];
+
+    // Get summary stats
+    const [statsResult] = await db.query(`
+      SELECT
+        COUNT(*) as total_orders,
+        SUM(CASE WHEN status = 'approved' OR status = 'delivered' THEN total_amount ELSE 0 END) as total_revenue,
+        SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) as pending_count,
+        SUM(CASE WHEN status = 'approved' THEN 1 ELSE 0 END) as approved_count,
+        SUM(CASE WHEN status = 'delivered' THEN 1 ELSE 0 END) as delivered_count,
+        SUM(CASE WHEN status = 'cancelled' THEN 1 ELSE 0 END) as cancelled_count
+      FROM orders
+    `) as any[];
 
     res.json({
       success: true,
-      orders
+      orders,
+      pagination: {
+        page: Number(page),
+        limit: Number(limit),
+        total,
+        totalPages: Math.ceil(total / Number(limit))
+      },
+      stats: statsResult[0]
     });
   } catch (error) {
     console.error('Error fetching all orders:', error);

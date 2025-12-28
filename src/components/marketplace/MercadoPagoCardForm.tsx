@@ -134,7 +134,7 @@ export default function MercadoPagoCardForm({
               setLoading(false);
               return;
             }
-            console.log("MercadoPago CardForm mounted successfully");
+            //console.log("MercadoPago CardForm mounted successfully");
             setLoading(false);
           },
           onSubmit: async (event: Event) => {
@@ -145,7 +145,7 @@ export default function MercadoPagoCardForm({
             try {
               const cardFormData = cardForm.getCardFormData();
 
-              console.log('Card form data:', cardFormData);
+              //console.log('Card form data:', cardFormData);
 
               const {
                 paymentMethodId: payment_method_id,
@@ -199,7 +199,7 @@ export default function MercadoPagoCardForm({
             }
           },
           onFetching: (resource: string) => {
-            console.log("Fetching resource:", resource);
+            //console.log("Fetching resource:", resource);
 
             const progressBar = document.querySelector(".progress-bar");
             if (progressBar) {
