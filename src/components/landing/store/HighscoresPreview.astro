@@ -1,4 +1,9 @@
 ---
+import { Award, ArrowRight } from '@lucide/astro';
+import DiamondPattern from "../../ui/DiamondPattern.astro";
+import GoldenLine from "../../ui/GoldenLine.astro";
+import CornerOrnaments from "../../ui/CornerOrnaments.astro";
+
 // For internal SSR calls, use localhost (same Express server)
 const INTERNAL_API_URL = `http://localhost:${process.env.PORT || 3301}`;
 
@@ -26,35 +31,16 @@ try {
 <section class="relative w-full rounded-xl overflow-hidden"
          style="background: linear-gradient(to bottom, rgb(17 24 39 / 0.98), rgb(17 24 39), rgb(0 0 0 / 0.98));">
   <!-- Diamond pattern overlay -->
-  <div class="absolute inset-0 opacity-[0.03] pointer-events-none rounded-xl" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M30 0L60 30L30 60L0 30z\' fill=\'%23d4af37\' fill-opacity=\'0.4\'/%3E%3C/svg%3E'); background-size: 30px 30px;"></div>
+  <DiamondPattern opacity={0.03} class="rounded-xl" />
 
   <!-- Top golden line -->
-  <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-yellow-500/50 to-transparent rounded-t-xl"></div>
+  <GoldenLine position="top" />
 
   <!-- Border -->
-  <div class="absolute inset-0 rounded-xl border border-yellow-600/20 pointer-events-none"></div>
+  <span class="absolute inset-0 rounded-xl border border-yellow-600/20 pointer-events-none" aria-hidden="true"></span>
 
   <!-- Corner ornaments -->
-  <div class="absolute top-2 left-2 w-5 h-5 opacity-20 pointer-events-none">
-    <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
-      <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
-    </svg>
-  </div>
-  <div class="absolute top-2 right-2 w-5 h-5 opacity-20 pointer-events-none" style="transform: scaleX(-1);">
-    <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
-      <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
-    </svg>
-  </div>
-  <div class="absolute bottom-2 left-2 w-5 h-5 opacity-20 pointer-events-none" style="transform: scaleY(-1);">
-    <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
-      <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
-    </svg>
-  </div>
-  <div class="absolute bottom-2 right-2 w-5 h-5 opacity-20 pointer-events-none" style="transform: scale(-1);">
-    <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
-      <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
-    </svg>
-  </div>
+  <CornerOrnaments variant="curve" size="md" opacity={0.2} offset={2} />
 
   <!-- Content -->
   <div class="relative z-10 p-5 pt-12">
@@ -69,9 +55,7 @@ try {
     {players.length === 0 ? (
       <div class="flex items-center justify-center py-8 text-center">
         <div>
-          <svg class="w-12 h-12 mx-auto text-yellow-500/30 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/>
-          </svg>
+          <Award class="w-12 h-12 mx-auto text-yellow-500/30 mb-3" strokeWidth={1.5} />
           <p class="text-gray-400 text-sm">No hay datos de highscores</p>
         </div>
       </div>
@@ -124,9 +108,7 @@ try {
         class="btn-medieval btn-medieval-secondary w-full"
       >
         <span>Ver Highscores</span>
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-        </svg>
+        <ArrowRight class="w-4 h-4" />
       </a>
     </div>
   </div>

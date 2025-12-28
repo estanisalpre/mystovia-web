@@ -1,0 +1,104 @@
+---
+interface Props {
+  variant?: 'bracket' | 'curve';
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  opacity?: number;
+  animate?: boolean;
+  offset?: number;
+  color?: 'yellow' | 'red';
+  class?: string;
+}
+
+const {
+  variant = 'curve',
+  size = 'sm',
+  opacity = 0.3,
+  animate = false,
+  offset = 2,
+  color = 'yellow',
+  class: className = ''
+} = Astro.props;
+
+const colorClass = color === 'red' ? 'text-red-500' : 'text-yellow-500';
+
+const sizeMap = {
+  xs: 'w-3 h-3',
+  sm: 'w-4 h-4',
+  md: 'w-5 h-5',
+  lg: 'w-6 h-6',
+  xl: 'w-10 h-10'
+};
+
+const sizeClass = sizeMap[size];
+const offsetClass = `top-${offset} left-${offset}`;
+---
+
+{variant === 'bracket' ? (
+  <>
+    <!-- Top Left -->
+    <div class:list={["absolute pointer-events-none", sizeClass, animate && "animate-corner-glow", className]} style={`top: ${offset * 4}px; left: ${offset * 4}px; opacity: ${opacity};`}>
+      <svg viewBox="0 0 100 100" fill="none" class:list={["w-full h-full", colorClass]}>
+        <path d="M0 0 L50 0 L50 10 L10 10 L10 50 L0 50 Z" fill="currentColor"/>
+        <path d="M15 15 L30 15 L30 20 L20 20 L20 30 L15 30 Z" fill="currentColor" opacity="0.6"/>
+      </svg>
+    </div>
+    <!-- Top Right -->
+    <div class:list={["absolute pointer-events-none", sizeClass, animate && "animate-corner-glow", className]} style={`top: ${offset * 4}px; right: ${offset * 4}px; opacity: ${opacity}; transform: scaleX(-1);`}>
+      <svg viewBox="0 0 100 100" fill="none" class:list={["w-full h-full", colorClass]}>
+        <path d="M0 0 L50 0 L50 10 L10 10 L10 50 L0 50 Z" fill="currentColor"/>
+        <path d="M15 15 L30 15 L30 20 L20 20 L20 30 L15 30 Z" fill="currentColor" opacity="0.6"/>
+      </svg>
+    </div>
+    <!-- Bottom Left -->
+    <div class:list={["absolute pointer-events-none", sizeClass, animate && "animate-corner-glow", className]} style={`bottom: ${offset * 4}px; left: ${offset * 4}px; opacity: ${opacity}; transform: scaleY(-1);`}>
+      <svg viewBox="0 0 100 100" fill="none" class:list={["w-full h-full", colorClass]}>
+        <path d="M0 0 L50 0 L50 10 L10 10 L10 50 L0 50 Z" fill="currentColor"/>
+        <path d="M15 15 L30 15 L30 20 L20 20 L20 30 L15 30 Z" fill="currentColor" opacity="0.6"/>
+      </svg>
+    </div>
+    <!-- Bottom Right -->
+    <div class:list={["absolute pointer-events-none", sizeClass, animate && "animate-corner-glow", className]} style={`bottom: ${offset * 4}px; right: ${offset * 4}px; opacity: ${opacity}; transform: scale(-1);`}>
+      <svg viewBox="0 0 100 100" fill="none" class:list={["w-full h-full", colorClass]}>
+        <path d="M0 0 L50 0 L50 10 L10 10 L10 50 L0 50 Z" fill="currentColor"/>
+        <path d="M15 15 L30 15 L30 20 L20 20 L20 30 L15 30 Z" fill="currentColor" opacity="0.6"/>
+      </svg>
+    </div>
+  </>
+) : (
+  <>
+    <!-- Top Left -->
+    <div class:list={["absolute pointer-events-none", sizeClass, animate && "animate-corner-glow", className]} style={`top: ${offset * 4}px; left: ${offset * 4}px; opacity: ${opacity};`}>
+      <svg viewBox="0 0 100 100" fill="none" class:list={["w-full h-full", colorClass]}>
+        <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
+      </svg>
+    </div>
+    <!-- Top Right -->
+    <div class:list={["absolute pointer-events-none", sizeClass, animate && "animate-corner-glow", className]} style={`top: ${offset * 4}px; right: ${offset * 4}px; opacity: ${opacity}; transform: scaleX(-1);`}>
+      <svg viewBox="0 0 100 100" fill="none" class:list={["w-full h-full", colorClass]}>
+        <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
+      </svg>
+    </div>
+    <!-- Bottom Left -->
+    <div class:list={["absolute pointer-events-none", sizeClass, animate && "animate-corner-glow", className]} style={`bottom: ${offset * 4}px; left: ${offset * 4}px; opacity: ${opacity}; transform: scaleY(-1);`}>
+      <svg viewBox="0 0 100 100" fill="none" class:list={["w-full h-full", colorClass]}>
+        <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
+      </svg>
+    </div>
+    <!-- Bottom Right -->
+    <div class:list={["absolute pointer-events-none", sizeClass, animate && "animate-corner-glow", className]} style={`bottom: ${offset * 4}px; right: ${offset * 4}px; opacity: ${opacity}; transform: scale(-1);`}>
+      <svg viewBox="0 0 100 100" fill="none" class:list={["w-full h-full", colorClass]}>
+        <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
+      </svg>
+    </div>
+  </>
+)}
+
+<style>
+  @keyframes corner-glow {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 0.7; }
+  }
+  .animate-corner-glow {
+    animation: corner-glow 2s ease-in-out infinite;
+  }
+</style>

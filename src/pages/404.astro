@@ -1,6 +1,9 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { Skull, Home, ShoppingBag } from '@lucide/astro';
+import { Skull, House, ShoppingBag, Star } from '@lucide/astro';
+import DiamondPattern from "../components/ui/DiamondPattern.astro";
+import GoldenLine from "../components/ui/GoldenLine.astro";
+import CornerOrnaments from "../components/ui/CornerOrnaments.astro";
 ---
 
 <Layout title="Página No Encontrada | Mystovia">
@@ -9,33 +12,9 @@ import { Skull, Home, ShoppingBag } from '@lucide/astro';
       <!-- Medieval container background -->
       <div class="absolute inset-0 rounded-xl bg-gradient-to-b from-gray-900/95 via-gray-900/98 to-black/95 border border-yellow-600/20"></div>
 
-      <!-- Top golden line -->
-      <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-yellow-500/50 to-transparent"></div>
-
-      <!-- Diamond pattern overlay -->
-      <div class="absolute inset-0 opacity-[0.03] pointer-events-none rounded-xl" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M30 0L60 30L30 60L0 30z\' fill=\'%23d4af37\' fill-opacity=\'0.4\'/%3E%3C/svg%3E'); background-size: 30px 30px;"></div>
-
-      <!-- Corner ornaments -->
-      <div class="absolute top-2 left-2 w-8 h-8 opacity-20 pointer-events-none">
-        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
-          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
-        </svg>
-      </div>
-      <div class="absolute top-2 right-2 w-8 h-8 opacity-20 pointer-events-none" style="transform: scaleX(-1);">
-        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
-          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
-        </svg>
-      </div>
-      <div class="absolute bottom-2 left-2 w-8 h-8 opacity-20 pointer-events-none" style="transform: scaleY(-1);">
-        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
-          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
-        </svg>
-      </div>
-      <div class="absolute bottom-2 right-2 w-8 h-8 opacity-20 pointer-events-none" style="transform: scale(-1);">
-        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
-          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
-        </svg>
-      </div>
+      <GoldenLine position="top" />
+      <DiamondPattern opacity={0.03} class="rounded-xl" />
+      <CornerOrnaments variant="curve" size="md" opacity={0.2} />
 
       <!-- Content -->
       <div class="relative z-10 p-6 sm:p-10 text-center">
@@ -89,7 +68,7 @@ import { Skull, Home, ShoppingBag } from '@lucide/astro';
             href="/"
             class="medieval-btn group inline-flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-b from-yellow-600 to-yellow-700 hover:from-yellow-500 hover:to-yellow-600 text-white font-semibold rounded-lg transition-all duration-300 border border-yellow-500/30 shadow-[0_0_15px_rgba(202,138,4,0.2)] hover:shadow-[0_0_20px_rgba(202,138,4,0.4)]"
           >
-            <Home class="w-4 h-4 group-hover:scale-110 transition-transform" />
+            <House class="w-4 h-4 group-hover:scale-110 transition-transform" />
             <span>Volver al Inicio</span>
           </a>
           <a
@@ -103,13 +82,11 @@ import { Skull, Home, ShoppingBag } from '@lucide/astro';
         </div>
 
         <!-- Bottom decorative element -->
-        <div class="flex items-center justify-center gap-3 mt-8">
-          <div class="h-px w-8 sm:w-12 bg-gradient-to-r from-transparent to-yellow-500/30"></div>
-          <svg class="w-4 h-4 text-yellow-500/40" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-          </svg>
-          <div class="h-px w-8 sm:w-12 bg-gradient-to-l from-transparent to-yellow-500/30"></div>
-        </div>
+        <figure class="flex items-center justify-center gap-3 mt-8" aria-hidden="true">
+          <span class="h-px w-8 sm:w-12 bg-gradient-to-r from-transparent to-yellow-500/30"></span>
+          <Star class="w-4 h-4 text-yellow-500/40" fill="currentColor" />
+          <span class="h-px w-8 sm:w-12 bg-gradient-to-l from-transparent to-yellow-500/30"></span>
+        </figure>
       </div>
     </div>
   </section>

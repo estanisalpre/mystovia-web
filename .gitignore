@@ -47,3 +47,6 @@ coverage/
 # secrets
 generate-secrets.js
 test-db.ts
+
+# database
+/database/

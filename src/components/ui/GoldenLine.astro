@@ -1,0 +1,52 @@
+---
+interface Props {
+  position?: 'top' | 'bottom';
+  thickness?: 'thin' | 'normal' | 'thick';
+  opacity?: number;
+  animate?: boolean;
+  color?: 'yellow' | 'red';
+  class?: string;
+}
+
+const {
+  position = 'top',
+  thickness = 'normal',
+  opacity = 0.5,
+  animate = false,
+  color = 'yellow',
+  class: className = ''
+} = Astro.props;
+
+const heightClass = {
+  thin: 'h-px',
+  normal: 'h-0.5',
+  thick: 'h-1'
+}[thickness];
+
+const positionClass = position === 'top' ? 'top-0' : 'bottom-0';
+const colorClass = color === 'red' ? 'via-red-500' : 'via-yellow-500';
+---
+
+<span
+  class:list={[
+    "absolute left-0 right-0 bg-gradient-to-r from-transparent to-transparent pointer-events-none",
+    heightClass,
+    positionClass,
+    colorClass,
+    animate && "animate-shimmer",
+    className
+  ]}
+  style={`--tw-gradient-via-opacity: ${opacity};`}
+  aria-hidden="true"
+></span>
+
+<style>
+  @keyframes shimmer {
+    0% { opacity: 0.5; }
+    50% { opacity: 1; }
+    100% { opacity: 0.5; }
+  }
+  .animate-shimmer {
+    animation: shimmer 2s ease-in-out infinite;
+  }
+</style>

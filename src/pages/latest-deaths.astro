@@ -1,5 +1,9 @@
 ---
 import Layout from "@layouts/Layout.astro";
+import DiamondPattern from "../components/ui/DiamondPattern.astro";
+import GoldenLine from "../components/ui/GoldenLine.astro";
+import CornerOrnaments from "../components/ui/CornerOrnaments.astro";
+import { Skull, AlertTriangle, Heart, ChevronLeft } from '@lucide/astro';
 ---
 
 <Layout title="Últimas Muertes - Mystovia">
@@ -8,9 +12,7 @@ import Layout from "@layouts/Layout.astro";
     <header class="text-center mb-8">
       <div class="flex items-center justify-center gap-3 mb-2">
         <div class="h-px w-16 bg-gradient-to-r from-transparent to-red-500/50"></div>
-        <svg class="w-6 h-6 text-red-500/60" fill="currentColor" viewBox="0 0 20 20">
-          <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/>
-        </svg>
+        <Skull class="w-6 h-6 text-red-500/60" />
         <div class="h-px w-16 bg-gradient-to-l from-transparent to-red-500/50"></div>
       </div>
       <h1 class="text-3xl md:text-4xl font-bold text-red-500 medieval-font mb-2">Últimas 100 Muertes</h1>
@@ -26,32 +28,13 @@ import Layout from "@layouts/Layout.astro";
     <!-- Table -->
     <div class="relative rounded-xl overflow-hidden"
          style="background: linear-gradient(to bottom, rgb(31 41 55 / 0.6), rgb(17 24 39 / 0.8)); border: 1px solid rgb(220 38 38 / 0.15);">
-      <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-red-500/30 to-transparent"></div>
+      <GoldenLine position="top" color="red" opacity={0.3} />
 
       <!-- Diamond pattern overlay -->
-      <div class="absolute inset-0 opacity-[0.02] pointer-events-none" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M30 0L60 30L30 60L0 30z\' fill=\'%23dc2626\' fill-opacity=\'0.4\'/%3E%3C/svg%3E'); background-size: 30px 30px;"></div>
+      <DiamondPattern opacity={0.02} class="rounded-xl" />
 
       <!-- Corner ornaments -->
-      <div class="absolute top-2 left-2 w-6 h-6 opacity-15 pointer-events-none">
-        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-red-500">
-          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
-        </svg>
-      </div>
-      <div class="absolute top-2 right-2 w-6 h-6 opacity-15 pointer-events-none" style="transform: scaleX(-1);">
-        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-red-500">
-          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
-        </svg>
-      </div>
-      <div class="absolute bottom-2 left-2 w-6 h-6 opacity-15 pointer-events-none" style="transform: scaleY(-1);">
-        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-red-500">
-          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
-        </svg>
-      </div>
-      <div class="absolute bottom-2 right-2 w-6 h-6 opacity-15 pointer-events-none" style="transform: scale(-1);">
-        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-red-500">
-          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
-        </svg>
-      </div>
+      <CornerOrnaments variant="curve" size="lg" opacity={0.15} color="red" offset={2} />
 
       <!-- Table Header - Desktop -->
       <div class="hidden sm:grid grid-cols-12 gap-2 px-4 py-3 text-sm text-red-500 font-semibold border-b border-red-600/20 bg-black/20 relative z-10">
@@ -76,17 +59,13 @@ import Layout from "@layouts/Layout.astro";
 
       <!-- Error State -->
       <div id="errorState" class="hidden py-12 text-center relative z-10">
-        <svg class="w-12 h-12 mx-auto text-red-500/50 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
-        </svg>
+        <AlertTriangle class="w-12 h-12 mx-auto text-red-500/50 mb-3" />
         <p class="text-red-400">Error al cargar los datos</p>
       </div>
 
       <!-- Empty State -->
       <div id="emptyState" class="hidden py-12 text-center relative z-10">
-        <svg class="w-12 h-12 mx-auto text-red-500/30 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-        </svg>
+        <Heart class="w-12 h-12 mx-auto text-red-500/30 mb-3" />
         <p class="text-gray-400">No hay muertes registradas</p>
       </div>
 
@@ -99,9 +78,7 @@ import Layout from "@layouts/Layout.astro";
     <!-- Back button -->
     <div class="mt-6 text-center">
       <a href="/" class="inline-flex items-center gap-2 text-gray-400 hover:text-red-400 transition-colors">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-        </svg>
+        <ChevronLeft class="w-4 h-4" />
         Volver al inicio
       </a>
     </div>

@@ -3,7 +3,10 @@ export const prerender = false;
 
 import Layout from '../../layouts/Layout.astro';
 import LikeButton from '../../components/LikeButton.astro';
-import { ArrowLeft, User, Calendar, Eye, Heart } from '@lucide/astro';
+import { ArrowLeft, User, Calendar, Eye, Heart, Diamond } from '@lucide/astro';
+import DiamondPattern from "../../components/ui/DiamondPattern.astro";
+import GoldenLine from "../../components/ui/GoldenLine.astro";
+import CornerOrnaments from "../../components/ui/CornerOrnaments.astro";
 
 const { id } = Astro.params;
 
@@ -68,37 +71,13 @@ const publishedDate = new Date(newsItem.published_at).toLocaleDateString('es-ES'
     <!-- Article Container -->
     <article class="relative rounded-xl overflow-hidden"
              style="background: linear-gradient(to bottom, rgb(17 24 39 / 0.95), rgb(0 0 0 / 0.9));">
-      <!-- Diamond pattern overlay -->
-      <div class="absolute inset-0 opacity-[0.03] pointer-events-none"
-           style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M30 0L60 30L30 60L0 30z\' fill=\'%23d4af37\' fill-opacity=\'0.4\'/%3E%3C/svg%3E'); background-size: 30px 30px;"></div>
-
-      <!-- Top golden line -->
-      <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-yellow-500/60 to-transparent"></div>
+      <DiamondPattern opacity={0.03} class="rounded-xl" />
+      <GoldenLine position="top" opacity={0.6} />
 
       <!-- Border -->
       <div class="absolute inset-0 rounded-xl border border-yellow-600/20 pointer-events-none"></div>
 
-      <!-- Corner ornaments -->
-      <div class="absolute top-3 left-3 w-6 h-6 opacity-30 pointer-events-none">
-        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
-          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
-        </svg>
-      </div>
-      <div class="absolute top-3 right-3 w-6 h-6 opacity-30 pointer-events-none" style="transform: scaleX(-1);">
-        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
-          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
-        </svg>
-      </div>
-      <div class="absolute bottom-3 left-3 w-6 h-6 opacity-30 pointer-events-none" style="transform: scaleY(-1);">
-        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
-          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
-        </svg>
-      </div>
-      <div class="absolute bottom-3 right-3 w-6 h-6 opacity-30 pointer-events-none" style="transform: scale(-1);">
-        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
-          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
-        </svg>
-      </div>
+      <CornerOrnaments variant="curve" size="sm" opacity={0.3} offset={3} />
 
       <!-- Image Header -->
       {newsItem.image_url && (
@@ -184,9 +163,7 @@ const publishedDate = new Date(newsItem.published_at).toLocaleDateString('es-ES'
         <!-- Footer Decoration -->
         <div class="flex items-center justify-center gap-3 mt-10 pt-8 border-t border-yellow-600/20">
           <div class="h-px w-12 sm:w-20 bg-gradient-to-r from-transparent to-yellow-500/50"></div>
-          <svg class="w-4 h-4 text-yellow-500/50" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M10 0L20 10L10 20L0 10z"/>
-          </svg>
+          <Diamond class="w-4 h-4 text-yellow-500/50" fill="currentColor" />
           <div class="h-px w-12 sm:w-20 bg-gradient-to-l from-transparent to-yellow-500/50"></div>
         </div>
       </div>

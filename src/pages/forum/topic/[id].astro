@@ -15,8 +15,11 @@ import {
   ThumbsUp,
   ThumbsDown,
   Trash2,
-  Send
+  Send,
+  AlertTriangle
 } from '@lucide/astro';
+import DiamondPattern from "../../../components/ui/DiamondPattern.astro";
+import GoldenLine from "../../../components/ui/GoldenLine.astro";
 
 // Helper function to format vote count
 function formatVotes(votes: number): string {
@@ -119,11 +122,8 @@ const { topic, comments } = topicData;
       <!-- Medieval container background -->
       <div class="absolute inset-0 bg-gradient-to-b from-gray-900/95 via-gray-900/98 to-black/95 border border-yellow-600/20 rounded-xl"></div>
 
-      <!-- Top golden line -->
-      <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-yellow-500/50 to-transparent"></div>
-
-      <!-- Diamond pattern overlay -->
-      <div class="absolute inset-0 opacity-[0.03] pointer-events-none rounded-xl" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M30 0L60 30L30 60L0 30z\' fill=\'%23d4af37\' fill-opacity=\'0.4\'/%3E%3C/svg%3E'); background-size: 30px 30px;"></div>
+      <GoldenLine position="top" />
+      <DiamondPattern opacity={0.03} class="rounded-xl" />
 
       <!-- Content -->
       <div class="relative z-10 p-4 sm:p-6">
@@ -342,9 +342,7 @@ const { topic, comments } = topicData;
               </div>
               {userCharacters.length === 0 && (
                 <p class="text-xs text-yellow-500/70 flex items-center gap-1">
-                  <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                  </svg>
+                  <AlertTriangle class="w-3 h-3" fill="currentColor" />
                   Necesitas crear un personaje para responder
                 </p>
               )}

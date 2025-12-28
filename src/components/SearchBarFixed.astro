@@ -1,19 +1,17 @@
 ---
-// Fixed Search Bar - Below header for desktop only
+import { Search } from "@lucide/astro";
 ---
 
-<!-- Desktop Fixed Search Bar -->
-<div class="hidden md:block fixed top-[60px] left-0 right-0 z-800 h-[50px]">
+<header class="hidden md:block fixed top-[60px] left-0 right-0 z-800 h-[50px]">
   <div class="w-full h-full flex items-center justify-center px-4"
        style="background: linear-gradient(to bottom, rgb(17 24 39 / 0.95), rgb(17 24 39 / 0.9)); border-bottom: 1px solid rgb(234 179 8 / 0.15);">
     <!-- Diamond pattern overlay -->
     <div class="absolute inset-0 opacity-[0.02] pointer-events-none" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M30 0L60 30L30 60L0 30z\' fill=\'%23d4af37\' fill-opacity=\'0.4\'/%3E%3C/svg%3E'); background-size: 30px 30px;"></div>
-
     <!-- Bottom golden line -->
     <div class="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-yellow-500/30 to-transparent"></div>
 
     <!-- Search Form -->
-    <form id="fixedSearchForm" class="relative z-10 flex items-center gap-3 w-full max-w-[50%]">
+    <form id="fixedSearchForm" class="relative z-10 flex items-center gap-3 w-full mt-2 max-w-[50%]">
       <div class="flex-1 relative">
         <input
           type="text"
@@ -21,9 +19,7 @@
           placeholder="Buscar personaje..."
           class="w-full h-[34px] px-4 pr-10 text-sm bg-gray-800/60 border border-yellow-600/20 rounded-lg focus:outline-none focus:border-yellow-500/50 text-white placeholder-gray-500 transition-colors"
         />
-        <svg class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-        </svg>
+        <Search class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
       </div>
       <button
         type="submit"
@@ -33,7 +29,7 @@
       </button>
     </form>
   </div>
-</div>
+</header>
 
 <script>
   import { t, getStoredLanguage } from '../i18n/translations';

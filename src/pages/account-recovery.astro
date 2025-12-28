@@ -1,5 +1,9 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import DiamondPattern from "../components/ui/DiamondPattern.astro";
+import GoldenLine from "../components/ui/GoldenLine.astro";
+import CornerOrnaments from "../components/ui/CornerOrnaments.astro";
+import { Diamond } from "@lucide/astro";
 ---
 
 <Layout title="Account Recovery | Mystovia">
@@ -8,33 +12,9 @@ import Layout from "../layouts/Layout.astro";
       <!-- Medieval container background -->
       <div class="absolute inset-0 rounded-xl bg-gradient-to-b from-gray-900/95 via-gray-900/98 to-black/95 border border-yellow-600/20"></div>
 
-      <!-- Top golden line -->
-      <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-yellow-500/50 to-transparent rounded-t-xl"></div>
-
-      <!-- Diamond pattern overlay -->
-      <div class="absolute inset-0 opacity-[0.03] pointer-events-none rounded-xl" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M30 0L60 30L30 60L0 30z\' fill=\'%23d4af37\' fill-opacity=\'0.4\'/%3E%3C/svg%3E'); background-size: 30px 30px;"></div>
-
-      <!-- Corner ornaments -->
-      <div class="absolute top-2 left-2 w-6 h-6 sm:w-8 sm:h-8 opacity-20 pointer-events-none">
-        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
-          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
-        </svg>
-      </div>
-      <div class="absolute top-2 right-2 w-6 h-6 sm:w-8 sm:h-8 opacity-20 pointer-events-none" style="transform: scaleX(-1);">
-        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
-          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
-        </svg>
-      </div>
-      <div class="absolute bottom-2 left-2 w-6 h-6 sm:w-8 sm:h-8 opacity-20 pointer-events-none" style="transform: scaleY(-1);">
-        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
-          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
-        </svg>
-      </div>
-      <div class="absolute bottom-2 right-2 w-6 h-6 sm:w-8 sm:h-8 opacity-20 pointer-events-none" style="transform: scale(-1);">
-        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
-          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
-        </svg>
-      </div>
+      <GoldenLine position="top" />
+      <DiamondPattern opacity={0.03} class="rounded-xl" />
+      <CornerOrnaments variant="curve" size="md" opacity={0.2} />
 
       <!-- Content -->
       <div class="relative z-10">
@@ -42,9 +22,7 @@ import Layout from "../layouts/Layout.astro";
         <div class="px-4 sm:px-6 py-4 border-b border-yellow-600/20">
           <div class="flex items-center justify-center gap-3 mb-2">
             <div class="h-px w-8 sm:w-12 bg-gradient-to-r from-transparent to-yellow-500/50"></div>
-            <svg class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-500/60" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M10 0L20 10L10 20L0 10z"/>
-            </svg>
+            <Diamond class="w-4 h-4 sm:w-5 sm:h-5 text-yellow-500/60" fill="currentColor" />
             <div class="h-px w-8 sm:w-12 bg-gradient-to-l from-transparent to-yellow-500/50"></div>
           </div>
           <h2 id="pageTitle" class="text-xl sm:text-2xl font-bold text-yellow-500 text-center medieval-font">Specify Your Problem</h2>

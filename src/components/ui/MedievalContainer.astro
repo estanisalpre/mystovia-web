@@ -1,0 +1,67 @@
+---
+import DiamondPattern from './DiamondPattern.astro';
+import GoldenLine from './GoldenLine.astro';
+import CornerOrnaments from './CornerOrnaments.astro';
+
+interface Props {
+  as?: 'div' | 'section' | 'article' | 'aside' | 'main';
+  variant?: 'default' | 'card' | 'modal' | 'page';
+  showDiamonds?: boolean;
+  showGoldenLine?: boolean;
+  showBottomLine?: boolean;
+  showCorners?: boolean;
+  cornerVariant?: 'bracket' | 'curve';
+  cornerSize?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  cornerOpacity?: number;
+  cornerAnimate?: boolean;
+  diamondOpacity?: number;
+  diamondSize?: number;
+  lineOpacity?: number;
+  lineAnimate?: boolean;
+  class?: string;
+  style?: string;
+}
+
+const {
+  as: Tag = 'div',
+  variant = 'default',
+  showDiamonds = true,
+  showGoldenLine = true,
+  showBottomLine = false,
+  showCorners = true,
+  cornerVariant = 'curve',
+  cornerSize = 'sm',
+  cornerOpacity = 0.3,
+  cornerAnimate = false,
+  diamondOpacity = 0.03,
+  diamondSize = 30,
+  lineOpacity = 0.5,
+  lineAnimate = false,
+  class: className = '',
+  style = ''
+} = Astro.props;
+
+const variantStyles = {
+  default: 'relative rounded-xl overflow-hidden',
+  card: 'relative rounded-xl overflow-hidden p-4 sm:p-6',
+  modal: 'relative rounded-xl md:rounded-2xl overflow-hidden',
+  page: 'relative rounded-xl md:rounded-2xl overflow-hidden p-4 sm:p-6 md:p-8'
+};
+
+const baseBackground = "background: linear-gradient(to bottom, rgb(17 24 39 / 0.95), rgb(17 24 39 / 0.98), rgb(0 0 0 / 0.95)); border: 1px solid rgb(202 138 4 / 0.2);";
+const modalShadow = variant === 'modal' ? " box-shadow: 0 0 60px rgba(234, 179, 8, 0.2), inset 0 1px 0 rgba(234, 179, 8, 0.1);" : "";
+---
+
+<Tag
+  class:list={[variantStyles[variant], className]}
+  style={`${baseBackground}${modalShadow} ${style}`}
+>
+  {showDiamonds && <DiamondPattern opacity={diamondOpacity} size={diamondSize} />}
+  {showGoldenLine && <GoldenLine position="top" opacity={lineOpacity} animate={lineAnimate} />}
+  {showBottomLine && <GoldenLine position="bottom" opacity={lineOpacity} animate={lineAnimate} />}
+  {showCorners && <CornerOrnaments variant={cornerVariant} size={cornerSize} opacity={cornerOpacity} animate={cornerAnimate} />}
+
+  <div class="relative z-10">
+    <slot />
+  </div>
+</Tag>

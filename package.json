@@ -14,9 +14,9 @@
     "start": "pnpm run server:prod",
     "seo": "seopilot"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["tibia, mmorpg, rpg, online game, mystovia server, otserver, tibia server, free"],
+  "author": "Martín Previte & Estanislao Salinas Previte",
+  "license": "MIT",
   "packageManager": "pnpm@10.17.0",
   "dependencies": {
     "@astrojs/db": "^0.18.2",
