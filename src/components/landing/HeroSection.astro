@@ -4,6 +4,8 @@ import { Diamond, Star, Sword, Download, ArrowRight, ShieldCheck, UserPlus, BarC
 import DiamondPattern from "../ui/DiamondPattern.astro";
 import GoldenLine from "../ui/GoldenLine.astro";
 import CornerOrnaments from "../ui/CornerOrnaments.astro";
+
+const downloadUrl = import.meta.env.PUBLIC_DOWNLOAD_URL || "https://github.com/estanisalpre/mystovia-web/releases/download/v.0.0.2/MystoviaLauncher.exe";
 ---
 
 <section id="download-section" class="flex justify-start items-center pt-32 flex-col relative py-20">
@@ -93,7 +95,7 @@ import CornerOrnaments from "../ui/CornerOrnaments.astro";
 
         <!-- BIG Download Button -->
         <a
-          href="https://github.com/estanisalpre/otserver-monorepo/releases/download/v0.0.1/MystoviaLauncher.exe"
+          href={downloadUrl}
           download="MystoviaLauncher.exe"
           class="group relative inline-flex items-center gap-4 px-12 py-6 bg-gradient-to-b from-yellow-500 via-yellow-600 to-yellow-700 hover:from-yellow-400 hover:via-yellow-500 hover:to-yellow-600 text-black font-bold text-xl md:text-2xl rounded-xl transition-all duration-300 transform hover:scale-105 border-2 border-yellow-400/60 shadow-[0_0_40px_rgba(234,179,8,0.4)] hover:shadow-[0_0_60px_rgba(234,179,8,0.6)] animate-button-pulse"
         >
