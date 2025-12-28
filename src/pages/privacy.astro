@@ -1,16 +1,19 @@
 ---
 import Layout from "@layouts/Layout.astro";
+import { Diamond } from "@lucide/astro";
 ---
 
-<Layout title="Política de Privacidad">
+<Layout
+  title="Política de Privacidad"
+  description="Conoce cómo Mystovia protege tu información personal. Política de privacidad, uso de datos, cookies y derechos de los usuarios."
+  keywords="politica privacidad mystovia, proteccion datos, cookies, privacidad tibia server"
+>
   <section class="page-container">
     <!-- Header -->
     <header class="text-center mb-10">
       <div class="flex items-center justify-center gap-3 mb-4">
         <div class="h-px w-16 bg-gradient-to-r from-transparent to-yellow-500/50"></div>
-        <svg class="w-5 h-5 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M10 0L20 10L10 20L0 10z"/>
-        </svg>
+        <Diamond class="w-5 h-5 text-yellow-500" fill="currentColor" />
         <div class="h-px w-16 bg-gradient-to-l from-transparent to-yellow-500/50"></div>
       </div>
       <h1 class="text-3xl md:text-4xl font-bold text-yellow-500 medieval-font mb-3">Política de Privacidad</h1>

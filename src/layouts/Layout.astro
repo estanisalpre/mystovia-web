@@ -14,9 +14,42 @@ import DownloadModal from '../components/DownloadModal';
 interface Props {
   title: string;
   description?: string;
+  keywords?: string;
+  canonical?: string;
+  ogImage?: string;
+  ogType?: 'website' | 'article' | 'profile';
+  noindex?: boolean;
+  structuredData?: object;
 }
 
-const { title, description = "Tibia Private Server" } = Astro.props;
+const {
+  title,
+  description = "Mystovia es un servidor privado de Tibia con rates personalizados, comunidad activa, eventos diarios y una experiencia RPG única. ¡Únete gratis!",
+  keywords = "tibia, servidor privado, tibia private server, ots, open tibia, mmorpg, rpg online, mystovia, tibia gratis",
+  canonical,
+  ogImage = "/og-image.jpg",
+  ogType = "website",
+  noindex = false,
+  structuredData
+} = Astro.props;
+
+const siteUrl = "https://www.mystovia.online";
+const currentUrl = canonical || `${siteUrl}${Astro.url.pathname}`;
+const fullTitle = title ? `${title} | Mystovia` : "Mystovia - Servidor Privado de Tibia";
+const ogImageUrl = ogImage.startsWith('http') ? ogImage : `${siteUrl}${ogImage}`;
+
+const defaultStructuredData = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Mystovia",
+  "url": siteUrl,
+  "description": description,
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": `${siteUrl}/character-information?name={search_term_string}`,
+    "query-input": "required name=search_term_string"
+  }
+};
 ---
 
 <!DOCTYPE html>
@@ -24,17 +57,80 @@ const { title, description = "Tibia Private Server" } = Astro.props;
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content={description}>
-  <title>{title}</title>
-  <link rel="icon" type="image/svg+xml" href="/favicon.ico">
 
-  <!-- google fonts -->
+  <!-- Primary Meta Tags -->
+  <title>{fullTitle}</title>
+  <meta name="title" content={fullTitle}>
+  <meta name="description" content={description}>
+  <meta name="keywords" content={keywords}>
+  <meta name="author" content="Mystovia Team">
+  <meta name="robots" content={noindex ? "noindex, nofollow" : "index, follow"}>
+  <meta name="googlebot" content={noindex ? "noindex, nofollow" : "index, follow"}>
+  <link rel="canonical" href={currentUrl}>
+
+  <!-- Google Tag Manager -->
+  <script is:inline>
+    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-TFN73ND4');
+  </script>
+  <!-- End Google Tag Manager -->
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#eab308">
+  <meta name="msapplication-TileColor" content="#1f2937">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content={ogType}>
+  <meta property="og:url" content={currentUrl}>
+  <meta property="og:title" content={fullTitle}>
+  <meta property="og:description" content={description}>
+  <meta property="og:image" content={ogImageUrl}>
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Mystovia">
+  <meta property="og:locale" content="es_ES">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content={currentUrl}>
+  <meta name="twitter:title" content={fullTitle}>
+  <meta name="twitter:description" content={description}>
+  <meta name="twitter:image" content={ogImageUrl}>
+
+  <!-- Additional SEO -->
+  <meta name="format-detection" content="telephone=no">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Mystovia">
+
+  <!-- Structured Data -->
+  <script type="application/ld+json" set:html={JSON.stringify(structuredData || defaultStructuredData)} />
+
+  <!-- Preconnect for performance -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+
+  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=Raleway:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
   <ViewTransitions/>
 </head>
 <body class="min-h-screen text-white flex flex-col">
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TFN73ND4"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+   
   <Header />
   <SearchBarFixed />
   <main class="relative flex-1 bg-cover bg-center bg-fixed md:pt-[50px]"

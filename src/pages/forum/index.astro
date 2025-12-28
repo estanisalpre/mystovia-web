@@ -1,6 +1,8 @@
 ---
 import Layout from "@layouts/Layout.astro";
-import { MessagesSquare, Info, MessageCircle } from "@lucide/astro";
+import { MessagesSquare, Info, MessageCircle, Diamond } from "@lucide/astro";
+import DiamondPattern from "../../components/ui/DiamondPattern.astro";
+import GoldenLine from "../../components/ui/GoldenLine.astro";
 
 // For internal SSR calls, use localhost with the same port (same Express server)
 const INTERNAL_API_URL = `http://localhost:${process.env.PORT || 3301}`;
@@ -39,15 +41,17 @@ if (userId && userEmail) {
 }
 ---
 
-<Layout title="Foro de la Comunidad | Mystovia">
+<Layout
+  title="Foro de la Comunidad"
+  description="Foro oficial de Mystovia. Participa en discusiones, comparte experiencias, reporta bugs y conecta con la comunidad."
+  keywords="foro mystovia, comunidad tibia, discusiones tibia, foro ots, comunidad ots"
+>
   <section class="page-container">
     <!-- Header with medieval style -->
     <div class="mb-6 sm:mb-8 text-center">
       <div class="flex items-center justify-center gap-3 mb-3">
         <div class="h-px w-8 sm:w-12 bg-gradient-to-r from-transparent to-yellow-500/50"></div>
-        <svg class="w-4 h-4 text-yellow-500/70" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M10 0L20 10L10 20L0 10z"/>
-        </svg>
+        <Diamond class="w-4 h-4 text-yellow-500/70" fill="currentColor" />
         <div class="h-px w-8 sm:w-12 bg-gradient-to-l from-transparent to-yellow-500/50"></div>
       </div>
       <div class="flex items-center justify-center gap-3 mb-3 sm:mb-4">
@@ -73,10 +77,8 @@ if (userId && userEmail) {
             <a href={`/forum/category/${category.id}`}
                class="relative rounded-xl overflow-hidden p-4 sm:p-5 border border-yellow-600/20 hover:border-yellow-500/40 transition-all flex items-center justify-between gap-4 group block"
                style="background: linear-gradient(to bottom, rgb(17 24 39 / 0.9), rgb(0 0 0 / 0.85));">
-              <!-- Diamond pattern overlay -->
-              <div class="absolute inset-0 opacity-[0.03] pointer-events-none" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M30 0L60 30L30 60L0 30z\' fill=\'%23d4af37\' fill-opacity=\'0.4\'/%3E%3C/svg%3E'); background-size: 30px 30px;"></div>
-              <!-- Top golden line -->
-              <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-yellow-500/40 to-transparent group-hover:via-yellow-500/60 transition-all"></div>
+              <DiamondPattern opacity={0.03} class="rounded-xl" />
+              <GoldenLine position="top" opacity={0.4} class="group-hover:opacity-60 transition-all" />
 
               <div class="flex-1 relative z-10">
                 <h2 class="text-base sm:text-lg md:text-xl font-bold text-yellow-500 mb-1 group-hover:translate-x-1 transition-transform">

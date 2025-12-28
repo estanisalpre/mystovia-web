@@ -3,6 +3,8 @@ export const prerender = false;
 
 import Layout from "@layouts/Layout.astro";
 import { Shield, Users, Crown, ChevronRight, Home, UserPlus, LogOut, Mail, Camera, X, UserMinus, ChevronUp, ChevronDown, Trash2 } from '@lucide/astro';
+import DiamondPattern from "../../components/ui/DiamondPattern.astro";
+import GoldenLine from "../../components/ui/GoldenLine.astro";
 
 const { id } = Astro.params;
 
@@ -90,7 +92,11 @@ function formatDate(timestamp: number): string {
 }
 ---
 
-<Layout title={guildData ? `${guildData.name} | Guilds` : 'Guild | Mystovia'}>
+<Layout
+  title={guildData ? guildData.name : 'Guild'}
+  description={guildData ? `Información de la guild ${guildData.name} en Mystovia. Miembros, líderes y estadísticas de la hermandad.` : 'Información de guild en Mystovia.'}
+  keywords="guild mystovia, hermandad tibia, clan tibia, miembros guild"
+>
   <section class="page-container max-w-4xl mx-auto">
     <!-- Breadcrumb -->
     <nav class="flex items-center gap-2 text-xs sm:text-sm text-gray-400 mb-6">
@@ -141,10 +147,8 @@ function formatDate(timestamp: number): string {
 
         <div class="relative rounded-xl overflow-hidden mb-6"
              style="background: linear-gradient(to bottom, rgb(31 41 55 / 0.8), rgb(17 24 39 / 0.9)); border: 1px solid rgb(234 179 8 / 0.2);">
-          <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-yellow-500/50 to-transparent"></div>
-
-          <div class="absolute inset-0 opacity-[0.03] pointer-events-none"
-               style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M30 0L60 30L30 60L0 30z\' fill=\'%23d4af37\' fill-opacity=\'0.4\'/%3E%3C/svg%3E'); background-size: 30px 30px;"></div>
+          <GoldenLine position="top" thickness="thick" />
+          <DiamondPattern opacity={0.03} class="rounded-xl" />
 
           <div class="relative z-10 p-6">
             <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">

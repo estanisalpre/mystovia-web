@@ -1,0 +1,19 @@
+# Security Policy for Mystovia
+# https://www.mystovia.online
+
+# If you have found a security vulnerability, please report it to us.
+
+Contact: https://mystovia.online/forum
+Contact: mailto:martinprevite.93@hotmail.com
+
+# Preferred Languages
+Preferred-Languages: es, en
+
+# Our security policy
+Policy: https://www.mystovia.online/terms
+
+# Canonical URL for this file
+Canonical: https://www.mystovia.online/.well-known/security.txt
+
+# Expiration date
+Expires: 2026-12-31T23:59:59.000Z

@@ -1,11 +1,17 @@
 ---
 import Layout from "@layouts/Layout.astro";
-import { Shield, Users, Crown, ChevronRight, Plus } from '@lucide/astro';
+import { Shield, Users, Crown, ChevronRight, Plus, Diamond } from '@lucide/astro';
+import DiamondPattern from "../../components/ui/DiamondPattern.astro";
+import GoldenLine from "../../components/ui/GoldenLine.astro";
 
 const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3301';
 ---
 
-<Layout title="Guilds | Mystovia">
+<Layout
+  title="Guilds"
+  description="Explora todas las guilds de Mystovia. Encuentra hermandades activas, únete a una guild o crea la tuya propia."
+  keywords="guilds mystovia, hermandades tibia, clanes tibia, unirse guild, guilds activas"
+>
   <section class="page-container">
     <!-- Header -->
     <header class="text-center mb-8">
@@ -30,11 +36,8 @@ const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3301';
     <!-- Guilds List -->
     <div class="relative rounded-xl overflow-hidden"
          style="background: linear-gradient(to bottom, rgb(31 41 55 / 0.6), rgb(17 24 39 / 0.8)); border: 1px solid rgb(234 179 8 / 0.15);">
-      <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-yellow-500/30 to-transparent"></div>
-
-      <!-- Diamond pattern overlay -->
-      <div class="absolute inset-0 opacity-[0.02] pointer-events-none"
-           style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M30 0L60 30L30 60L0 30z\' fill=\'%23d4af37\' fill-opacity=\'0.4\'/%3E%3C/svg%3E'); background-size: 30px 30px;"></div>
+      <GoldenLine position="top" opacity={0.3} />
+      <DiamondPattern opacity={0.02} class="rounded-xl" />
 
       <!-- Table Header -->
       <div class="hidden sm:grid grid-cols-12 gap-2 px-4 py-3 text-sm text-yellow-500 font-semibold border-b border-yellow-600/20 bg-black/20">
@@ -157,15 +160,11 @@ const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3301';
                 <span class="text-white font-semibold group-hover:text-yellow-500 transition-colors">${guild.name}</span>
               </div>
               <div class="hidden sm:flex col-span-3 items-center gap-2 text-gray-400">
-                <svg class="w-4 h-4 text-yellow-500/70" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M10 0L20 10L10 20L0 10z"/>
-                </svg>
+                <svg class="w-4 h-4 text-yellow-500/70 lucide lucide-diamond" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.7 10.3a2.41 2.41 0 0 0 0 3.41l7.59 7.59a2.41 2.41 0 0 0 3.41 0l7.59-7.59a2.41 2.41 0 0 0 0-3.41l-7.59-7.59a2.41 2.41 0 0 0-3.41 0Z"/></svg>
                 ${guild.owner_name || 'Desconocido'}
               </div>
               <div class="hidden sm:flex col-span-2 items-center justify-center text-white gap-1">
-                <svg class="w-4 h-4 text-yellow-500/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
-                </svg>
+                <svg class="w-4 h-4 text-yellow-500/50 lucide lucide-users" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
                 ${guild.member_count}
               </div>
               <div class="hidden sm:flex col-span-2 items-center justify-center text-gray-500 text-sm">${formatDate(guild.creationdata)}</div>

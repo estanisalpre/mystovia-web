@@ -1,6 +1,9 @@
 ---
 import Layout from "@layouts/Layout.astro";
-import { BookOpenText, AlertTriangle, Info, Shield, Swords, MessageSquare, Scale, ShoppingBag, Gavel } from "@lucide/astro";
+import { BookOpenText, AlertTriangle, Info, Shield, Swords, MessageSquare, Scale, ShoppingBag, Gavel, Diamond, ArrowUp } from "@lucide/astro";
+import DiamondPattern from "../components/ui/DiamondPattern.astro";
+import GoldenLine from "../components/ui/GoldenLine.astro";
+import CornerOrnaments from "../components/ui/CornerOrnaments.astro";
 
 // Reglas del servidor - Contenido estático
 const sections = [
@@ -142,15 +145,17 @@ const getIconComponent = (iconName: string) => {
 };
 ---
 
-<Layout title="Reglas del Servidor | Mystovia">
+<Layout
+  title="Reglas del Servidor"
+  description="Lee las reglas oficiales de Mystovia. Conoce las normas de conducta, reglas de PvP, sanciones y todo lo necesario para jugar correctamente."
+  keywords="reglas mystovia, normas tibia server, reglas pvp, sanciones, conducta servidor"
+>
   <section class="page-container">
     <!-- Header with medieval style -->
     <div class="mb-6 sm:mb-8 text-center">
       <div class="flex items-center justify-center gap-3 mb-3">
         <div class="h-px w-8 sm:w-12 bg-gradient-to-r from-transparent to-yellow-500/50"></div>
-        <svg class="w-4 h-4 text-yellow-500/70" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M10 0L20 10L10 20L0 10z"/>
-        </svg>
+        <Diamond class="w-4 h-4 text-yellow-500/70" fill="currentColor" />
         <div class="h-px w-8 sm:w-12 bg-gradient-to-l from-transparent to-yellow-500/50"></div>
       </div>
       <div class="flex items-center justify-center gap-3 mb-3 sm:mb-4">
@@ -177,8 +182,8 @@ const getIconComponent = (iconName: string) => {
     <!-- Table of Contents -->
     <div class="relative rounded-xl overflow-hidden p-4 sm:p-6 mb-6 border border-yellow-600/20"
          style="background: linear-gradient(to bottom, rgb(17 24 39 / 0.95), rgb(0 0 0 / 0.9));">
-      <div class="absolute inset-0 opacity-[0.02] pointer-events-none" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M30 0L60 30L30 60L0 30z\' fill=\'%23d4af37\' fill-opacity=\'0.4\'/%3E%3C/svg%3E'); background-size: 30px 30px;"></div>
-      <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-yellow-500/40 to-transparent"></div>
+      <DiamondPattern opacity={0.02} class="rounded-xl" />
+      <GoldenLine position="top" opacity={0.4} />
 
       <h2 class="text-lg font-bold text-yellow-500 mb-4 medieval-font relative z-10">Indice de Secciones</h2>
       <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 relative z-10">
@@ -203,22 +208,9 @@ const getIconComponent = (iconName: string) => {
           <article id={`section-${section.id}`}
                    class="relative rounded-xl overflow-hidden border border-yellow-600/20 scroll-mt-24"
                    style="background: linear-gradient(to bottom, rgb(17 24 39 / 0.95), rgb(0 0 0 / 0.9));">
-            <!-- Diamond pattern overlay -->
-            <div class="absolute inset-0 opacity-[0.02] pointer-events-none" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M30 0L60 30L30 60L0 30z\' fill=\'%23d4af37\' fill-opacity=\'0.4\'/%3E%3C/svg%3E'); background-size: 30px 30px;"></div>
-            <!-- Top golden line -->
-            <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-yellow-500/50 to-transparent"></div>
-
-            <!-- Corner ornaments -->
-            <div class="absolute top-2 left-2 w-4 h-4 opacity-30 pointer-events-none">
-              <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
-                <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
-              </svg>
-            </div>
-            <div class="absolute top-2 right-2 w-4 h-4 opacity-30 pointer-events-none" style="transform: scaleX(-1);">
-              <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
-                <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
-              </svg>
-            </div>
+            <DiamondPattern opacity={0.02} class="rounded-xl" />
+            <GoldenLine position="top" />
+            <CornerOrnaments variant="curve" size="xs" opacity={0.3} />
 
             <!-- Section Header -->
             <div class="p-4 sm:p-6 border-b border-yellow-600/20 relative z-10"
@@ -270,9 +262,7 @@ const getIconComponent = (iconName: string) => {
     <!-- Back to top button -->
     <div class="flex justify-center mt-8">
       <a href="#" class="btn-medieval btn-medieval-secondary text-sm">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
-        </svg>
+        <ArrowUp class="w-4 h-4" />
         <span>Volver arriba</span>
       </a>
     </div>

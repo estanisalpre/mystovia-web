@@ -2,6 +2,8 @@
 import Layout from '../../layouts/Layout.astro';
 import { hasPermission } from '../../utils/permissions';
 import { Newspaper, Plus, ArrowLeft, Eye, Heart, Calendar, Edit, Trash2, ExternalLink } from '@lucide/astro';
+import DiamondPattern from "../../components/ui/DiamondPattern.astro";
+import GoldenLine from "../../components/ui/GoldenLine.astro";
 
 // Use internal URL for SSR to avoid timeout on Render
 const INTERNAL_API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3301';
@@ -52,7 +54,11 @@ const { news, pagination } = newsData;
 const { categories } = categoriesData;
 ---
 
-<Layout title="Admin - Noticias">
+<Layout
+  title="Admin - Noticias"
+  description="Administración de noticias de Mystovia."
+  noindex={true}
+>
   <section class="page-container">
     <!-- Header -->
     <header class="mb-8">
@@ -112,10 +118,8 @@ const { categories } = categoriesData;
     <!-- News Table -->
     <div class="relative rounded-xl overflow-hidden"
          style="background: linear-gradient(to bottom, rgb(17 24 39 / 0.95), rgb(0 0 0 / 0.9));">
-      <!-- Diamond pattern overlay -->
-      <div class="absolute inset-0 opacity-[0.02] pointer-events-none"
-           style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M30 0L60 30L30 60L0 30z\' fill=\'%23d4af37\' fill-opacity=\'0.4\'/%3E%3C/svg%3E'); background-size: 30px 30px;"></div>
-      <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-yellow-500/40 to-transparent"></div>
+      <DiamondPattern opacity={0.02} class="rounded-xl" />
+      <GoldenLine position="top" opacity={0.4} />
       <div class="absolute inset-0 rounded-xl border border-yellow-600/20 pointer-events-none"></div>
 
       <!-- Table Header -->
@@ -281,10 +285,8 @@ const { categories } = categoriesData;
   <div id="newsModal" class="modal-container hidden">
     <div class="modal-wrapper">
       <div class="modal-content max-w-3xl">
-      <!-- Diamond pattern overlay -->
-      <div class="absolute inset-0 opacity-[0.02] pointer-events-none"
-           style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M30 0L60 30L30 60L0 30z\' fill=\'%23d4af37\' fill-opacity=\'0.4\'/%3E%3C/svg%3E'); background-size: 30px 30px;"></div>
-      <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-yellow-500/60 to-transparent"></div>
+      <DiamondPattern opacity={0.02} class="rounded-xl" />
+      <GoldenLine position="top" opacity={0.6} />
       <div class="absolute inset-0 rounded-xl border border-yellow-600/20 pointer-events-none"></div>
 
       <!-- Modal Header -->

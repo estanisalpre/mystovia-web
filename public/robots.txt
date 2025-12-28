@@ -1,0 +1,41 @@
+# Robots.txt for Mystovia
+# https://www.mystovia.online
+
+User-agent: *
+Allow: /
+
+# Disallow admin and private pages
+Disallow: /admin/
+Disallow: /api/
+Disallow: /account-management
+Disallow: /characters
+Disallow: /create-character
+Disallow: /recovery-verify
+Disallow: /reset-password
+
+# Disallow auth pages
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+Disallow: /lost-account
+Disallow: /account-recovery
+
+# Allow crawling of important public pages
+Allow: /highscores
+Allow: /guilds
+Allow: /news
+Allow: /wiki
+Allow: /forum
+Allow: /marketplace
+Allow: /online
+Allow: /rules
+Allow: /terms
+Allow: /privacy
+Allow: /latest-deaths
+Allow: /character-information
+
+# Sitemap location
+Sitemap: https://www.mystovia.online/sitemap.xml
+
+# Crawl delay (optional, be respectful to crawlers)
+Crawl-delay: 1

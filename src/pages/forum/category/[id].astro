@@ -5,6 +5,8 @@ import Layout from '../../../layouts/Layout.astro';
 import Pagination from '../../../components/Pagination.astro';
 import { hasPermission } from '../../../utils/permissions';
 import { Plus, User, MessageSquare, Eye, Calendar, Pin, Lock, ChevronRight, Home, ThumbsUp } from '@lucide/astro';
+import DiamondPattern from "../../../components/ui/DiamondPattern.astro";
+import GoldenLine from "../../../components/ui/GoldenLine.astro";
 
 // Helper function to format vote count
 function formatVotes(votes: number): string {
@@ -72,7 +74,11 @@ try {
 const { topics, pagination } = topicsData;
 ---
 
-<Layout title={categoryData.name}>
+<Layout
+  title={categoryData.name}
+  description={`Temas de ${categoryData.name} en el foro de Mystovia. Participa en las discusiones de la comunidad.`}
+  keywords={`foro ${categoryData.name.toLowerCase()}, categoria foro mystovia, discusiones tibia`}
+>
   <section class="page-container">
     <!-- Breadcrumb -->
     <nav class="flex items-center gap-2 text-xs sm:text-sm text-gray-400 mb-4 sm:mb-6">
@@ -89,10 +95,8 @@ const { topics, pagination } = topicsData;
     <!-- Header -->
     <div class="relative rounded-xl overflow-hidden p-4 sm:p-6 border border-yellow-600/20 mb-6"
          style="background: linear-gradient(to bottom, rgb(17 24 39 / 0.9), rgb(0 0 0 / 0.85));">
-      <!-- Diamond pattern overlay -->
-      <div class="absolute inset-0 opacity-[0.03] pointer-events-none" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M30 0L60 30L30 60L0 30z\' fill=\'%23d4af37\' fill-opacity=\'0.4\'/%3E%3C/svg%3E'); background-size: 30px 30px;"></div>
-      <!-- Top golden line -->
-      <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-yellow-500/50 to-transparent"></div>
+      <DiamondPattern opacity={0.03} class="rounded-xl" />
+      <GoldenLine position="top" />
 
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 relative z-10">
         <div>

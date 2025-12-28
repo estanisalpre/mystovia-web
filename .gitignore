@@ -43,3 +43,10 @@ coverage/
 *.tmp
 *.swp
 *.swo
+
+# secrets
+generate-secrets.js
+test-db.ts
+
+# database
+/database/

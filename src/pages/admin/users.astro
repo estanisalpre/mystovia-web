@@ -55,7 +55,11 @@ const pagination = usersData?.pagination || { page: 1, totalPages: 1 };
 const roles = rolesData?.roles || [];
 ---
 
-<Layout title="Gestión de Usuarios">
+<Layout
+  title="Gestión de Usuarios"
+  description="Gestión de usuarios de Mystovia."
+  noindex={true}
+>
   <section class="page-container">
     <div class="flex justify-between items-center mb-6">
       <h1 class="text-3xl font-bold">👥 Gestión de Usuarios</h1>

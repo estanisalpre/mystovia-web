@@ -7,14 +7,12 @@ interface Props {
 
 const { currentPage, totalPages, baseUrl } = Astro.props;
 
-// Generar URL con parámetros
 function getPageUrl(page: number) {
   const url = new URL(baseUrl, Astro.url);
   url.searchParams.set('page', page.toString());
   return url.pathname + url.search;
 }
 
-// Generar array de páginas a mostrar con su tipo
 interface PageItem {
   type: 'page' | 'ellipsis';
   page?: number;

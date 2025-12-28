@@ -2,6 +2,10 @@
 import Input from "@ui/Input.astro";
 import ErrorMessage from "@ui/ErrorMessage.astro";
 import SubmitBtn from "@lib/components/ui/SubmitBtn.astro";
+import DiamondPattern from "../../ui/DiamondPattern.astro";
+import GoldenLine from "../../ui/GoldenLine.astro";
+import CornerOrnaments from "../../ui/CornerOrnaments.astro";
+import { Diamond } from '@lucide/astro';
 
 let error = "";
 ---
@@ -12,35 +16,16 @@ let error = "";
   style="background: linear-gradient(to bottom, rgb(17 24 39 / 0.98), rgb(17 24 39), rgb(0 0 0 / 0.98));"
 >
   <!-- Diamond pattern overlay -->
-  <div class="absolute inset-0 opacity-[0.03] pointer-events-none rounded-xl" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M30 0L60 30L30 60L0 30z\' fill=\'%23d4af37\' fill-opacity=\'0.4\'/%3E%3C/svg%3E'); background-size: 30px 30px;"></div>
+  <DiamondPattern opacity={0.03} class="rounded-xl" />
 
   <!-- Top golden line -->
-  <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-yellow-500/50 to-transparent rounded-t-xl"></div>
+  <GoldenLine position="top" />
 
   <!-- Border -->
-  <div class="absolute inset-0 rounded-xl border border-yellow-600/20 pointer-events-none"></div>
+  <span class="absolute inset-0 rounded-xl border border-yellow-600/20 pointer-events-none" aria-hidden="true"></span>
 
   <!-- Corner ornaments -->
-  <div class="absolute top-2 left-2 w-5 h-5 opacity-20 pointer-events-none">
-    <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
-      <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
-    </svg>
-  </div>
-  <div class="absolute top-2 right-2 w-5 h-5 opacity-20 pointer-events-none" style="transform: scaleX(-1);">
-    <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
-      <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
-    </svg>
-  </div>
-  <div class="absolute bottom-2 left-2 w-5 h-5 opacity-20 pointer-events-none" style="transform: scaleY(-1);">
-    <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
-      <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
-    </svg>
-  </div>
-  <div class="absolute bottom-2 right-2 w-5 h-5 opacity-20 pointer-events-none" style="transform: scale(-1);">
-    <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
-      <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
-    </svg>
-  </div>
+  <CornerOrnaments variant="curve" size="md" opacity={0.2} offset={2} />
 
   <!-- Content -->
   <div class="relative z-10 p-5 pt-12">
@@ -77,9 +62,7 @@ let error = "";
     <!-- Decorative divider -->
     <div class="flex items-center gap-2 my-3">
       <div class="flex-1 h-px bg-gradient-to-r from-transparent via-yellow-500/20 to-transparent"></div>
-      <svg class="w-3 h-3 text-yellow-500/40" fill="currentColor" viewBox="0 0 20 20">
-        <path d="M10 0L20 10L10 20L0 10z"/>
-      </svg>
+      <Diamond class="w-3 h-3 text-yellow-500/40" fill="currentColor" />
       <div class="flex-1 h-px bg-gradient-to-r from-transparent via-yellow-500/20 to-transparent"></div>
     </div>
 

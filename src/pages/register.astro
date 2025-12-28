@@ -1,14 +1,21 @@
 ---
 import Layout from "../layouts/Layout.astro";
-
 import Input from "@ui/Input.astro";
 import ErrorMessage from "@ui/ErrorMessage.astro";
 import SubmitBtn from "@ui/SubmitBtn.astro";
+import { Star, TriangleAlert, ClipboardCopy } from '@lucide/astro';
+import DiamondPattern from "../components/ui/DiamondPattern.astro";
+import GoldenLine from "../components/ui/GoldenLine.astro";
+import CornerOrnaments from "../components/ui/CornerOrnaments.astro";
 
 let error = "";
 ---
 
-<Layout title="Registrarse | Mystovia">
+<Layout
+  title="Crear Cuenta"
+  description="Regístrate gratis en Mystovia y comienza tu aventura en el mejor servidor privado de Tibia. Crea tu cuenta en segundos."
+  keywords="registrarse mystovia, crear cuenta tibia, registro gratis, nueva cuenta ots"
+>
   <section
     class="grow z-100 flex items-center justify-center min-h-screen py-12 px-4"
   >
@@ -17,32 +24,13 @@ let error = "";
       <div class="absolute inset-0 rounded-xl bg-gradient-to-b from-gray-900/95 via-gray-900/98 to-black/95 border border-yellow-600/20"></div>
 
       <!-- Top golden line -->
-      <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-yellow-500/50 to-transparent"></div>
+      <GoldenLine position="top" />
 
       <!-- Diamond pattern overlay -->
-      <div class="absolute inset-0 opacity-[0.03] pointer-events-none rounded-xl" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M30 0L60 30L30 60L0 30z\' fill=\'%23d4af37\' fill-opacity=\'0.4\'/%3E%3C/svg%3E'); background-size: 30px 30px;"></div>
+      <DiamondPattern opacity={0.03} class="rounded-xl" />
 
       <!-- Corner ornaments -->
-      <div class="absolute top-2 left-2 w-8 h-8 opacity-20 pointer-events-none">
-        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
-          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
-        </svg>
-      </div>
-      <div class="absolute top-2 right-2 w-8 h-8 opacity-20 pointer-events-none" style="transform: scaleX(-1);">
-        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
-          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
-        </svg>
-      </div>
-      <div class="absolute bottom-2 left-2 w-8 h-8 opacity-20 pointer-events-none" style="transform: scaleY(-1);">
-        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
-          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
-        </svg>
-      </div>
-      <div class="absolute bottom-2 right-2 w-8 h-8 opacity-20 pointer-events-none" style="transform: scale(-1);">
-        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
-          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
-        </svg>
-      </div>
+      <CornerOrnaments variant="curve" size="lg" opacity={0.2} />
 
       <!-- Form content -->
       <form
@@ -50,16 +38,14 @@ let error = "";
         class="relative z-10 p-8 space-y-6"
       >
         <!-- Title with decorative elements -->
-        <div class="text-center mb-8">
-          <div class="flex items-center justify-center gap-3 mb-2">
-            <div class="h-px w-12 bg-gradient-to-r from-transparent to-yellow-500/50"></div>
-            <svg class="w-5 h-5 text-yellow-500/60" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-            </svg>
-            <div class="h-px w-12 bg-gradient-to-l from-transparent to-yellow-500/50"></div>
-          </div>
+        <header class="text-center mb-8">
+          <figure class="flex items-center justify-center gap-3 mb-2" aria-hidden="true">
+            <span class="h-px w-12 bg-gradient-to-r from-transparent to-yellow-500/50"></span>
+            <Star class="w-5 h-5 text-yellow-500/60" fill="currentColor" />
+            <span class="h-px w-12 bg-gradient-to-l from-transparent to-yellow-500/50"></span>
+          </figure>
           <h2 id="registerTitle" class="text-3xl font-bold text-white medieval-font">Crear cuenta</h2>
-        </div>
+        </header>
 
         <Input
           id="username"
@@ -124,43 +110,22 @@ let error = "";
       <div class="absolute inset-0 rounded-xl bg-gradient-to-b from-gray-900/98 via-gray-900 to-black border border-yellow-500/30"></div>
 
       <!-- Top golden line -->
-      <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-yellow-500/60 to-transparent"></div>
+      <GoldenLine position="top" opacity={0.6} />
 
       <!-- Diamond pattern overlay -->
-      <div class="absolute inset-0 opacity-[0.03] pointer-events-none rounded-xl" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M30 0L60 30L30 60L0 30z\' fill=\'%23d4af37\' fill-opacity=\'0.4\'/%3E%3C/svg%3E'); background-size: 30px 30px;"></div>
+      <DiamondPattern opacity={0.03} class="rounded-xl" />
 
       <!-- Corner ornaments -->
-      <div class="absolute top-2 left-2 w-8 h-8 opacity-20 pointer-events-none">
-        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
-          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
-        </svg>
-      </div>
-      <div class="absolute top-2 right-2 w-8 h-8 opacity-20 pointer-events-none" style="transform: scaleX(-1);">
-        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
-          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
-        </svg>
-      </div>
-      <div class="absolute bottom-2 left-2 w-8 h-8 opacity-20 pointer-events-none" style="transform: scaleY(-1);">
-        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
-          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
-        </svg>
-      </div>
-      <div class="absolute bottom-2 right-2 w-8 h-8 opacity-20 pointer-events-none" style="transform: scale(-1);">
-        <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-yellow-500">
-          <path d="M0 0 L40 0 Q0 0 0 40 Z" fill="currentColor"/>
-        </svg>
-      </div>
+      <CornerOrnaments variant="curve" size="lg" opacity={0.2} />
 
       <!-- Modal inner content -->
-      <div class="relative z-10 p-8">
+      <article class="relative z-10 p-8">
         <!-- Warning Icon -->
-        <div class="flex justify-center mb-4">
-          <div class="w-16 h-16 bg-yellow-500/20 rounded-full flex items-center justify-center border border-yellow-500/30">
-            <svg class="w-8 h-8 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-            </svg>
-          </div>
-        </div>
+        <figure class="flex justify-center mb-4">
+          <figcaption class="w-16 h-16 bg-yellow-500/20 rounded-full flex items-center justify-center border border-yellow-500/30">
+            <TriangleAlert class="w-8 h-8 text-yellow-500" />
+          </figcaption>
+        </figure>
 
         <h3 id="modalTitle" class="text-2xl font-bold text-center text-white mb-2 medieval-font">Recovery Key</h3>
         <p id="modalSubtitle" class="text-center text-gray-400 text-sm mb-6">
@@ -180,9 +145,7 @@ let error = "";
           type="button"
           class="w-full py-2 mb-4 text-sm bg-gray-800 hover:bg-gray-700 text-white rounded-lg transition flex items-center justify-center gap-2 border border-gray-700"
         >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
-          </svg>
+          <ClipboardCopy class="w-4 h-4" />
           <span id="copyBtnText">Copiar clave</span>
         </button>
 
