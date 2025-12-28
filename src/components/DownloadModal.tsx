@@ -21,7 +21,9 @@ export default function DownloadModal() {
     dialogRef.current?.close();
   };
 
-  const downloadUrl = "https://github.com/estanisalpre/otserver-monorepo/releases/download/v0.0.1/MystoviaLauncher.exe";
+  const downloadUrl =
+    import.meta.env.PUBLIC_DOWNLOAD_URL ||
+    "https://github.com/estanisalpre/mystovia-web/releases/download/v.0.0.2/MystoviaLauncher.exe";
 
   return (
     <dialog
