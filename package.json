@@ -11,7 +11,8 @@
     "build": "astro build && tsc --project server/tsconfig.json",
     "preview": "astro preview",
     "server:prod": "node server/dist/index.js",
-    "start": "pnpm run server:prod"
+    "start": "pnpm run server:prod",
+    "seo": "seopilot"
   },
   "keywords": [],
   "author": "",
@@ -41,6 +42,7 @@
     "react-dom": "^19.2.0",
     "react-i18next": "^16.4.1",
     "resend": "^6.6.0",
+    "seopilot": "^0.1.0",
     "tailwindcss": "^4.1.16",
     "tsparticles": "^3.9.1",
     "tsparticles-engine": "^2.12.0",
