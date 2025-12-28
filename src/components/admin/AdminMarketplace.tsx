@@ -154,8 +154,8 @@ export default function AdminMarketplace() {
       {/* Header */}
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-white mb-2">Items Management</h1>
-          <p className="text-gray-400">Create, edit, and manage marketplace items</p>
+          <h1 className="text-3xl font-bold text-white mb-2">Administración de tienda</h1>
+          <p className="text-gray-400">Crea, edita y elimina productos de la tienda</p>
         </div>
 
         <button
@@ -163,7 +163,7 @@ export default function AdminMarketplace() {
           className="flex items-center gap-2 bg-linear-to-r from-blue-600 to-purple-600 text-white px-6 py-3 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all font-semibold"
         >
           <Plus size={20} />
-          Create New Item
+          Crear nuevo producto
         </button>
       </div>
 
@@ -175,7 +175,7 @@ export default function AdminMarketplace() {
             <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
             <input
               type="text"
-              placeholder="Search items..."
+              placeholder="Buscar productos..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full bg-gray-700 text-white pl-10 pr-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -188,7 +188,7 @@ export default function AdminMarketplace() {
             onChange={(e) => setCategoryFilter(e.target.value)}
             className="bg-gray-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            <option value="all">All Categories</option>
+            <option value="all">Todos</option>
             <option value="knight">Knight</option>
             <option value="paladin">Paladin</option>
             <option value="sorcerer">Sorcerer</option>
@@ -202,9 +202,9 @@ export default function AdminMarketplace() {
             onChange={(e) => setStatusFilter(e.target.value)}
             className="bg-gray-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            <option value="all">All Status</option>
-            <option value="active">Active Only</option>
-            <option value="inactive">Inactive Only</option>
+            <option value="all">Todos</option>
+            <option value="active">Activo</option>
+            <option value="inactive">Inactivo</option>
           </select>
         </div>
       </div>

@@ -14,10 +14,10 @@ export const requireAdmin = async (req: Request, res: Response, next: NextFuncti
   try {
     const user = (req as any).user;
 
-    console.log("🔍 requireAdmin => user del token:", user);
+    //console.log("🔍 requireAdmin => user del token:", user);
 
     if (!user || !user.userId) {
-      console.log("🚫 No hay usuario en token o falta userId");
+      //console.log("🚫 No hay usuario en token o falta userId");
       return res.status(401).json({
         error: 'Authentication required'
       });
@@ -37,7 +37,6 @@ export const requireAdmin = async (req: Request, res: Response, next: NextFuncti
 
     const groupId = Number(rows[0].group_id);
 
-    // Check if user is admin (group_id >= 3)
     if (isNaN(groupId) || groupId < 10) {
       return res.status(403).json({
         error: 'Access denied. Admin privileges required.',
@@ -46,7 +45,6 @@ export const requireAdmin = async (req: Request, res: Response, next: NextFuncti
       });
     }
 
-    // Attach admin info to request
     (req as any).isAdmin = true;
     (req as any).groupId = groupId;
 

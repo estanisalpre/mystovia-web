@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { X, Plus, Trash2, AlertCircle } from 'lucide-react';
 
 const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3301';
@@ -35,7 +35,6 @@ export default function ItemFormModal({
   item,
   onSuccess
 }: ItemFormModalProps) {
-  const dialogRef = useRef<HTMLDialogElement>(null);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -56,7 +55,6 @@ export default function ItemFormModal({
 
   useEffect(() => {
     if (isOpen) {
-      dialogRef.current?.showModal();
       if (item) {
         const validCategories = ['knight', 'paladin', 'sorcerer', 'druid', 'item'];
         let category = item.category;
@@ -88,10 +86,17 @@ export default function ItemFormModal({
         setGameItems([{ itemId: '', count: 1, name: '' }]);
       }
       setError('');
+      document.body.style.overflow = 'hidden';
     } else {
-      dialogRef.current?.close();
+      document.body.style.overflow = '';
     }
+
+    return () => {
+      document.body.style.overflow = '';
+    };
   }, [isOpen, item]);
+
+  if (!isOpen) return null;
 
   const addGameItem = () => {
     setGameItems([...gameItems, { itemId: '', count: 1, name: '' }]);
@@ -194,256 +199,263 @@ export default function ItemFormModal({
   };
 
   return (
-    <dialog
-      ref={dialogRef}
-      className="fixed left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-3xl max-h-[90vh] bg-gray-900 rounded-xl shadow-2xl border border-gray-800 overflow-hidden flex flex-col p-0 backdrop:bg-black/70"
-      onClick={(e) => {
-        if (e.target === dialogRef.current) onClose();
-      }}
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center"
+      role="dialog"
+      aria-modal="true"
       aria-labelledby="item-form-modal-title"
     >
-      {/* Header */}
-      <header className="flex items-center justify-between p-6 border-b border-gray-800">
-        <h2 id="item-form-modal-title" className="text-2xl font-bold text-white">
-          {item ? 'Edit Item' : 'Create New Item'}
-        </h2>
-        <button
-          onClick={onClose}
-          className="text-gray-400 hover:text-white transition-colors"
-          type="button"
-          aria-label="Cerrar"
-        >
-          <X size={24} aria-hidden="true" />
-        </button>
-      </header>
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        onClick={onClose}
+      />
 
-      {/* Content */}
-      <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6">
-        {error && (
-          <aside className="bg-red-500/10 border border-red-500/50 rounded-lg p-4 mb-6 flex items-start gap-3" role="alert">
-            <AlertCircle size={20} className="text-red-500 shrink-0 mt-0.5" aria-hidden="true" />
-            <p className="text-red-500 text-sm">{error}</p>
-          </aside>
-        )}
+      {/* Modal Content */}
+      <div className="relative w-full max-w-3xl max-h-[90vh] bg-gray-900 rounded-xl shadow-2xl border border-gray-800 overflow-hidden flex flex-col mx-4">
+        {/* Header */}
+        <header className="flex items-center justify-between p-6 border-b border-gray-800">
+          <h2 id="item-form-modal-title" className="text-2xl font-bold text-white">
+            {item ? 'Editar producto' : 'Crear Nuevo Producto'}
+          </h2>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-white transition-colors"
+            type="button"
+            aria-label="Cerrar"
+          >
+            <X size={24} aria-hidden="true" />
+          </button>
+        </header>
 
-        <fieldset className="space-y-6 border-0 p-0">
-          {/* Basic Info */}
-          <section className="grid grid-cols-2 gap-4">
-            <label className="col-span-2">
-              <span className="block text-white font-semibold mb-2">
-                Item Name *
-              </span>
-              <input
-                type="text"
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full bg-gray-800 text-white border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500"
-                placeholder="e.g., Knight Starter Pack"
-                required
-              />
-            </label>
+        {/* Content */}
+        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6">
+          {error && (
+            <aside className="bg-red-500/10 border border-red-500/50 rounded-lg p-4 mb-6 flex items-start gap-3" role="alert">
+              <AlertCircle size={20} className="text-red-500 shrink-0 mt-0.5" aria-hidden="true" />
+              <p className="text-red-500 text-sm">{error}</p>
+            </aside>
+          )}
 
-            <label className="col-span-2">
-              <span className="block text-white font-semibold mb-2">
-                Description
-              </span>
-              <textarea
-                value={formData.description}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full bg-gray-800 text-white border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500 h-24 resize-none"
-                placeholder="Describe the item or set..."
-              />
-            </label>
-
-            <label>
-              <span className="block text-white font-semibold mb-2">
-                Price ($) *
-              </span>
-              <input
-                type="number"
-                step="0.01"
-                min="0"
-                value={formData.price}
-                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                className="w-full bg-gray-800 text-white border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500"
-                placeholder="0.00"
-                required
-              />
-            </label>
-
-            <label>
-              <span className="block text-white font-semibold mb-2">
-                Category *
-              </span>
-              <select
-                value={formData.category}
-                onChange={(e) => setFormData({ ...formData, category: e.target.value as any })}
-                className="w-full bg-gray-800 text-white border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500"
-              >
-                <option value="knight">Knight</option>
-                <option value="paladin">Paladin</option>
-                <option value="sorcerer">Sorcerer</option>
-                <option value="druid">Druid</option>
-                <option value="item">Item</option>
-              </select>
-            </label>
-
-            <label>
-              <span className="block text-white font-semibold mb-2">
-                Stock (-1 = unlimited)
-              </span>
-              <input
-                type="number"
-                value={formData.stock}
-                onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
-                className="w-full bg-gray-800 text-white border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500"
-                placeholder="-1"
-              />
-            </label>
-
-            <label>
-              <span className="block text-white font-semibold mb-2">
-                Image URL
-              </span>
-              <input
-                type="url"
-                value={formData.image_url}
-                onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                className="w-full bg-gray-800 text-white border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500"
-                placeholder="https://i.imgur.com/XXXXX.png"
-              />
-              <small className="text-gray-500 text-xs mt-1 block">
-                Tip: Usa el link directo de Imgur (i.imgur.com). Links de página se convierten automáticamente.
-              </small>
-              {/* Image Preview */}
-              {formData.image_url && (
-                <figure className="mt-3">
-                  <figcaption className="text-gray-400 text-xs mb-2">Vista previa:</figcaption>
-                  <picture className="w-24 h-24 bg-gray-700 rounded-lg overflow-hidden block">
-                    <img
-                      src={formData.image_url.match(/^https?:\/\/imgur\.com\/(\w+)$/)
-                        ? `https://i.imgur.com/${formData.image_url.match(/^https?:\/\/imgur\.com\/(\w+)$/)?.[1]}.png`
-                        : formData.image_url}
-                      alt="Preview"
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).style.display = 'none';
-                      }}
-                      onLoad={(e) => {
-                        (e.target as HTMLImageElement).style.display = 'block';
-                      }}
-                    />
-                  </picture>
-                </figure>
-              )}
-            </label>
-
-            <nav className="col-span-2 flex gap-4">
-              <label className="flex items-center gap-2 text-white cursor-pointer">
+          <fieldset className="space-y-6 border-0 p-0">
+            {/* Basic Info */}
+            <section className="grid grid-cols-2 gap-4">
+              <label className="col-span-2">
+                <span className="block text-white font-semibold mb-2">
+                  Nombre *
+                </span>
                 <input
-                  type="checkbox"
-                  checked={formData.featured}
-                  onChange={(e) => setFormData({ ...formData, featured: e.target.checked })}
-                  className="w-4 h-4 rounded bg-gray-700 border-gray-600"
+                  type="text"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  className="w-full bg-gray-800 text-white border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500"
+                  placeholder="e.g., Knight Starter Pack"
+                  required
                 />
-                <span>Featured Item</span>
               </label>
 
-              {item && (
+              <label className="col-span-2">
+                <span className="block text-white font-semibold mb-2">
+                  Descripción
+                </span>
+                <textarea
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  className="w-full bg-gray-800 text-white border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500 h-24 resize-none"
+                  placeholder="Descripción del item o set..."
+                />
+              </label>
+
+              <label>
+                <span className="block text-white font-semibold mb-2">
+                  Precio (AR $) *
+                </span>
+                <input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={formData.price}
+                  onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                  className="w-full bg-gray-800 text-white border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500"
+                  placeholder="0.00"
+                  required
+                />
+              </label>
+
+              <label>
+                <span className="block text-white font-semibold mb-2">
+                  Categoría *
+                </span>
+                <select
+                  value={formData.category}
+                  onChange={(e) => setFormData({ ...formData, category: e.target.value as any })}
+                  className="w-full bg-gray-800 text-white border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500"
+                >
+                  <option value="knight">Knight</option>
+                  <option value="paladin">Paladin</option>
+                  <option value="sorcerer">Sorcerer</option>
+                  <option value="druid">Druid</option>
+                  <option value="item">Item</option>
+                </select>
+              </label>
+
+              <label>
+                <span className="block text-white font-semibold mb-2">
+                  Stock (-1 = unlimited)
+                </span>
+                <input
+                  type="number"
+                  value={formData.stock}
+                  onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
+                  className="w-full bg-gray-800 text-white border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500"
+                  placeholder="-1"
+                />
+              </label>
+
+              <label>
+                <span className="block text-white font-semibold mb-2">
+                  Imagen URL
+                </span>
+                <input
+                  type="url"
+                  value={formData.image_url}
+                  onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                  className="w-full bg-gray-800 text-white border border-gray-700 rounded-lg px-4 py-2 focus:outline-none focus:border-blue-500"
+                  placeholder="https://i.imgur.com/XXXXX.png"
+                />
+                <small className="text-gray-500 text-xs mt-1 block">
+                  Tip: Usa el link directo de Imgur (i.imgur.com). Links de página se convierten automáticamente.
+                </small>
+                {/* Image Preview */}
+                {formData.image_url && (
+                  <figure className="mt-3">
+                    <figcaption className="text-gray-400 text-xs mb-2">Vista previa:</figcaption>
+                    <picture className="w-24 h-24 bg-gray-700 rounded-lg overflow-hidden block">
+                      <img
+                        src={formData.image_url.match(/^https?:\/\/imgur\.com\/(\w+)$/)
+                          ? `https://i.imgur.com/${formData.image_url.match(/^https?:\/\/imgur\.com\/(\w+)$/)?.[1]}.png`
+                          : formData.image_url}
+                        alt="Preview"
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = 'none';
+                        }}
+                        onLoad={(e) => {
+                          (e.target as HTMLImageElement).style.display = 'block';
+                        }}
+                      />
+                    </picture>
+                  </figure>
+                )}
+              </label>
+
+              <div className="col-span-2 flex gap-4">
                 <label className="flex items-center gap-2 text-white cursor-pointer">
                   <input
                     type="checkbox"
-                    checked={formData.is_active}
-                    onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
+                    checked={formData.featured}
+                    onChange={(e) => setFormData({ ...formData, featured: e.target.checked })}
                     className="w-4 h-4 rounded bg-gray-700 border-gray-600"
                   />
-                  <span>Active</span>
+                  <span>Características</span>
                 </label>
-              )}
-            </nav>
-          </section>
 
-          {/* Game Items */}
-          <section>
-            <header className="flex items-center justify-between mb-3">
-              <legend className="block text-white font-semibold">
-                Items Included *
-              </legend>
-              <button
-                type="button"
-                onClick={addGameItem}
-                className="flex items-center gap-1 text-blue-500 hover:text-blue-400 text-sm"
-              >
-                <Plus size={16} aria-hidden="true" />
-                Add Item
-              </button>
-            </header>
+                {item && (
+                  <label className="flex items-center gap-2 text-white cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={formData.is_active}
+                      onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
+                      className="w-4 h-4 rounded bg-gray-700 border-gray-600"
+                    />
+                    <span>Activo</span>
+                  </label>
+                )}
+              </div>
+            </section>
 
-            <ul className="space-y-3 list-none p-0 m-0">
-              {gameItems.map((gameItem, index) => (
-                <li key={index} className="flex gap-2">
-                  <input
-                    type="text"
-                    placeholder="Item ID"
-                    value={gameItem.itemId}
-                    onChange={(e) => updateGameItem(index, 'itemId', e.target.value)}
-                    className="w-24 bg-gray-800 text-white border border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500"
-                    aria-label={`Item ${index + 1} ID`}
-                  />
-                  <input
-                    type="number"
-                    placeholder="Count"
-                    min="1"
-                    value={gameItem.count}
-                    onChange={(e) => updateGameItem(index, 'count', parseInt(e.target.value) || 1)}
-                    className="w-24 bg-gray-800 text-white border border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500"
-                    aria-label={`Item ${index + 1} count`}
-                  />
-                  <input
-                    type="text"
-                    placeholder="Item Name"
-                    value={gameItem.name}
-                    onChange={(e) => updateGameItem(index, 'name', e.target.value)}
-                    className="flex-1 bg-gray-800 text-white border border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500"
-                    aria-label={`Item ${index + 1} name`}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => removeGameItem(index)}
-                    disabled={gameItems.length <= 1}
-                    className="p-2 text-red-500 hover:text-red-400 disabled:opacity-50 disabled:cursor-not-allowed"
-                    aria-label={`Remove item ${index + 1}`}
-                  >
-                    <Trash2 size={18} aria-hidden="true" />
-                  </button>
-                </li>
-              ))}
-            </ul>
+            {/* Game Items */}
+            <section>
+              <header className="flex items-center justify-between mb-3">
+                <legend className="block text-white font-semibold">
+                  Incluye *
+                </legend>
+                <button
+                  type="button"
+                  onClick={addGameItem}
+                  className="flex items-center gap-1 text-blue-500 hover:text-blue-400 text-sm"
+                >
+                  <Plus size={16} aria-hidden="true" />
+                  Agregar
+                </button>
+              </header>
 
-            <p className="text-gray-500 text-sm mt-2">
-              Add the Tibia item IDs and names that will be included in this product
-            </p>
-          </section>
-        </fieldset>
+              <ul className="space-y-3 list-none p-0 m-0">
+                {gameItems.map((gameItem, index) => (
+                  <li key={index} className="flex gap-2">
+                    <input
+                      type="text"
+                      placeholder="Item ID"
+                      value={gameItem.itemId}
+                      onChange={(e) => updateGameItem(index, 'itemId', e.target.value)}
+                      className="w-24 bg-gray-800 text-white border border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500"
+                      aria-label={`Item ${index + 1} ID`}
+                    />
+                    <input
+                      type="number"
+                      placeholder="Count"
+                      min="1"
+                      value={gameItem.count}
+                      onChange={(e) => updateGameItem(index, 'count', parseInt(e.target.value) || 1)}
+                      className="w-24 bg-gray-800 text-white border border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500"
+                      aria-label={`Item ${index + 1} count`}
+                    />
+                    <input
+                      type="text"
+                      placeholder="Item Name"
+                      value={gameItem.name}
+                      onChange={(e) => updateGameItem(index, 'name', e.target.value)}
+                      className="flex-1 bg-gray-800 text-white border border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:border-blue-500"
+                      aria-label={`Item ${index + 1} name`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeGameItem(index)}
+                      disabled={gameItems.length <= 1}
+                      className="p-2 text-red-500 hover:text-red-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                      aria-label={`Eliminar item ${index + 1}`}
+                    >
+                      <Trash2 size={18} aria-hidden="true" />
+                    </button>
+                  </li>
+                ))}
+              </ul>
 
-        {/* Footer */}
-        <footer className="flex gap-3 mt-6 pt-6 border-t border-gray-800">
-          <button
-            type="button"
-            onClick={onClose}
-            className="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-3 rounded-lg font-semibold transition-colors"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            disabled={loading}
-            className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {loading ? 'Saving...' : item ? 'Update Item' : 'Create Item'}
-          </button>
-        </footer>
-      </form>
-    </dialog>
+              <p className="text-gray-500 text-sm mt-2">
+                Agregar los IDs de items de Tibia y sus nombres que serán incluidos en este producto
+              </p>
+            </section>
+          </fieldset>
+
+          {/* Footer */}
+          <footer className="flex gap-3 mt-6 pt-6 border-t border-gray-800">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-3 rounded-lg font-semibold transition-colors"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {loading ? 'Guardando...' : item ? 'Actualizar' : 'Crear'}
+            </button>
+          </footer>
+        </form>
+      </div>
+    </div>
   );
 }

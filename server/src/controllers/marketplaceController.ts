@@ -520,18 +520,18 @@ export const handleMercadoPagoWebhook = async (req: Request, res: Response) => {
   try {
     const payload = req.body as WebhookPayload;
 
-    console.log('MercadoPago Webhook received:', payload);
+    //console.log('MercadoPago Webhook received:', payload);
 
     // Only process payment notifications
     if (payload.type === 'payment') {
       const mpPayment = await getPaymentById(payload.data.id);
 
-      console.log('Payment details:', mpPayment);
+      //console.log('Payment details:', mpPayment);
 
       const orderId = mpPayment.external_reference;
 
       if (!orderId) {
-        console.log('No external_reference found in payment');
+        //console.log('No external_reference found in payment');
         return res.status(400).json({ error: 'No order reference found' });
       }
 
@@ -551,7 +551,7 @@ export const handleMercadoPagoWebhook = async (req: Request, res: Response) => {
 
       // Update order based on payment status
       if (mpPayment.status === 'approved') {
-        console.log(`Payment ${mpPayment.id} approved for order ${orderId}`);
+        //console.log(`Payment ${mpPayment.id} approved for order ${orderId}`);
 
         await connection.beginTransaction();
 
@@ -590,12 +590,8 @@ export const handleMercadoPagoWebhook = async (req: Request, res: Response) => {
 
         await connection.commit();
 
-        // TODO: Here you can add logic to deliver items to player's depot/mailbox
-        // TODO: Send email notification to user
-
         return res.json({ success: true, message: 'Payment approved and order updated' });
       } else if (mpPayment.status === 'rejected' || mpPayment.status === 'cancelled') {
-        // Update order status to cancelled
         await connection.query(
           'UPDATE orders SET status = ?, payment_id = ? WHERE id = ?',
           ['cancelled', mpPayment.id?.toString() || null, orderId]
@@ -839,7 +835,7 @@ export const processCardPayment = async (req: Request, res: Response) => {
         }
       });
 
-      console.log('MercadoPago payment created:', mpPayment);
+      //console.log('MercadoPago payment created:', mpPayment);
 
       // Log the payment
       await connection.query(
@@ -872,13 +868,11 @@ export const processCardPayment = async (req: Request, res: Response) => {
 
         // Deliver items to player depot
         try {
-          // Prepare items for delivery
           const itemsToDeliver = cartItems.flatMap((cartItem: any) => {
             const itemsJson = typeof cartItem.items_json === 'string'
               ? JSON.parse(cartItem.items_json)
               : cartItem.items_json;
 
-            // Each market item contains an array of game items
             return itemsJson.map((gameItem: any) => ({
               itemId: gameItem.itemId,
               count: gameItem.count * cartItem.quantity,
@@ -886,12 +880,12 @@ export const processCardPayment = async (req: Request, res: Response) => {
             }));
           });
 
-          console.log(`Delivering ${itemsToDeliver.length} items to player ${player_id}:`, itemsToDeliver);
+          //console.log(`Delivering ${itemsToDeliver.length} items to player ${player_id}:`, itemsToDeliver);
 
           // Use deliverItemsToDepot to add items directly to player_depotitems
           await deliverItemsToDepot(player_id, itemsToDeliver, orderId);
 
-          console.log(`✅ Items delivered successfully to depot for order ${orderId}`);
+          //console.log(`✅ Items delivered successfully to depot for order ${orderId}`);
         } catch (deliveryError) {
           console.error('❌ Error delivering items to depot:', deliveryError);
           // Don't fail the payment, just log the error
@@ -927,7 +921,6 @@ export const processCardPayment = async (req: Request, res: Response) => {
           message: 'Payment is pending approval'
         });
       } else {
-        // Payment rejected or failed
         await connection.query(
           'UPDATE orders SET status = ?, payment_id = ? WHERE id = ?',
           ['cancelled', mpPayment.id?.toString() || null, orderId]

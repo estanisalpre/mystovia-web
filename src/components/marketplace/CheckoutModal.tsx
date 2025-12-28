@@ -75,7 +75,7 @@ export default function CheckoutModal({
   };
 
   const handlePaymentSuccess = (paymentData: any) => {
-    console.log('Payment successful:', paymentData);
+    //console.log('Payment successful:', paymentData);
     setSuccess(true);
 
     window.dispatchEvent(new Event('cart-updated'));

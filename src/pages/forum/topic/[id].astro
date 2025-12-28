@@ -52,10 +52,10 @@ if (userId && userEmail) {
       const data = await verifyResponse.json();
       if (data.success && data.user) {
         user = data.user;
-        console.log('User verified:', user.accountName, 'groupId:', user.groupId);
+        //console.log('User verified:', user.accountName, 'groupId:', user.groupId);
       }
     } else {
-      console.log('Verify response not ok:', verifyResponse.status);
+      //console.log('Verify response not ok:', verifyResponse.status);
     }
   } catch (error) {
     console.error('Error verifying user:', error);

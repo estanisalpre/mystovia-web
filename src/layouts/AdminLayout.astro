@@ -1,10 +1,10 @@
 ---
 import '../styles/global.css';
-import { Shield, Package, ShoppingBag, BarChart3, Users, LogOut } from 'lucide-react';
+import { Shield, Package, ShoppingBag, LogOut } from 'lucide-react';
 
 interface Props {
   title: string;
-  activeTab?: 'items' | 'orders' | 'stats';
+  activeTab?: 'items' | 'orders';
 }
 
 const { title, activeTab } = Astro.props;
@@ -16,7 +16,7 @@ const { title, activeTab } = Astro.props;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
-    <title>{title} - Admin Panel</title>
+    <title>{title} | Mystovia Admin</title>
 
     <!-- google fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -31,8 +31,8 @@ const { title, activeTab } = Astro.props;
           <div class="flex items-center gap-3">
             <Shield className="text-yellow-500" size={28} />
             <div>
-              <h1 class="text-white font-bold text-lg">Admin Panel</h1>
-              <p class="text-gray-400 text-xs">Marketplace Management</p>
+              <h1 class="text-white font-bold text-lg">Panel administrativo</h1>
+              <p class="text-gray-400 text-xs">Administración de la tienda</p>
             </div>
           </div>
 
@@ -41,14 +41,14 @@ const { title, activeTab } = Astro.props;
               href="/"
               class="text-gray-400 hover:text-white transition-colors text-sm"
             >
-              Back to Site
+              Volver al sitio
             </a>
             <button
               id="adminLogout"
               class="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors text-sm"
             >
               <LogOut size={16} />
-              Logout
+              Salir
             </button>
           </div>
         </div>
@@ -68,7 +68,7 @@ const { title, activeTab } = Astro.props;
             }`}
           >
             <Package size={18} />
-            <span>Items Management</span>
+            <span>Administrar productos</span>
           </a>
 
           <a
@@ -80,19 +80,7 @@ const { title, activeTab } = Astro.props;
             }`}
           >
             <ShoppingBag size={18} />
-            <span>Orders</span>
-          </a>
-
-          <a
-            href="/admin/marketplace/stats"
-            class={`flex items-center gap-2 px-6 py-4 border-b-2 transition-colors ${
-              activeTab === 'stats'
-                ? 'border-blue-500 text-white bg-gray-800/50'
-                : 'border-transparent text-gray-400 hover:text-white'
-            }`}
-          >
-            <BarChart3 size={18} />
-            <span>Statistics</span>
+            <span>Órdenes</span>
           </a>
         </div>
       </div>

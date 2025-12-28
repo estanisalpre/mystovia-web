@@ -1,0 +1,8 @@
+---
+import AdminLayout from '../../../layouts/AdminLayout.astro';
+import AdminOrders from '../../../components/admin/AdminOrders';
+---
+
+<AdminLayout title="Órdenes" activeTab="orders">
+  <AdminOrders client:load />
+</AdminLayout>
