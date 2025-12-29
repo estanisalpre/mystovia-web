@@ -1,5 +1,5 @@
 ---
-import { Search } from "@lucide/astro";
+import { Search, Bot } from "@lucide/astro";
 ---
 
 <header class="hidden md:block fixed top-[60px] left-0 right-0 z-800 h-[50px]">
@@ -10,24 +10,36 @@ import { Search } from "@lucide/astro";
     <!-- Bottom golden line -->
     <div class="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-yellow-500/30 to-transparent"></div>
 
-    <!-- Search Form -->
-    <form id="fixedSearchForm" class="relative z-10 flex items-center gap-3 w-full mt-2 max-w-[50%]">
-      <div class="flex-1 relative">
-        <input
-          type="text"
-          id="fixedCharacterName"
-          placeholder="Buscar personaje..."
-          class="w-full h-[34px] px-4 pr-10 text-sm bg-gray-800/60 border border-yellow-600/20 rounded-lg focus:outline-none focus:border-yellow-500/50 text-white placeholder-gray-500 transition-colors"
-        />
-        <Search class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-      </div>
-      <button
-        type="submit"
-        class="h-[34px] px-5 text-sm font-semibold bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-black rounded-lg transition-all border border-yellow-400/30 whitespace-nowrap"
+    <!-- Search Form + Bot Guide Button -->
+    <div class="relative z-10 flex items-center gap-4 w-full mt-2 max-w-[60%]">
+      <form id="fixedSearchForm" class="flex-1 flex items-center gap-3">
+        <div class="flex-1 relative">
+          <input
+            type="text"
+            id="fixedCharacterName"
+            placeholder="Buscar personaje..."
+            class="w-full h-[34px] px-4 pr-10 text-sm bg-gray-800/60 border border-yellow-600/20 rounded-lg focus:outline-none focus:border-yellow-500/50 text-white placeholder-gray-500 transition-colors"
+          />
+          <Search class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+        </div>
+        <button
+          type="submit"
+          class="h-[34px] px-5 text-sm font-semibold bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-black rounded-lg transition-all border border-yellow-400/30 whitespace-nowrap"
+        >
+          Buscar
+        </button>
+      </form>
+
+      <!-- Bot Guide Button -->
+      <a
+        href="/guides"
+        class="flex items-center gap-2 h-[34px] px-4 text-sm font-semibold bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 hover:text-purple-200 rounded-lg transition-all border border-purple-500/30 hover:border-purple-500/50 whitespace-nowrap"
+        title="Guías de configuración del Bot"
       >
-        Buscar
-      </button>
-    </form>
+        <Bot class="w-4 h-4" />
+        <span class="hidden lg:inline">Config. Bot</span>
+      </a>
+    </div>
   </div>
 </header>
 

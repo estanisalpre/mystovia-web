@@ -1,0 +1,273 @@
+---
+import Layout from '@layouts/Layout.astro';
+import { ChevronLeft, AlertTriangle, Info } from '@lucide/astro';
+import DiamondPattern from "@c/ui/DiamondPattern.astro";
+import GoldenLine from "@c/ui/GoldenLine.astro";
+import CornerOrnaments from "@c/ui/CornerOrnaments.astro";
+import { Cavebot } from '@assets/guides';
+---
+
+<Layout
+  title="Configuración de CaveBot - Guías del Bot"
+  description="Aprende a configurar el CaveBot para automatizar recorridos. Tutorial completo desde cero."
+  keywords="cavebot mystovia, configurar cavebot bot, waypoints bot, tutorial cavebot"
+>
+  <section class="page-container max-w-4xl mx-auto">
+    <!-- Back Button -->
+    <a href="/guides" class="inline-flex items-center gap-2 text-gray-400 hover:text-yellow-500 transition-colors mb-6">
+      <ChevronLeft class="w-4 h-4" />
+      <span>Volver a guías</span>
+    </a>
+
+    <!-- Header -->
+    <div class="relative rounded-xl overflow-hidden p-6 md:p-8 mb-8 border border-yellow-600/30"
+         style="background: linear-gradient(to bottom, rgb(17 24 39 / 0.95), rgb(0 0 0 / 0.9));">
+      <DiamondPattern opacity={0.03} />
+      <GoldenLine position="top" opacity={0.5} />
+      <CornerOrnaments variant="curve" size="md" opacity={0.3} />
+
+      <div class="relative z-10">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="text-xs bg-green-500/20 text-green-400 px-2 py-1 rounded border border-green-500/30">
+            CaveBot
+          </span>
+        </div>
+        <h1 class="text-2xl md:text-3xl lg:text-4xl font-bold text-yellow-500 medieval-font mb-3">
+          Configuración de CaveBot
+        </h1>
+        <p class="text-gray-400">
+          Guía básica para crear un CaveBot desde cero.
+        </p>
+      </div>
+    </div>
+
+    <!-- Guide Image -->
+    <div class="mb-8 rounded-xl overflow-hidden border border-gray-700">
+      <img src={Cavebot.src} alt="Configuración de CaveBot" class="w-full h-auto" />
+    </div>
+
+    <!-- Content -->
+    <div class="space-y-8">
+      <!-- Section 1 -->
+      <article class="guide-section">
+        <h2 class="guide-title">
+          <span class="guide-number">1</span>
+          Crear el respawn
+        </h2>
+        <div class="guide-content">
+          <ul class="guide-list">
+            <li>Ir a la pestaña <strong class="text-yellow-500">CaveBot</strong>.</li>
+            <li>Hacer clic en <strong class="text-yellow-500">Add</strong>.</li>
+            <li>Escribir el nombre del respawn que deseas crear.</li>
+          </ul>
+
+          <div class="mt-4 p-4 rounded-lg border border-gray-700 bg-gray-800/50">
+            <strong class="text-gray-300">Ejemplo:</strong>
+            <div class="code-block mt-2">Dwarfs</div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Section 2 -->
+      <article class="guide-section">
+        <h2 class="guide-title">
+          <span class="guide-number">2</span>
+          Abrir el editor de waypoints
+        </h2>
+        <div class="guide-content">
+          <p class="text-gray-300 mb-4">Una vez creado el respawn, hacer clic en <strong class="text-yellow-500">Show waypoint editor</strong>.</p>
+
+          <div class="p-4 rounded-lg border border-gray-700 bg-gray-800/50">
+            <p class="text-gray-300">Se abrirá el editor de waypoints donde podrás:</p>
+            <ul class="mt-2 space-y-1 text-gray-400">
+              <li>• Agregar waypoints manualmente</li>
+              <li>• Grabar recorridos automáticamente</li>
+              <li>• Configurar acciones especiales</li>
+            </ul>
+          </div>
+        </div>
+      </article>
+
+      <!-- Section 3 -->
+      <article class="guide-section">
+        <h2 class="guide-title">
+          <span class="guide-number">3</span>
+          Grabar el recorrido (Auto Recording)
+        </h2>
+        <div class="guide-content">
+          <ol class="list-decimal list-inside text-gray-300 space-y-2 mb-4">
+            <li>Hacer clic en el botón <strong class="text-yellow-500">Auto Recording</strong>.</li>
+            <li>Caminar por el respawn normalmente.</li>
+            <li>El bot registrará cada paso que des como un waypoint.</li>
+          </ol>
+
+          <div class="alert-box alert-info mt-4">
+            <Info class="w-5 h-5 shrink-0" />
+            <div>
+              <strong>Consejo:</strong><br />
+              Camina despacio y asegúrate de pasar por todos los lugares donde quieras que el bot vaya.
+              Incluye zonas de caza, escaleras, y puntos de regreso.
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Section 4 -->
+      <article class="guide-section">
+        <h2 class="guide-title">
+          <span class="guide-number">4</span>
+          Finalizar la grabación
+        </h2>
+        <div class="guide-content">
+          <p class="text-gray-300 mb-4">Una vez completado el recorrido:</p>
+
+          <ol class="list-decimal list-inside text-gray-300 space-y-2 mb-4">
+            <li>Hacer clic nuevamente en <strong class="text-yellow-500">Auto Recording</strong> para detener la grabación.</li>
+            <li>Revisar los waypoints generados en la lista.</li>
+            <li>Editar o eliminar waypoints si es necesario.</li>
+          </ol>
+
+          <div class="alert-box alert-warning mt-4">
+            <AlertTriangle class="w-5 h-5 shrink-0" />
+            <div>
+              <strong>IMPORTANTE:</strong><br />
+              Asegúrate de que el recorrido forme un circuito cerrado para que el bot pueda repetirlo indefinidamente.
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Section 5 -->
+      <article class="guide-section">
+        <h2 class="guide-title">
+          <span class="guide-number">5</span>
+          Activar el CaveBot
+        </h2>
+        <div class="guide-content">
+          <p class="text-gray-300 mb-4">Una vez completado el recorrido:</p>
+
+          <ol class="list-decimal list-inside text-gray-300 space-y-2 mb-4">
+            <li>Hacer clic en <strong class="text-yellow-500">Off</strong>, ubicado al lado del nombre del respawn.</li>
+            <li>El estado cambiará a <strong class="text-green-400">On</strong>, indicando que el CaveBot quedó activo.</li>
+          </ol>
+
+          <div class="p-4 rounded-lg border border-green-600/30 bg-green-500/5">
+            <h4 class="text-green-400 font-semibold mb-2">¡Listo!</h4>
+            <p class="text-gray-300 text-sm">
+              El bot comenzará a seguir el recorrido grabado automáticamente.
+              Asegúrate de tener configurado también el <strong class="text-yellow-500">Target</strong> y el <strong class="text-yellow-500">HealBot</strong> para una experiencia completa.
+            </p>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <!-- Back to guides -->
+    <div class="mt-12 pt-8 border-t border-gray-800">
+      <a href="/guides" class="inline-flex items-center gap-2 text-yellow-500 hover:text-yellow-400 transition-colors">
+        <ChevronLeft class="w-4 h-4" />
+        <span>Volver a todas las guías</span>
+      </a>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .guide-section {
+    position: relative;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    border: 1px solid rgb(31 41 55);
+    padding: 1.5rem;
+    background: linear-gradient(to bottom, rgb(31 41 55 / 0.3), rgb(17 24 39 / 0.5));
+  }
+
+  .guide-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-family: 'Cinzel', serif;
+  }
+
+  @media (min-width: 768px) {
+    .guide-title {
+      font-size: 1.5rem;
+    }
+  }
+
+  .guide-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 9999px;
+    background-color: rgb(234 179 8 / 0.2);
+    color: rgb(234 179 8);
+    font-size: 0.875rem;
+    font-weight: 700;
+    border: 1px solid rgb(234 179 8 / 0.3);
+  }
+
+  .guide-content {
+    padding-left: 2.75rem;
+  }
+
+  .guide-list {
+    list-style-type: disc;
+    list-style-position: inside;
+    color: rgb(209 213 219);
+  }
+
+  .guide-list li {
+    color: rgb(209 213 219);
+    margin-bottom: 0.5rem;
+  }
+
+  .guide-image-placeholder {
+    margin-top: 1rem;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    border: 1px solid rgb(55 65 81);
+    background-color: rgb(17 24 39 / 0.5);
+  }
+
+  .guide-image {
+    width: 100%;
+    height: auto;
+  }
+
+  .code-block {
+    background-color: rgb(17 24 39);
+    border: 1px solid rgb(55 65 81);
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    font-family: monospace;
+    color: rgb(234 179 8);
+  }
+
+  .alert-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    border-width: 1px;
+  }
+
+  .alert-warning {
+    border-color: rgb(202 138 4 / 0.3);
+    background-color: rgb(234 179 8 / 0.1);
+    color: rgb(254 249 195);
+  }
+
+  .alert-info {
+    border-color: rgb(59 130 246 / 0.3);
+    background-color: rgb(59 130 246 / 0.1);
+    color: rgb(191 219 254);
+  }
+</style>

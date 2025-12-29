@@ -1,0 +1,168 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { Diamond, Sword, Shield, Heart, Zap, Settings, Target, BookOpen } from '@lucide/astro';
+import DiamondPattern from "../../components/ui/DiamondPattern.astro";
+import GoldenLine from "../../components/ui/GoldenLine.astro";
+import CornerOrnaments from "../../components/ui/CornerOrnaments.astro";
+
+interface Guide {
+  title: string;
+  description: string;
+  slug: string;
+  icon: string;
+  category: string;
+}
+
+const guides: Guide[] = [
+  {
+    title: "Configuración de Ataque (Spells y Runas)",
+    description: "Aprende a configurar el AttackBot para usar spells y runas automáticamente contra criaturas.",
+    slug: "attackbot-spells-runas",
+    icon: "sword",
+    category: "AttackBot"
+  },
+  {
+    title: "Mana Training",
+    description: "Guía visual para configurar el entrenamiento de mana automático.",
+    slug: "mana-training",
+    icon: "zap",
+    category: "Training"
+  },
+  {
+    title: "Configuración de Health (HealBot)",
+    description: "Aprende a configurar el sistema de curación automática para mantener tu personaje con vida.",
+    slug: "healbot",
+    icon: "heart",
+    category: "HealBot"
+  },
+  {
+    title: "Configuración de Target",
+    description: "Guía completa para configurar el sistema de targeting automático y atacar criaturas.",
+    slug: "target",
+    icon: "target",
+    category: "Target"
+  },
+  {
+    title: "Configuración de CaveBot",
+    description: "Guía básica para crear un CaveBot desde cero y automatizar recorridos.",
+    slug: "cavebot",
+    icon: "settings",
+    category: "CaveBot"
+  },
+  {
+    title: "Spells Cooldowns",
+    description: "Lista completa de cooldowns de spells en Mystovia por vocación.",
+    slug: "spells-cooldowns",
+    icon: "book",
+    category: "Referencia"
+  },
+];
+
+const iconMap: Record<string, any> = {
+  sword: Sword,
+  shield: Shield,
+  heart: Heart,
+  zap: Zap,
+  settings: Settings,
+  target: Target,
+  book: BookOpen
+};
+---
+
+<Layout
+  title="Config. del Bot"
+  description="Guías y tutoriales para configurar el bot de Mystovia. Aprende a usar AttackBot, HealBot, CaveBot y más."
+  keywords="guias bot mystovia, tutorial bot tibia, attackbot, healbot, cavebot, configurar bot ots"
+>
+  <section class="page-container">
+    <!-- Header -->
+    <div class="mb-8 text-center">
+      <div class="flex items-center justify-center gap-3 mb-3">
+        <div class="h-px w-12 bg-gradient-to-r from-transparent to-yellow-500/50"></div>
+        <Diamond class="w-4 h-4 text-yellow-500/70" fill="currentColor" />
+        <div class="h-px w-12 bg-gradient-to-l from-transparent to-yellow-500/50"></div>
+      </div>
+      <h1 class="text-3xl md:text-4xl font-bold mb-4 text-yellow-500 medieval-font">Guías del Bot</h1>
+      <p class="text-gray-400 max-w-2xl mx-auto">
+        Tutoriales completos para configurar el bot del servidor. Aprende a sacar el máximo provecho de todas las funcionalidades.
+      </p>
+    </div>
+
+    <!-- Info Box -->
+    <div class="relative rounded-xl overflow-hidden p-6 mb-8 border border-blue-500/30"
+         style="background: linear-gradient(to bottom, rgb(30 58 138 / 0.2), rgb(17 24 39 / 0.9));">
+      <div class="flex items-start gap-4">
+        <div class="p-3 bg-blue-500/20 rounded-lg shrink-0">
+          <BookOpen class="w-6 h-6 text-blue-400" />
+        </div>
+        <div>
+          <h3 class="text-blue-400 font-semibold mb-1">Importante</h3>
+          <p class="text-gray-300 text-sm">
+            Los cooldowns de los spells en Mystovia son diferentes a los de Tibia Oficial.
+            Asegúrate de revisar la sección de cooldowns dentro de cada guía para configurar correctamente tu bot.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Guides Grid -->
+    {guides.length === 0 ? (
+      <div class="text-center py-12">
+        <p class="text-gray-400">No hay guías disponibles aún.</p>
+      </div>
+    ) : (
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {guides.map((guide) => {
+          const IconComponent = iconMap[guide.icon] || BookOpen;
+          return (
+            <a
+              href={`/guides/${guide.slug}`}
+              class="relative rounded-xl overflow-hidden border border-yellow-600/20 hover:border-yellow-500/40 transition-all duration-300 group"
+              style="background: linear-gradient(to bottom, rgb(17 24 39 / 0.95), rgb(0 0 0 / 0.9));"
+            >
+              <DiamondPattern opacity={0.03} />
+              <GoldenLine position="top" opacity={0.4} />
+              <CornerOrnaments variant="curve" size="sm" opacity={0.2} />
+
+              <div class="relative z-10 p-6">
+                <!-- Category Badge -->
+                <div class="flex items-center justify-between mb-4">
+                  <span class="text-xs bg-yellow-500/20 text-yellow-500 px-2 py-1 rounded border border-yellow-500/30">
+                    {guide.category}
+                  </span>
+                  <div class="p-2 bg-yellow-500/10 rounded-lg group-hover:bg-yellow-500/20 transition-colors">
+                    <IconComponent class="w-5 h-5 text-yellow-500" />
+                  </div>
+                </div>
+
+                <!-- Content -->
+                <h2 class="text-xl font-bold text-white mb-2 group-hover:text-yellow-500 transition-colors medieval-font">
+                  {guide.title}
+                </h2>
+                <p class="text-gray-400 text-sm mb-4 line-clamp-2">
+                  {guide.description}
+                </p>
+
+                <!-- Read More -->
+                <div class="flex items-center text-yellow-500 text-sm font-medium">
+                  <span>Leer guía</span>
+                  <span class="ml-2 group-hover:translate-x-1 transition-transform">→</span>
+                </div>
+              </div>
+            </a>
+          );
+        })}
+      </div>
+    )}
+
+  </section>
+</Layout>
+
+<style>
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+</style>

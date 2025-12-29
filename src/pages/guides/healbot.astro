@@ -1,0 +1,311 @@
+---
+import Layout from '@layouts/Layout.astro';
+import { ChevronLeft, AlertTriangle } from '@lucide/astro';
+import DiamondPattern from "@c/ui/DiamondPattern.astro";
+import GoldenLine from "@c/ui/GoldenLine.astro";
+import CornerOrnaments from "@c/ui/CornerOrnaments.astro";
+import { HealBot } from '@assets/guides';
+---
+
+<Layout
+  title="Configuración de Health (HealBot) - Guías del Bot"
+  description="Aprende a configurar el HealBot para curarte automáticamente con spells y pociones. Tutorial completo."
+  keywords="healbot mystovia, configurar curacion bot, pociones bot tibia, tutorial healbot"
+>
+  <section class="page-container max-w-4xl mx-auto">
+    <!-- Back Button -->
+    <a href="/guides" class="inline-flex items-center gap-2 text-gray-400 hover:text-yellow-500 transition-colors mb-6">
+      <ChevronLeft class="w-4 h-4" />
+      <span>Volver a guías</span>
+    </a>
+
+    <!-- Header -->
+    <div class="relative rounded-xl overflow-hidden p-6 md:p-8 mb-8 border border-yellow-600/30"
+         style="background: linear-gradient(to bottom, rgb(17 24 39 / 0.95), rgb(0 0 0 / 0.9));">
+      <DiamondPattern opacity={0.03} />
+      <GoldenLine position="top" opacity={0.5} />
+      <CornerOrnaments variant="curve" size="md" opacity={0.3} />
+
+      <div class="relative z-10">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="text-xs bg-green-500/20 text-green-400 px-2 py-1 rounded border border-green-500/30">
+            HealBot
+          </span>
+        </div>
+        <h1 class="text-2xl md:text-3xl lg:text-4xl font-bold text-yellow-500 medieval-font mb-3">
+          Configuración de Health (HealBot)
+        </h1>
+        <p class="text-gray-400">
+          Guía completa para configurar la curación automática con spells y pociones.
+        </p>
+      </div>
+    </div>
+
+    <!-- Guide Image -->
+    <div class="mb-8 rounded-xl overflow-hidden border border-gray-700">
+      <img src={HealBot.src} alt="Configuración de HealBot" class="w-full h-auto" />
+    </div>
+
+    <!-- Content -->
+    <div class="space-y-8">
+      <!-- Section 1 -->
+      <article class="guide-section">
+        <h2 class="guide-title">
+          <span class="guide-number">1</span>
+          Acceso a la configuración
+        </h2>
+        <div class="guide-content">
+          <ul class="guide-list">
+            <li>Ir a la pestaña <strong class="text-yellow-500">HP</strong>.</li>
+            <li>Al lado del botón <strong class="text-yellow-500">HealBot</strong>, hacer clic en <strong class="text-yellow-500">Setup</strong>.</li>
+          </ul>
+        </div>
+      </article>
+
+      <!-- Section 2 -->
+      <article class="guide-section">
+        <h2 class="guide-title">
+          <span class="guide-number">2</span>
+          Spell Healing (curación con magias)
+        </h2>
+        <div class="guide-content">
+          <p class="text-gray-300 mb-4">Cada línea corresponde a una magia de curación con su condición.</p>
+
+          <div class="p-4 rounded-lg border border-gray-700 bg-gray-800/50 mb-4">
+            <h4 class="text-white font-semibold mb-3">Campos principales:</h4>
+            <ul class="guide-list">
+              <li><strong class="text-yellow-500">When:</strong> Health Percent</li>
+              <li><strong class="text-yellow-500">Is:</strong> Below</li>
+              <li>El recuadro al lado de below pertenece a <strong class="text-yellow-500">Percent:</strong> porcentaje de vida al cual queremos que se cure</li>
+              <li>Ejemplo: <code class="code-inline">90</code></li>
+              <li><strong class="text-yellow-500">Cast:</strong> nombre del spell</li>
+              <li>Ejemplo: <code class="code-inline">exura</code></li>
+              <li><strong class="text-yellow-500">Mana Cost:</strong> costo de mana del spell</li>
+              <li>Ejemplo: <code class="code-inline">20</code> (exura consume 20 de mana)</li>
+            </ul>
+          </div>
+        </div>
+      </article>
+
+      <!-- Section 3 -->
+      <article class="guide-section">
+        <h2 class="guide-title">
+          <span class="guide-number">3</span>
+          Prioridad de magias (Move Up / Move Down)
+        </h2>
+        <div class="guide-content">
+          <p class="text-gray-300 mb-4">Los botones <strong class="text-yellow-500">Move Up</strong> y <strong class="text-yellow-500">Move Down</strong> permiten ordenar las magias.</p>
+          <p class="text-gray-400 mb-4">El bot ejecuta las curaciones de arriba hacia abajo, respetando el orden configurado.</p>
+
+          <div class="mt-4 p-4 rounded-lg border border-yellow-600/30 bg-yellow-500/5">
+            <h4 class="text-yellow-500 font-semibold mb-3">Ejemplo de rotación recomendada para magos:</h4>
+            <ol class="list-decimal list-inside text-gray-300 space-y-1">
+              <li><code class="code-inline">exura vita</code></li>
+              <li><code class="code-inline">exura gran</code></li>
+              <li><code class="code-inline">exura</code></li>
+            </ol>
+            <p class="text-gray-500 text-sm mt-3">(La cantidad de magias depende de cuántas quieras utilizar.)</p>
+          </div>
+        </div>
+      </article>
+
+      <!-- Section 4 -->
+      <article class="guide-section">
+        <h2 class="guide-title">
+          <span class="guide-number">4</span>
+          Item Healing (curación con ítems)
+        </h2>
+        <div class="guide-content">
+          <p class="text-gray-300 mb-4">Funciona de forma similar al Spell Healing.</p>
+
+          <div class="p-4 rounded-lg border border-gray-700 bg-gray-800/50 mb-4">
+            <h4 class="text-white font-semibold mb-3">Configuración:</h4>
+            <ul class="guide-list">
+              <li>En <strong class="text-yellow-500">When</strong>, podemos elegir:
+                <ul class="ml-6 mt-2 space-y-1">
+                  <li>• Health Percent o</li>
+                  <li>• Mana Percent</li>
+                </ul>
+              </li>
+              <li class="mt-2">En <strong class="text-yellow-500">Use</strong>, se debe colocar el ID del ítem (poción, rune, etc.).</li>
+            </ul>
+          </div>
+
+          <div class="mt-4 p-4 rounded-lg border border-blue-600/30 bg-blue-500/5">
+            <h4 class="text-blue-400 font-semibold mb-3">Ejemplo recomendado para Knights:</h4>
+            <ol class="list-decimal list-inside text-gray-300 space-y-1">
+              <li>Health Potion</li>
+              <li>Mana Potion</li>
+            </ol>
+            <p class="text-gray-400 mt-3">La Health Potion debe tener mayor prioridad.</p>
+          </div>
+
+          <div class="alert-box alert-danger mt-4">
+            <AlertTriangle class="w-5 h-5 shrink-0" />
+            <div>
+              <strong>IMPORTANTE:</strong><br />
+              Si la Mana Potion está arriba en la lista, el bot intentará recuperar mana antes que vida, lo que puede ser peligroso en combate.
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Section 5 -->
+      <article class="guide-section">
+        <h2 class="guide-title">
+          <span class="guide-number">5</span>
+          Settings (opción clave)
+        </h2>
+        <div class="guide-content">
+          <p class="text-gray-300 mb-4">Dentro de la pestaña <strong class="text-yellow-500">Settings</strong>, se recomienda:</p>
+
+          <div class="alert-box alert-warning mb-4">
+            <AlertTriangle class="w-5 h-5 shrink-0" />
+            <div>
+              <strong>Destildar la opción "Items must be visible"</strong><br /><br />
+              Aunque esta opción sea recomendada, si el jugador no tiene la backpack abierta o las pociones no están visibles en pantalla, el bot no usará pociones si esta opción está activada.
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Section 6 -->
+      <article class="guide-section">
+        <h2 class="guide-title">
+          <span class="guide-number">6</span>
+          Activar el HealBot
+        </h2>
+        <div class="guide-content">
+          <p class="text-gray-300 mb-4">Una vez configurado todo:</p>
+
+          <ol class="list-decimal list-inside text-gray-300 space-y-2 mb-4">
+            <li>Hacer clic en <strong class="text-yellow-500">Close</strong>.</li>
+            <li>Activar el bot presionando el botón <strong class="text-yellow-500">HealBot</strong>.</li>
+          </ol>
+
+          <div class="p-4 rounded-lg border border-gray-700 bg-gray-800/50">
+            <h4 class="text-white font-semibold mb-3">Estado del botón:</h4>
+            <ul class="space-y-2">
+              <li class="flex items-center gap-3">
+                <span class="w-4 h-4 rounded-full bg-red-500"></span>
+                <span class="text-gray-300">Rojo → HealBot desactivado</span>
+              </li>
+              <li class="flex items-center gap-3">
+                <span class="w-4 h-4 rounded-full bg-green-500"></span>
+                <span class="text-gray-300">Verde → HealBot activado</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </article>
+    </div>
+
+    <!-- Back to guides -->
+    <div class="mt-12 pt-8 border-t border-gray-800">
+      <a href="/guides" class="inline-flex items-center gap-2 text-yellow-500 hover:text-yellow-400 transition-colors">
+        <ChevronLeft class="w-4 h-4" />
+        <span>Volver a todas las guías</span>
+      </a>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .guide-section {
+    position: relative;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    border: 1px solid rgb(31 41 55);
+    padding: 1.5rem;
+    background: linear-gradient(to bottom, rgb(31 41 55 / 0.3), rgb(17 24 39 / 0.5));
+  }
+
+  .guide-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-family: 'Cinzel', serif;
+  }
+
+  @media (min-width: 768px) {
+    .guide-title {
+      font-size: 1.5rem;
+    }
+  }
+
+  .guide-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 9999px;
+    background-color: rgb(234 179 8 / 0.2);
+    color: rgb(234 179 8);
+    font-size: 0.875rem;
+    font-weight: 700;
+    border: 1px solid rgb(234 179 8 / 0.3);
+  }
+
+  .guide-content {
+    padding-left: 2.75rem;
+  }
+
+  .guide-list {
+    list-style-type: disc;
+    list-style-position: inside;
+    color: rgb(209 213 219);
+  }
+
+  .guide-list li {
+    color: rgb(209 213 219);
+    margin-bottom: 0.5rem;
+  }
+
+  .guide-image-placeholder {
+    margin-top: 1rem;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    border: 1px solid rgb(55 65 81);
+    background-color: rgb(17 24 39 / 0.5);
+  }
+
+  .guide-image {
+    width: 100%;
+    height: auto;
+  }
+
+  .code-inline {
+    background-color: rgb(31 41 55);
+    padding: 0.125rem 0.5rem;
+    border-radius: 0.25rem;
+    color: rgb(250 204 21);
+    font-family: monospace;
+    font-size: 0.875rem;
+  }
+
+  .alert-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    border-width: 1px;
+  }
+
+  .alert-warning {
+    border-color: rgb(202 138 4 / 0.3);
+    background-color: rgb(234 179 8 / 0.1);
+    color: rgb(254 249 195);
+  }
+
+  .alert-danger {
+    border-color: rgb(220 38 38 / 0.3);
+    background-color: rgb(239 68 68 / 0.1);
+    color: rgb(254 202 202);
+  }
+</style>

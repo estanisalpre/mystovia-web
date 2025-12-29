@@ -35,7 +35,8 @@
     "guilds": "Guilds",
     "highscores": "Highscores",
     "online": "Online",
-    "latestDeaths": "Deaths"
+    "latestDeaths": "Deaths",
+    "guides": "Bot Config"
   },
   "auth": {
     "login": "Login",
@@ -303,6 +304,39 @@
     "termsTitle": "Terms and Conditions",
     "privacyTitle": "Privacy Policy",
     "lastUpdated": "Last updated"
+  },
+  "guides": {
+    "title": "Bot Guides",
+    "description": "Complete tutorials to configure the server bot. Learn to get the most out of all the features.",
+    "important": "Important",
+    "importantNote": "Spell cooldowns in Mystovia are different from Official Tibia. Make sure to check the cooldowns section in each guide to configure your bot correctly.",
+    "readGuide": "Read guide",
+    "backToGuides": "Back to all guides",
+    "back": "Back to guides",
+    "attackbot": {
+      "title": "Attack Configuration (Spells & Runes)",
+      "description": "Learn to configure the AttackBot to use spells and runes automatically against creatures."
+    },
+    "manaTraining": {
+      "title": "Mana Training",
+      "description": "Visual guide to configure automatic mana training."
+    },
+    "healbot": {
+      "title": "Health Configuration (HealBot)",
+      "description": "Learn to configure the automatic healing system to keep your character alive."
+    },
+    "target": {
+      "title": "Target Configuration",
+      "description": "Complete guide to configure the automatic targeting system and attack creatures."
+    },
+    "cavebot": {
+      "title": "CaveBot Configuration",
+      "description": "Basic guide to create a CaveBot from scratch and automate routes."
+    },
+    "cooldowns": {
+      "title": "Spells Cooldowns",
+      "description": "Complete list of spell cooldowns in Mystovia by vocation."
+    }
   },
   "account": {
     "title": "Account Management",

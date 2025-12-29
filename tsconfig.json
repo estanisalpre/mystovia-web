@@ -15,6 +15,7 @@
       "@ui/*": ["lib/components/ui/*"],
       "@layouts/*": ["layouts/*"],
       "@utils/*": ["utils/*"],
+      "@assets/*": ["assets/*"],
     }
   }
 }

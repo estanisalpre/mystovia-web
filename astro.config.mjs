@@ -19,6 +19,7 @@ export default defineConfig({
         '@ui': path.resolve('./src/lib/components/ui'),
         '@layouts': path.resolve('./src/layouts'),
         '@utils': path.resolve('./src/utils'),
+        '@assets': path.resolve('./src/assets'),
       },
     },
   },

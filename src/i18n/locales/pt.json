@@ -35,7 +35,8 @@
     "guilds": "Guilds",
     "highscores": "Highscores",
     "online": "Online",
-    "latestDeaths": "Mortes"
+    "latestDeaths": "Mortes",
+    "guides": "Config. Bot"
   },
   "auth": {
     "login": "Entrar",
@@ -303,6 +304,39 @@
     "termsTitle": "Termos e Condições",
     "privacyTitle": "Política de Privacidade",
     "lastUpdated": "Última atualização"
+  },
+  "guides": {
+    "title": "Guias do Bot",
+    "description": "Tutoriais completos para configurar o bot do servidor. Aprenda a aproveitar ao máximo todas as funcionalidades.",
+    "important": "Importante",
+    "importantNote": "Os cooldowns dos spells em Mystovia são diferentes do Tibia Oficial. Certifique-se de verificar a seção de cooldowns em cada guia para configurar seu bot corretamente.",
+    "readGuide": "Ler guia",
+    "backToGuides": "Voltar para todos os guias",
+    "back": "Voltar aos guias",
+    "attackbot": {
+      "title": "Configuração de Ataque (Spells e Runas)",
+      "description": "Aprenda a configurar o AttackBot para usar spells e runas automaticamente contra criaturas."
+    },
+    "manaTraining": {
+      "title": "Mana Training",
+      "description": "Guia visual para configurar o treinamento de mana automático."
+    },
+    "healbot": {
+      "title": "Configuração de Health (HealBot)",
+      "description": "Aprenda a configurar o sistema de cura automática para manter seu personagem vivo."
+    },
+    "target": {
+      "title": "Configuração de Target",
+      "description": "Guia completo para configurar o sistema de targeting automático e atacar criaturas."
+    },
+    "cavebot": {
+      "title": "Configuração de CaveBot",
+      "description": "Guia básico para criar um CaveBot do zero e automatizar percursos."
+    },
+    "cooldowns": {
+      "title": "Spells Cooldowns",
+      "description": "Lista completa de cooldowns de spells em Mystovia por vocação."
+    }
   },
   "account": {
     "title": "Gerenciamento de Conta",
