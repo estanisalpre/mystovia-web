@@ -23,9 +23,9 @@ export default function HeaderNav() {
 
   if (!isClient) {
     return (
-      <nav className="hidden lg:flex w-full medieval-font font-semibold items-center justify-center gap-4 xl:gap-6 px-4 py-2">
-        <a href="/marketplace" className="nav-link-important flex items-center gap-1">
-          <Store size={18} /> <span className="opacity-0">Store</span>
+      <nav className="hidden lg:flex w-full medieval-font font-semibold items-center justify-center gap-3 xl:gap-5 px-4 py-2">
+        <a href="/marketplace" className="store-button">
+          <Store size={16} /> <span className="opacity-0">Store</span>
         </a>
         <a href="/news" className="nav-link"><span className="opacity-0">News</span></a>
         <a href="/forum" className="nav-link"><span className="opacity-0">Forum</span></a>
@@ -40,9 +40,9 @@ export default function HeaderNav() {
   }
 
   return (
-    <nav className="hidden lg:flex w-full medieval-font font-semibold items-center justify-center gap-4 xl:gap-6 px-4 py-2">
-      <a href="/marketplace" className="nav-link-important flex items-center gap-1">
-        <Store size={18} /> {t('nav.store')}
+    <nav className="hidden lg:flex w-full medieval-font font-semibold items-center justify-center gap-3 xl:gap-5 px-4 py-2">
+      <a href="/marketplace" className="store-button">
+        <Store size={16} /> {t('nav.store')}
       </a>
       <a href="/news" className="nav-link">{t('nav.news')}</a>
       <a href="/forum" className="nav-link">{t('nav.forum')}</a>

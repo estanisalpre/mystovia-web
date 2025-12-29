@@ -1,7 +1,7 @@
 ---
 export const prerender = false;
 
-import Layout from '../../../layouts/Layout.astro';
+import Layout from '@layouts/Layout.astro';
 import { hasPermission } from '../../../utils/permissions';
 import {
   ChevronRight,
@@ -18,10 +18,9 @@ import {
   Send,
   AlertTriangle
 } from '@lucide/astro';
-import DiamondPattern from "../../../components/ui/DiamondPattern.astro";
-import GoldenLine from "../../../components/ui/GoldenLine.astro";
+import DiamondPattern from "@c/ui/DiamondPattern.astro";
+import GoldenLine from "@c/ui/GoldenLine.astro";
 
-// Helper function to format vote count
 function formatVotes(votes: number): string {
   if (votes > 0) return `+${votes}`;
   if (votes < 0) return `${votes}`;
@@ -30,17 +29,14 @@ function formatVotes(votes: number): string {
 
 const { id } = Astro.params;
 
-// For internal SSR calls, use localhost with the same port (same Express server)
 const INTERNAL_API_URL = `http://localhost:${process.env.PORT || 3301}`;
 
-// Get user from cookies and verify with API
 const userId = Astro.cookies.get('userId')?.value;
 const userEmail = Astro.cookies.get('userEmail')?.value;
 let user = null;
 
 if (userId && userEmail) {
   try {
-    // Use internal URL for SSR verification (same server, no cross-origin issues)
     const verifyResponse = await fetch(`${INTERNAL_API_URL}/api/auth/verify`, {
       method: 'GET',
       headers: {

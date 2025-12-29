@@ -1,0 +1,282 @@
+---
+import Layout from '@layouts/Layout.astro';
+import { ChevronLeft, AlertTriangle } from '@lucide/astro';
+import DiamondPattern from "@c/ui/DiamondPattern.astro";
+import GoldenLine from "@c/ui/GoldenLine.astro";
+import CornerOrnaments from "@c/ui/CornerOrnaments.astro";
+import { Target } from '@assets/guides';
+---
+
+<Layout
+  title="Configuración de Target - Guías del Bot"
+  description="Aprende a configurar el Target para atacar criaturas automáticamente. Tutorial completo."
+  keywords="target mystovia, configurar target bot, atacar criaturas bot, tutorial target"
+>
+  <section class="page-container max-w-4xl mx-auto">
+    <!-- Back Button -->
+    <a href="/guides" class="inline-flex items-center gap-2 text-gray-400 hover:text-yellow-500 transition-colors mb-6">
+      <ChevronLeft class="w-4 h-4" />
+      <span>Volver a guías</span>
+    </a>
+
+    <!-- Header -->
+    <div class="relative rounded-xl overflow-hidden p-6 md:p-8 mb-8 border border-yellow-600/30"
+         style="background: linear-gradient(to bottom, rgb(17 24 39 / 0.95), rgb(0 0 0 / 0.9));">
+      <DiamondPattern opacity={0.03} />
+      <GoldenLine position="top" opacity={0.5} />
+      <CornerOrnaments variant="curve" size="md" opacity={0.3} />
+
+      <div class="relative z-10">
+        <div class="flex items-center gap-2 mb-3">
+          <span class="text-xs bg-red-500/20 text-red-400 px-2 py-1 rounded border border-red-500/30">
+            Target
+          </span>
+        </div>
+        <h1 class="text-2xl md:text-3xl lg:text-4xl font-bold text-yellow-500 medieval-font mb-3">
+          Configuración de Target
+        </h1>
+        <p class="text-gray-400">
+          Guía completa para configurar el sistema de targeting automático.
+        </p>
+      </div>
+    </div>
+
+    <!-- Guide Image -->
+    <div class="mb-8 rounded-xl overflow-hidden border border-gray-700">
+      <img src={Target.src} alt="Configuración de Target" class="w-full h-auto" />
+    </div>
+
+    <!-- Content -->
+    <div class="space-y-8">
+      <!-- Section 1 -->
+      <article class="guide-section">
+        <h2 class="guide-title">
+          <span class="guide-number">1</span>
+          Crear el perfil de Target (respawn)
+        </h2>
+        <div class="guide-content">
+          <ul class="guide-list">
+            <li>Ir a la pestaña <strong class="text-yellow-500">Target</strong>.</li>
+            <li>Hacer clic en <strong class="text-yellow-500">Add</strong>.</li>
+            <li>Escribir el nombre del respawn.</li>
+          </ul>
+
+          <div class="alert-box alert-warning mt-4">
+            <AlertTriangle class="w-5 h-5 shrink-0" />
+            <div>
+              <strong>ATENCIÓN:</strong><br />
+              Este paso es obligatorio.<br />
+              Si no se agrega un nombre de respawn, el bot no atacará a ninguna criatura.
+            </div>
+          </div>
+
+          <div class="mt-4 p-4 rounded-lg border border-gray-700 bg-gray-800/50">
+            <strong class="text-gray-300">Ejemplo:</strong>
+            <div class="code-block mt-2">Dwarfs</div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Section 2 -->
+      <article class="guide-section">
+        <h2 class="guide-title">
+          <span class="guide-number">2</span>
+          Abrir el Target Editor
+        </h2>
+        <div class="guide-content">
+          <p class="text-gray-300 mb-4">Una vez creado el respawn, hacer clic en <strong class="text-yellow-500">Show target editor</strong>.</p>
+
+          <div class="p-4 rounded-lg border border-gray-700 bg-gray-800/50">
+            <p class="text-gray-300">Se habilitarán los botones:</p>
+            <ul class="mt-2 space-y-1 text-gray-400">
+              <li>• <strong class="text-yellow-500">Add</strong></li>
+              <li>• <strong class="text-yellow-500">Edit</strong></li>
+              <li>• <strong class="text-yellow-500">Remove</strong></li>
+            </ul>
+          </div>
+        </div>
+      </article>
+
+      <!-- Section 3 -->
+      <article class="guide-section">
+        <h2 class="guide-title">
+          <span class="guide-number">3</span>
+          Agregar criaturas a atacar
+        </h2>
+        <div class="guide-content">
+          <ol class="list-decimal list-inside text-gray-300 space-y-2 mb-4">
+            <li>Hacer clic en <strong class="text-yellow-500">Add</strong>.</li>
+            <li>En el campo <strong class="text-yellow-500">Target Name</strong>, escribir el nombre de la criatura que queremos atacar.</li>
+          </ol>
+
+          <div class="p-4 rounded-lg border border-gray-700 bg-gray-800/50 mb-4">
+            <strong class="text-gray-300">Ejemplo:</strong>
+            <div class="code-block mt-2">dwarf</div>
+          </div>
+
+          <p class="text-gray-400 mb-4">Al confirmar, se abrirá una ventana con varias opciones de configuración:</p>
+
+          <ul class="guide-list">
+            <li>Prioridad</li>
+            <li>Distancia</li>
+            <li>Forma de ataque</li>
+            <li>Comportamiento durante el combate</li>
+          </ul>
+
+          <p class="text-gray-500 mt-4 text-sm">Estas opciones pueden ajustarse libremente según la forma en que cada jugador quiera cazar.</p>
+        </div>
+      </article>
+
+      <!-- Section 4 -->
+      <article class="guide-section">
+        <h2 class="guide-title">
+          <span class="guide-number">4</span>
+          Agregar múltiples criaturas
+        </h2>
+        <div class="guide-content">
+          <p class="text-gray-300 mb-4">Si el respawn tiene varias criaturas, se debe repetir el mismo procedimiento:</p>
+
+          <p class="text-gray-400 mb-4"><strong class="text-yellow-500">Add</strong> → <strong class="text-yellow-500">Target Name</strong></p>
+
+          <div class="p-4 rounded-lg border border-yellow-600/30 bg-yellow-500/5">
+            <h4 class="text-yellow-500 font-semibold mb-3">Ejemplo de respawn Dwarfs:</h4>
+            <ul class="text-gray-300 space-y-1">
+              <li><code class="code-inline">dwarf</code></li>
+              <li><code class="code-inline">dwarf soldier</code></li>
+              <li><code class="code-inline">dwarf guard</code></li>
+            </ul>
+          </div>
+
+          <p class="text-gray-500 mt-4 text-sm">Cada criatura quedará configurada de forma independiente.</p>
+        </div>
+      </article>
+
+      <!-- Section 5 -->
+      <article class="guide-section">
+        <h2 class="guide-title">
+          <span class="guide-number">5</span>
+          Activar el Target
+        </h2>
+        <div class="guide-content">
+          <p class="text-gray-300 mb-4">Una vez agregadas todas las criaturas:</p>
+
+          <ol class="list-decimal list-inside text-gray-300 space-y-2 mb-4">
+            <li>Hacer clic en <strong class="text-yellow-500">Off</strong>, ubicado al lado del nombre del respawn.</li>
+            <li>El estado cambiará a <strong class="text-green-400">On</strong>, indicando que el Target quedó activo.</li>
+          </ol>
+        </div>
+      </article>
+    </div>
+
+    <!-- Back to guides -->
+    <div class="mt-12 pt-8 border-t border-gray-800">
+      <a href="/guides" class="inline-flex items-center gap-2 text-yellow-500 hover:text-yellow-400 transition-colors">
+        <ChevronLeft class="w-4 h-4" />
+        <span>Volver a todas las guías</span>
+      </a>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .guide-section {
+    position: relative;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    border: 1px solid rgb(31 41 55);
+    padding: 1.5rem;
+    background: linear-gradient(to bottom, rgb(31 41 55 / 0.3), rgb(17 24 39 / 0.5));
+  }
+
+  .guide-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-family: 'Cinzel', serif;
+  }
+
+  @media (min-width: 768px) {
+    .guide-title {
+      font-size: 1.5rem;
+    }
+  }
+
+  .guide-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 9999px;
+    background-color: rgb(234 179 8 / 0.2);
+    color: rgb(234 179 8);
+    font-size: 0.875rem;
+    font-weight: 700;
+    border: 1px solid rgb(234 179 8 / 0.3);
+  }
+
+  .guide-content {
+    padding-left: 2.75rem;
+  }
+
+  .guide-list {
+    list-style-type: disc;
+    list-style-position: inside;
+    color: rgb(209 213 219);
+  }
+
+  .guide-list li {
+    color: rgb(209 213 219);
+    margin-bottom: 0.5rem;
+  }
+
+  .guide-image-placeholder {
+    margin-top: 1rem;
+    border-radius: 0.5rem;
+    overflow: hidden;
+    border: 1px solid rgb(55 65 81);
+    background-color: rgb(17 24 39 / 0.5);
+  }
+
+  .guide-image {
+    width: 100%;
+    height: auto;
+  }
+
+  .code-block {
+    background-color: rgb(17 24 39);
+    border: 1px solid rgb(55 65 81);
+    border-radius: 0.5rem;
+    padding: 0.75rem 1rem;
+    font-family: monospace;
+    color: rgb(234 179 8);
+  }
+
+  .code-inline {
+    background-color: rgb(31 41 55);
+    padding: 0.125rem 0.5rem;
+    border-radius: 0.25rem;
+    color: rgb(250 204 21);
+    font-family: monospace;
+    font-size: 0.875rem;
+  }
+
+  .alert-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    border-width: 1px;
+  }
+
+  .alert-warning {
+    border-color: rgb(202 138 4 / 0.3);
+    background-color: rgb(234 179 8 / 0.1);
+    color: rgb(254 249 195);
+  }
+</style>

@@ -57,9 +57,9 @@ import CornerOrnaments from "./ui/CornerOrnaments.astro";
             </a>
           </li>
           <li>
-            <a href="/wiki" class="text-gray-400 hover:text-yellow-500 transition-colors text-sm flex items-center gap-2 group">
+            <a href="/guides" class="text-gray-400 hover:text-yellow-500 transition-colors text-sm flex items-center gap-2 group">
               <span class="w-1 h-1 rounded-full bg-gray-600 group-hover:bg-yellow-500 transition-colors" aria-hidden="true"></span>
-              Wiki
+              Config. Bot
             </a>
           </li>
         </ul>
@@ -143,11 +143,9 @@ import CornerOrnaments from "./ui/CornerOrnaments.astro";
 
   const lang = getStoredLanguage();
 
-  // Description
   const footerDesc = document.getElementById('footerDescription');
   if (footerDesc) footerDesc.textContent = t('footer.description', lang);
 
-  // Section titles - preserve the Lucide icons (they are rendered as SVG)
   const gameTitle = document.getElementById('footerGameTitle');
   if (gameTitle) {
     const icon = gameTitle.querySelector('svg');
@@ -172,7 +170,6 @@ import CornerOrnaments from "./ui/CornerOrnaments.astro";
     supportTitle.appendChild(document.createTextNode(t('footer.support', lang)));
   }
 
-  // Links
   const downloadClient = document.getElementById('downloadClientLink');
   if (downloadClient) {
     const bullet = downloadClient.querySelector('span');
@@ -180,7 +177,6 @@ import CornerOrnaments from "./ui/CornerOrnaments.astro";
     if (bullet) downloadClient.appendChild(bullet);
     downloadClient.appendChild(document.createTextNode(t('footer.downloadClient', lang)));
 
-    // Add click handler to open download modal
     downloadClient.addEventListener('click', () => {
       window.dispatchEvent(new CustomEvent('openDownloadModal'));
     });
@@ -194,7 +190,6 @@ import CornerOrnaments from "./ui/CornerOrnaments.astro";
     serverRules.appendChild(document.createTextNode(t('footer.serverRules', lang)));
   }
 
-  // Other elements
   const marketplace = document.getElementById('footerMarketplace');
   if (marketplace) marketplace.textContent = t('footer.marketplace', lang);
 
@@ -219,7 +214,6 @@ import CornerOrnaments from "./ui/CornerOrnaments.astro";
   const privacy = document.getElementById('footerPrivacy');
   if (privacy) privacy.textContent = t('footer.privacy', lang);
 
-  // Copyright
   const copyright = document.getElementById('footerCopyright');
   if (copyright) copyright.textContent = `© 2025 Mystovia. ${t('footer.allRightsReserved', lang)}`;
 </script>
