@@ -50,34 +50,43 @@ import CornerOrnaments from "../../ui/CornerOrnaments.astro";
 <script>
     import { t, getStoredLanguage } from '../../../i18n/translations';
 
-    const lang = getStoredLanguage();
+    function applyTranslations() {
+        const lang = getStoredLanguage();
 
-    const titleEl = document.getElementById('searchTitle');
-    if (titleEl) titleEl.textContent = t('character.searchTitle', lang);
+        const titleEl = document.getElementById('searchTitle');
+        if (titleEl) titleEl.textContent = t('character.searchTitle', lang);
 
-    const searchBtn = document.getElementById('searchBtn');
-    if (searchBtn) searchBtn.textContent = t('character.searchButton', lang);
+        const searchBtn = document.getElementById('searchBtn');
+        if (searchBtn) searchBtn.textContent = t('character.searchButton', lang);
 
-    const charNameInput = document.getElementById('characterName') as HTMLInputElement;
-    if (charNameInput) {
-        charNameInput.placeholder = t('character.searchPlaceholder', lang);
-        const label = charNameInput.parentElement?.querySelector('label');
-        if (label) label.textContent = t('character.searchLabel', lang);
+        const charNameInput = document.getElementById('characterName') as HTMLInputElement;
+        if (charNameInput) {
+            charNameInput.placeholder = t('character.searchPlaceholder', lang);
+            const label = charNameInput.parentElement?.querySelector('label');
+            if (label) label.textContent = t('character.searchLabel', lang);
+        }
     }
 
-    const form = document.getElementById("searchCharacterForm") as HTMLFormElement & {
-        characterName: HTMLInputElement;
-    };
+    function initSearchForm() {
+        const lang = getStoredLanguage();
+        const form = document.getElementById("searchCharacterForm") as HTMLFormElement & {
+            characterName: HTMLInputElement;
+        };
 
-    form?.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const characterName = form.characterName.value.trim();
+        form?.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const characterName = form.characterName.value.trim();
 
-        if (!characterName) {
-            alert(t('character.searchEmpty', lang));
-            return;
-        }
+            if (!characterName) {
+                alert(t('character.searchEmpty', lang));
+                return;
+            }
 
-        window.location.href = `/character-information?name=${encodeURIComponent(characterName)}`;
-    });
+            window.location.href = `/character-information?name=${encodeURIComponent(characterName)}`;
+        });
+    }
+
+    applyTranslations();
+    initSearchForm();
+    document.addEventListener('astro:page-load', applyTranslations);
 </script>

@@ -47,7 +47,7 @@ try {
         <div class="absolute inset-0 rounded-b-lg border border-yellow-400/30 pointer-events-none"></div>
         <div class="flex items-center gap-2 relative z-10">
           <Newspaper class="w-4 h-4 text-black" />
-          <h2 class="text-sm font-bold text-black text-center medieval-font">Últimas Noticias</h2>
+          <h2 id="newsTitle" class="text-sm font-bold text-black text-center medieval-font">Últimas Noticias</h2>
         </div>
       </div>
     </div>
@@ -57,7 +57,7 @@ try {
       <div class="flex items-center justify-center text-center py-12">
         <div>
           <Newspaper class="w-16 h-16 mx-auto text-yellow-500/30 mb-4" />
-          <p class="text-gray-400">Aún no tenemos noticias nuevas</p>
+          <p id="noNewsText" class="text-gray-400">Aún no tenemos noticias nuevas</p>
         </div>
       </div>
     ) : (
@@ -131,10 +131,30 @@ try {
           href="/news"
           class="inline-flex items-center gap-2 text-yellow-500 hover:text-yellow-400 text-sm font-medium transition-colors group"
         >
-          <span>Ver todas las noticias</span>
+          <span id="viewAllNewsText">Ver todas las noticias</span>
           <ArrowRight class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
         </a>
       </div>
     )}
   </div>
 </section>
+
+<script>
+  import { t, getStoredLanguage } from '../../../i18n/translations';
+
+  function applyTranslations() {
+    const lang = getStoredLanguage();
+
+    const newsTitle = document.getElementById('newsTitle');
+    if (newsTitle) newsTitle.textContent = t('landing.latestNews', lang);
+
+    const noNewsText = document.getElementById('noNewsText');
+    if (noNewsText) noNewsText.textContent = t('landing.noNewsYet', lang);
+
+    const viewAllNewsText = document.getElementById('viewAllNewsText');
+    if (viewAllNewsText) viewAllNewsText.textContent = t('landing.viewAllNews', lang);
+  }
+
+  applyTranslations();
+  document.addEventListener('astro:page-load', applyTranslations);
+</script>

@@ -39,10 +39,10 @@ try {
     <nav class="flex items-center gap-2 text-xs sm:text-sm text-gray-400 mb-6">
       <a href="/" class="hover:text-yellow-500 transition-colors flex items-center gap-1">
         <Home class="w-3 h-3" />
-        Inicio
+        <span id="onBreadcrumbHome">Inicio</span>
       </a>
       <ChevronRight class="w-3 h-3 text-gray-600" />
-      <span class="text-yellow-500">Players Online</span>
+      <span id="onBreadcrumbCurrent" class="text-yellow-500">Players Online</span>
     </nav>
 
     <!-- Header -->
@@ -52,8 +52,8 @@ try {
         <Users class="w-8 h-8 text-yellow-500" />
         <div class="h-px w-16 bg-gradient-to-l from-transparent to-yellow-500/50"></div>
       </div>
-      <h1 class="text-3xl md:text-4xl font-bold text-yellow-500 medieval-font mb-2">Players Online</h1>
-      <p class="text-gray-400">
+      <h1 id="onTitle" class="text-3xl md:text-4xl font-bold text-yellow-500 medieval-font mb-2">Players Online</h1>
+      <p id="onSubtitle" class="text-gray-400" data-total={total}>
         {total === 0 ? 'No hay jugadores online' : `${total} jugador${total !== 1 ? 'es' : ''} online`}
       </p>
     </header>
@@ -67,16 +67,16 @@ try {
       {players.length === 0 ? (
         <div class="py-16 text-center">
           <Users class="w-16 h-16 mx-auto text-yellow-500/30 mb-4" />
-          <p class="text-gray-400 text-lg mb-2">No hay jugadores online</p>
-          <p class="text-gray-500 text-sm">El servidor está vacío en este momento</p>
+          <p id="onNoPlayersTitle" class="text-gray-400 text-lg mb-2">No hay jugadores online</p>
+          <p id="onNoPlayersDesc" class="text-gray-500 text-sm">El servidor está vacío en este momento</p>
         </div>
       ) : (
         <>
           <!-- Table Header -->
           <div class="hidden sm:grid grid-cols-12 gap-2 px-4 py-3 text-sm text-yellow-500 font-semibold border-b border-yellow-600/20 bg-black/20">
-            <div class="col-span-5">Nombre</div>
-            <div class="col-span-4">Vocación</div>
-            <div class="col-span-3 text-right">Nivel</div>
+            <div id="onHeaderName" class="col-span-5">Nombre</div>
+            <div id="onHeaderVocation" class="col-span-4">Vocación</div>
+            <div id="onHeaderLevel" class="col-span-3 text-right">Nivel</div>
           </div>
 
           <!-- Players List -->
@@ -115,3 +115,50 @@ try {
     </div>
   </section>
 </Layout>
+
+<script>
+  import { t, getStoredLanguage } from '../i18n/translations';
+
+  function applyTranslations() {
+    const lang = getStoredLanguage();
+
+    const onBreadcrumbHome = document.getElementById('onBreadcrumbHome');
+    if (onBreadcrumbHome) onBreadcrumbHome.textContent = t('pages.home', lang);
+
+    const onBreadcrumbCurrent = document.getElementById('onBreadcrumbCurrent');
+    if (onBreadcrumbCurrent) onBreadcrumbCurrent.textContent = t('pages.online.title', lang);
+
+    const onTitle = document.getElementById('onTitle');
+    if (onTitle) onTitle.textContent = t('pages.online.title', lang);
+
+    const onSubtitle = document.getElementById('onSubtitle');
+    if (onSubtitle) {
+      const total = parseInt(onSubtitle.dataset.total || '0');
+      if (total === 0) {
+        onSubtitle.textContent = t('pages.online.noPlayers', lang);
+      } else if (total === 1) {
+        onSubtitle.textContent = `1 ${t('pages.online.playerOnline', lang)}`;
+      } else {
+        onSubtitle.textContent = `${total} ${t('pages.online.playersOnline', lang)}`;
+      }
+    }
+
+    const onNoPlayersTitle = document.getElementById('onNoPlayersTitle');
+    if (onNoPlayersTitle) onNoPlayersTitle.textContent = t('pages.online.noPlayers', lang);
+
+    const onNoPlayersDesc = document.getElementById('onNoPlayersDesc');
+    if (onNoPlayersDesc) onNoPlayersDesc.textContent = t('pages.online.serverEmpty', lang);
+
+    const onHeaderName = document.getElementById('onHeaderName');
+    if (onHeaderName) onHeaderName.textContent = t('pages.online.name', lang);
+
+    const onHeaderVocation = document.getElementById('onHeaderVocation');
+    if (onHeaderVocation) onHeaderVocation.textContent = t('pages.online.vocation', lang);
+
+    const onHeaderLevel = document.getElementById('onHeaderLevel');
+    if (onHeaderLevel) onHeaderLevel.textContent = t('pages.online.level', lang);
+  }
+
+  applyTranslations();
+  document.addEventListener('astro:page-load', applyTranslations);
+</script>

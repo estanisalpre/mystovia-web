@@ -99,29 +99,34 @@ import CornerOrnaments from "@c/ui/CornerOrnaments.astro";
 <script>
   import { t, getStoredLanguage } from '../i18n/translations';
 
-  const lang = getStoredLanguage();
+  function applyTranslations() {
+    const lang = getStoredLanguage();
 
-  const title = document.getElementById('notFoundTitle');
-  if (title) title.textContent = t('notFound.title', lang);
+    const title = document.getElementById('notFoundTitle');
+    if (title) title.textContent = t('notFound.title', lang);
 
-  const message = document.getElementById('notFoundMessage');
-  if (message) message.textContent = t('notFound.message', lang);
+    const message = document.getElementById('notFoundMessage');
+    if (message) message.textContent = t('notFound.message', lang);
 
-  const explanation = document.getElementById('notFoundExplanation');
-  if (explanation) explanation.textContent = t('notFound.explanation', lang);
+    const explanation = document.getElementById('notFoundExplanation');
+    if (explanation) explanation.textContent = t('notFound.explanation', lang);
 
-  const thanks = document.getElementById('notFoundThanks');
-  if (thanks) thanks.textContent = t('notFound.thanks', lang);
+    const thanks = document.getElementById('notFoundThanks');
+    if (thanks) thanks.textContent = t('notFound.thanks', lang);
 
-  const backHome = document.getElementById('backHomeBtn');
-  if (backHome) {
-    const span = backHome.querySelector('span');
-    if (span) span.textContent = t('common.backHome', lang);
+    const backHome = document.getElementById('backHomeBtn');
+    if (backHome) {
+      const span = backHome.querySelector('span');
+      if (span) span.textContent = t('common.backHome', lang);
+    }
+
+    const goMarketplace = document.getElementById('goMarketplaceBtn');
+    if (goMarketplace) {
+      const span = goMarketplace.querySelector('span');
+      if (span) span.textContent = t('notFound.goToMarketplace', lang);
+    }
   }
 
-  const goMarketplace = document.getElementById('goMarketplaceBtn');
-  if (goMarketplace) {
-    const span = goMarketplace.querySelector('span');
-    if (span) span.textContent = t('notFound.goToMarketplace', lang);
-  }
+  applyTranslations();
+  document.addEventListener('astro:page-load', applyTranslations);
 </script>

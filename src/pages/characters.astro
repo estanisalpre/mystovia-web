@@ -77,7 +77,6 @@ import { Star } from "@lucide/astro";
   const emptyState = document.getElementById("emptyState")!;
   const API_URL = import.meta.env.PUBLIC_API_URL;
 
-  // Check authentication using cookie-based auth
   async function checkAuth() {
     try {
       const response = await fetch(`${API_URL}/api/auth/verify`, {
@@ -85,7 +84,6 @@ import { Star } from "@lucide/astro";
       });
 
       if (!response.ok) {
-        // Not authenticated, redirect to login
         window.location.href = "/login";
         return false;
       }
@@ -110,11 +108,9 @@ import { Star } from "@lucide/astro";
       const data = await response.json();
 
       if (data.characters.length === 0) {
-        // Show empty state
         charactersGrid.classList.add("hidden");
         emptyState.classList.remove("hidden");
       } else {
-        // Show characters grid
         charactersGrid.classList.remove("hidden");
         emptyState.classList.add("hidden");
 
@@ -203,7 +199,6 @@ import { Star } from "@lucide/astro";
     }
   }
 
-  // Initialize: Check auth and load characters
   (async () => {
     const isAuthenticated = await checkAuth();
     if (isAuthenticated) {

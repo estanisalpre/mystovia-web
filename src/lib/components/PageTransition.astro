@@ -22,7 +22,7 @@ import { Diamond, Star } from "@lucide/astro";
 
     <!-- Loading text -->
     <div class="flex flex-col items-center gap-1">
-      <p class="text-yellow-500 text-sm font-medium medieval-font tracking-wider">Cargando...</p>
+      <p id="page-transition-text" class="text-yellow-500 text-sm font-medium medieval-font tracking-wider">Cargando...</p>
       <div class="flex items-center gap-2">
         <div class="h-px w-8 bg-gradient-to-r from-transparent to-yellow-500/50"></div>
         <Star class="w-3 h-3 text-yellow-500/50" fill="currentColor" />
@@ -33,6 +33,14 @@ import { Diamond, Star } from "@lucide/astro";
 </section>
 
 <script>
+  import { t, getStoredLanguage } from '../../i18n/translations';
+
+  function applyTranslations() {
+    const lang = getStoredLanguage();
+    const loadingText = document.getElementById('page-transition-text');
+    if (loadingText) loadingText.textContent = t('common.loading', lang);
+  }
+
   function showLoader() {
     const loader = document.getElementById('page-transition-loader');
     if (loader) {
@@ -68,5 +76,9 @@ import { Diamond, Star } from "@lucide/astro";
   }
 
   setupTransitionLoader();
-  document.addEventListener('astro:page-load', setupTransitionLoader);
+  applyTranslations();
+  document.addEventListener('astro:page-load', () => {
+    setupTransitionLoader();
+    applyTranslations();
+  });
 </script>

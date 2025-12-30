@@ -135,7 +135,7 @@ import { Star } from "@lucide/astro";
               required
               class="mt-1 w-4 h-4 accent-yellow-500 cursor-pointer"
             />
-            <label for="acceptRules" class="text-sm text-gray-300 cursor-pointer">
+            <label for="acceptRules" id="acceptRulesLabel" class="text-sm text-gray-300 cursor-pointer">
               Acepto las <a href="/rules" class="text-yellow-500 hover:text-yellow-400 underline" target="_blank">reglas</a> y las <a href="/terms" class="text-yellow-500 hover:text-yellow-400 underline" target="_blank">condiciones</a> del servidor.
             </label>
           </div>
@@ -197,32 +197,44 @@ import { Star } from "@lucide/astro";
 <script>
   import { t, getStoredLanguage } from '../i18n/translations';
 
+  function applyTranslations() {
+    const lang = getStoredLanguage();
+
+    const createCharTitle = document.getElementById("createCharTitle");
+    if (createCharTitle) createCharTitle.textContent = t("character.createCharacter", lang);
+
+    const charNameLabel = document.getElementById("charNameLabel");
+    if (charNameLabel) charNameLabel.textContent = t("character.characterName", lang);
+
+    const charNameInput = document.getElementById("characterName") as HTMLInputElement;
+    if (charNameInput) charNameInput.placeholder = t("character.characterNamePlaceholder", lang);
+
+    const charNameHint = document.getElementById("charNameHint");
+    if (charNameHint) charNameHint.textContent = t("character.characterNameHint", lang);
+
+    const vocationLabel = document.getElementById("vocationLabel");
+    if (vocationLabel) vocationLabel.textContent = t("character.selectVocation", lang);
+
+    const createCharBtn = document.getElementById("createCharBtn");
+    if (createCharBtn) createCharBtn.textContent = t("character.createButton", lang);
+
+    const yourCharsTitle = document.getElementById("yourCharsTitle");
+    if (yourCharsTitle) yourCharsTitle.textContent = t("character.yourCharacters", lang);
+
+    const loadingChars = document.getElementById("loadingChars");
+    if (loadingChars) loadingChars.textContent = t("character.loadingCharacters", lang);
+
+    const acceptRulesLabel = document.getElementById("acceptRulesLabel");
+    if (acceptRulesLabel) {
+      // Preserve the links with underline styling
+      acceptRulesLabel.innerHTML = `${t("createCharacter.acceptRulesPrefix", lang)} <a href="/rules" class="text-yellow-500 hover:text-yellow-400 underline" target="_blank">${t("createCharacter.acceptRulesLink", lang)}</a> ${t("createCharacter.acceptRulesAnd", lang)} <a href="/terms" class="text-yellow-500 hover:text-yellow-400 underline" target="_blank">${t("createCharacter.acceptRulesTerms", lang)}</a> ${t("createCharacter.acceptRulesSuffix", lang)}`;
+    }
+  }
+
+  applyTranslations();
+  document.addEventListener('astro:page-load', applyTranslations);
+
   const lang = getStoredLanguage();
-
-  // Apply translations
-  const createCharTitle = document.getElementById("createCharTitle");
-  if (createCharTitle) createCharTitle.textContent = t("character.createCharacter", lang);
-
-  const charNameLabel = document.getElementById("charNameLabel");
-  if (charNameLabel) charNameLabel.textContent = t("character.characterName", lang);
-
-  const charNameInput = document.getElementById("characterName") as HTMLInputElement;
-  if (charNameInput) charNameInput.placeholder = t("character.characterNamePlaceholder", lang);
-
-  const charNameHint = document.getElementById("charNameHint");
-  if (charNameHint) charNameHint.textContent = t("character.characterNameHint", lang);
-
-  const vocationLabel = document.getElementById("vocationLabel");
-  if (vocationLabel) vocationLabel.textContent = t("character.selectVocation", lang);
-
-  const createCharBtn = document.getElementById("createCharBtn");
-  if (createCharBtn) createCharBtn.textContent = t("character.createButton", lang);
-
-  const yourCharsTitle = document.getElementById("yourCharsTitle");
-  if (yourCharsTitle) yourCharsTitle.textContent = t("character.yourCharacters", lang);
-
-  const loadingChars = document.getElementById("loadingChars");
-  if (loadingChars) loadingChars.textContent = t("character.loadingCharacters", lang);
 
   const characterForm = document.getElementById(
     "characterForm"

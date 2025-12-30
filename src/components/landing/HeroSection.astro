@@ -19,7 +19,7 @@ const downloadUrl = import.meta.env.PUBLIC_DOWNLOAD_URL || "https://github.com/e
       <Diamond class="w-4 h-4 text-yellow-500/70 animate-pulse" fill="currentColor" />
       <span class="h-px w-12 bg-gradient-to-l from-transparent to-yellow-500/50"></span>
     </figure>
-    <p class="text-yellow-500/80 text-lg medieval-font tracking-widest uppercase text-center">Bienvenidos a</p>
+    <p id="heroWelcome" class="text-yellow-500/80 text-lg medieval-font tracking-widest uppercase text-center">Bienvenidos a</p>
   </header>
 
   <!-- Logo with celebration glow -->
@@ -72,16 +72,16 @@ const downloadUrl = import.meta.env.PUBLIC_DOWNLOAD_URL || "https://github.com/e
         </figure>
 
         <!-- Main celebration title -->
-        <h2 class="text-3xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-400 medieval-font tracking-wider uppercase mb-4 animate-text-glow">
+        <h2 id="heroKingdomOpen" class="text-3xl md:text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-yellow-500 to-yellow-400 medieval-font tracking-wider uppercase mb-4 animate-text-glow">
           ¡El Reino Está Abierto!
         </h2>
 
         <!-- Subtitle -->
-        <p class="text-xl md:text-2xl text-yellow-500/90 medieval-font mb-2 animate-fade-in">
+        <p id="heroAdventureBegins" class="text-xl md:text-2xl text-yellow-500/90 medieval-font mb-2 animate-fade-in">
           ¡La aventura comienza ahora!
         </p>
 
-        <p class="text-gray-400 text-base md:text-lg mb-8 max-w-xl mx-auto">
+        <p id="heroKingdomDescription" class="text-gray-400 text-base md:text-lg mb-8 max-w-xl mx-auto">
           Las puertas de Mystovia se han abierto. Es hora de forjar tu leyenda, guerrero.
           ¡Únete a miles de aventureros que ya están explorando el reino!
         </p>
@@ -105,7 +105,7 @@ const downloadUrl = import.meta.env.PUBLIC_DOWNLOAD_URL || "https://github.com/e
           <!-- Download icon -->
           <Download class="w-8 h-8 transition-transform group-hover:translate-y-1" />
 
-          <span class="medieval-font tracking-wide relative z-10">DESCARGAR CLIENTE</span>
+          <span id="heroDownloadBtn" class="medieval-font tracking-wide relative z-10">DESCARGAR CLIENTE</span>
 
           <!-- Arrow indicator -->
           <ArrowRight class="w-6 h-6 transition-transform group-hover:translate-x-1" />
@@ -114,7 +114,7 @@ const downloadUrl = import.meta.env.PUBLIC_DOWNLOAD_URL || "https://github.com/e
         <!-- Secondary info -->
         <p class="text-gray-500 text-sm mt-4 flex items-center justify-center gap-2">
           <ShieldCheck class="w-4 h-4" />
-          Windows 10/11 - Instalación rápida y segura
+          <span id="heroWindowsInstall">Windows 10/11 - Instalación rápida y segura</span>
         </p>
       </div>
     </div>
@@ -138,7 +138,7 @@ const downloadUrl = import.meta.env.PUBLIC_DOWNLOAD_URL || "https://github.com/e
 
       <!-- Content -->
       <div class="relative z-10">
-        <h2 class="text-2xl md:text-3xl font-bold text-yellow-500 medieval-font mb-3">
+        <h2 id="heroTagline" class="text-2xl md:text-3xl font-bold text-yellow-500 medieval-font mb-3">
           Forja tu leyenda
         </h2>
         <figure class="flex items-center justify-center gap-3 mb-3" aria-hidden="true">
@@ -146,7 +146,7 @@ const downloadUrl = import.meta.env.PUBLIC_DOWNLOAD_URL || "https://github.com/e
           <Diamond class="w-3 h-3 text-yellow-500/50" fill="currentColor" />
           <span class="h-px w-16 bg-gradient-to-l from-transparent to-yellow-500/40"></span>
         </figure>
-        <p class="text-gray-300 text-lg leading-relaxed">
+        <p id="heroDescription" class="text-gray-300 text-lg leading-relaxed">
           Un reino clásico donde cada batalla cuenta,<br class="hidden sm:block"/>
           los peligros son reales y las recompensas, únicas.
         </p>
@@ -161,14 +161,14 @@ const downloadUrl = import.meta.env.PUBLIC_DOWNLOAD_URL || "https://github.com/e
       class="btn-medieval btn-medieval-primary btn-medieval-lg"
     >
       <UserPlus class="w-5 h-5" />
-      <span>Crear cuenta</span>
+      <span id="heroCreateAccount">Crear cuenta</span>
     </a>
     <a
       href="/highscores"
       class="btn-medieval btn-medieval-secondary btn-medieval-lg"
     >
       <BarChart3 class="w-5 h-5" />
-      <span>Ver Highscores</span>
+      <span id="heroViewHighscores">Ver Highscores</span>
     </a>
   </nav>
 
@@ -344,6 +344,45 @@ const downloadUrl = import.meta.env.PUBLIC_DOWNLOAD_URL || "https://github.com/e
 </style>
 
 <script>
+  import { t, getStoredLanguage } from '../../i18n/translations';
+
+  function applyTranslations() {
+    const lang = getStoredLanguage();
+
+    const heroWelcome = document.getElementById('heroWelcome');
+    if (heroWelcome) heroWelcome.textContent = t('hero.welcome', lang);
+
+    const heroKingdomOpen = document.getElementById('heroKingdomOpen');
+    if (heroKingdomOpen) heroKingdomOpen.textContent = t('hero.kingdomOpen', lang);
+
+    const heroAdventureBegins = document.getElementById('heroAdventureBegins');
+    if (heroAdventureBegins) heroAdventureBegins.textContent = t('hero.adventureBegins', lang);
+
+    const heroKingdomDescription = document.getElementById('heroKingdomDescription');
+    if (heroKingdomDescription) heroKingdomDescription.textContent = t('hero.kingdomDescription', lang);
+
+    const heroDownloadBtn = document.getElementById('heroDownloadBtn');
+    if (heroDownloadBtn) heroDownloadBtn.textContent = t('hero.downloadClient', lang);
+
+    const heroWindowsInstall = document.getElementById('heroWindowsInstall');
+    if (heroWindowsInstall) heroWindowsInstall.textContent = t('hero.windowsInstall', lang);
+
+    const heroTagline = document.getElementById('heroTagline');
+    if (heroTagline) heroTagline.textContent = t('hero.tagline', lang);
+
+    const heroDescription = document.getElementById('heroDescription');
+    if (heroDescription) heroDescription.textContent = t('hero.description', lang);
+
+    const heroCreateAccount = document.getElementById('heroCreateAccount');
+    if (heroCreateAccount) heroCreateAccount.textContent = t('hero.createAccount', lang);
+
+    const heroViewHighscores = document.getElementById('heroViewHighscores');
+    if (heroViewHighscores) heroViewHighscores.textContent = t('hero.viewHighscores', lang);
+  }
+
+  applyTranslations();
+  document.addEventListener('astro:page-load', applyTranslations);
+
   // Create celebration particles
   function createParticles() {
     const container = document.getElementById('celebration-particles');

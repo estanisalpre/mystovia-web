@@ -20,8 +20,8 @@ const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3301';
         <Shield class="w-8 h-8 text-yellow-500" />
         <div class="h-px w-16 bg-gradient-to-l from-transparent to-yellow-500/50"></div>
       </div>
-      <h1 class="text-3xl md:text-4xl font-bold text-yellow-500 medieval-font mb-2">Guilds</h1>
-      <p class="text-gray-400">Únete a una hermandad y conquista Mystovia</p>
+      <h1 id="guildsTitle" class="text-3xl md:text-4xl font-bold text-yellow-500 medieval-font mb-2">Guilds</h1>
+      <p id="guildsSubtitle" class="text-gray-400">Únete a una hermandad y conquista Mystovia</p>
     </header>
 
     <!-- Create Guild Button -->
@@ -29,7 +29,7 @@ const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3301';
       <a href="/guilds/create"
          class="flex items-center gap-2 px-4 py-2 bg-gradient-to-b from-yellow-600 to-yellow-700 hover:from-yellow-500 hover:to-yellow-600 text-white rounded-lg transition-all border border-yellow-500/30 shadow-[0_0_10px_rgba(234,179,8,0.2)] hover:shadow-[0_0_15px_rgba(234,179,8,0.3)]">
         <Plus class="w-4 h-4" />
-        <span class="font-semibold">Crear Guild</span>
+        <span id="guildsCreateBtn" class="font-semibold">Crear Guild</span>
       </a>
     </div>
 
@@ -42,30 +42,30 @@ const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3301';
       <!-- Table Header -->
       <div class="hidden sm:grid grid-cols-12 gap-2 px-4 py-3 text-sm text-yellow-500 font-semibold border-b border-yellow-600/20 bg-black/20">
         <div class="col-span-5">Guild</div>
-        <div class="col-span-3">Líder</div>
-        <div class="col-span-2 text-center">Miembros</div>
-        <div class="col-span-2 text-center">Creada</div>
+        <div id="guildsHeaderLeader" class="col-span-3">Líder</div>
+        <div id="guildsHeaderMembers" class="col-span-2 text-center">Miembros</div>
+        <div id="guildsHeaderCreated" class="col-span-2 text-center">Creada</div>
       </div>
 
       <!-- Loading State -->
       <div id="loadingState" class="py-12 text-center">
         <div class="w-8 h-8 border-2 border-yellow-500/30 border-t-yellow-500 rounded-full animate-spin mx-auto mb-3"></div>
-        <p class="text-gray-400">Cargando guilds...</p>
+        <p id="guildsLoadingText" class="text-gray-400">Cargando guilds...</p>
       </div>
 
       <!-- Error State -->
       <div id="errorState" class="hidden py-12 text-center">
         <Shield class="w-12 h-12 mx-auto text-red-500/50 mb-3" />
-        <p class="text-red-400">Error al cargar las guilds</p>
+        <p id="guildsErrorText" class="text-red-400">Error al cargar las guilds</p>
       </div>
 
       <!-- Empty State -->
       <div id="emptyState" class="hidden py-12 text-center">
         <Shield class="w-12 h-12 mx-auto text-yellow-500/30 mb-3" />
-        <p class="text-gray-400 mb-4">No hay guilds creadas aún</p>
+        <p id="guildsEmptyText" class="text-gray-400 mb-4">No hay guilds creadas aún</p>
         <a href="/guilds/create" class="inline-flex items-center gap-2 text-yellow-500 hover:text-yellow-400 transition-colors">
           <Plus class="w-4 h-4" />
-          Sé el primero en crear una
+          <span id="guildsBeFirst">Sé el primero en crear una</span>
         </a>
       </div>
 
@@ -87,6 +87,8 @@ const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3301';
 </script>
 
 <script>
+  import { t, getStoredLanguage } from '../../i18n/translations';
+
   const API_URL = (window as any).__GUILDS_API_URL__ || 'http://localhost:3301';
 
   interface Guild {
@@ -250,8 +252,40 @@ const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3301';
     }
   }
 
+  function applyTranslations() {
+    const lang = getStoredLanguage();
+
+    const guildsTitle = document.getElementById('guildsTitle');
+    if (guildsTitle) guildsTitle.textContent = t('pages.guilds.title', lang);
+
+    const guildsSubtitle = document.getElementById('guildsSubtitle');
+    if (guildsSubtitle) guildsSubtitle.textContent = t('pages.guilds.subtitle', lang);
+
+    const guildsCreateBtn = document.getElementById('guildsCreateBtn');
+    if (guildsCreateBtn) guildsCreateBtn.textContent = t('pages.guilds.createGuild', lang);
+
+    const guildsHeaderLeader = document.getElementById('guildsHeaderLeader');
+    if (guildsHeaderLeader) guildsHeaderLeader.textContent = t('pages.guilds.leader', lang);
+
+    const guildsHeaderMembers = document.getElementById('guildsHeaderMembers');
+    if (guildsHeaderMembers) guildsHeaderMembers.textContent = t('pages.guilds.members', lang);
+
+    const guildsLoadingText = document.getElementById('guildsLoadingText');
+    if (guildsLoadingText) guildsLoadingText.textContent = t('pages.guilds.loading', lang);
+
+    const guildsEmptyText = document.getElementById('guildsEmptyText');
+    if (guildsEmptyText) guildsEmptyText.textContent = t('pages.guilds.noGuilds', lang);
+
+    const guildsBeFirst = document.getElementById('guildsBeFirst');
+    if (guildsBeFirst) guildsBeFirst.textContent = t('pages.guilds.beFirst', lang);
+  }
+
   init();
-  document.addEventListener('astro:page-load', init);
+  applyTranslations();
+  document.addEventListener('astro:page-load', () => {
+    init();
+    applyTranslations();
+  });
 </script>
 
 <style>

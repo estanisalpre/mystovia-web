@@ -49,9 +49,9 @@ const categories = categoriesData?.categories || [];
       </div>
       <div class="flex items-center justify-center gap-3 mb-3 sm:mb-4">
         <Newspaper class="w-6 h-6 sm:w-8 sm:h-8 text-yellow-500" />
-        <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-yellow-500 medieval-font">Noticias</h1>
+        <h1 id="newsTitle" class="text-2xl sm:text-3xl md:text-4xl font-bold text-yellow-500 medieval-font">Noticias</h1>
       </div>
-      <p class="text-sm sm:text-base md:text-lg text-gray-400">
+      <p id="newsSubtitle" class="text-sm sm:text-base md:text-lg text-gray-400">
         Mantente al día con las últimas novedades del servidor
       </p>
     </header>
@@ -62,7 +62,7 @@ const categories = categoriesData?.categories || [];
         <a
           href="/news"
           class:list={[
-            'px-3 py-1.5 text-xs sm:text-sm font-medium rounded-lg border transition-all',
+            'px-3 py-1.5 text-xs sm:text-sm font-medium rounded-lg border transition-all news-category-all',
             !categoryId
               ? 'bg-yellow-500/20 text-yellow-500 border-yellow-500/50'
               : 'border-yellow-600/30 text-gray-400 hover:text-yellow-500 hover:border-yellow-500/50'
@@ -89,7 +89,7 @@ const categories = categoriesData?.categories || [];
     <!-- News Grid -->
     {news.length === 0 ? (
       <div class="text-center py-8 sm:py-12">
-        <p class="text-sm sm:text-base text-gray-400">
+        <p id="newsEmptyText" class="text-sm sm:text-base text-gray-400">
           No hay noticias publicadas aún.
         </p>
       </div>
@@ -140,7 +140,7 @@ const categories = categoriesData?.categories || [];
               </div>
 
               <a href={`/news/${item.id}`}
-                 class="inline-flex items-center gap-2 px-3 py-1.5 text-xs sm:text-sm font-semibold text-black bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-lg hover:from-yellow-400 hover:to-yellow-500 transition-all">
+                 class="inline-flex items-center gap-2 px-3 py-1.5 text-xs sm:text-sm font-semibold text-black bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-lg hover:from-yellow-400 hover:to-yellow-500 transition-all news-read-more">
                 Leer más
                 <ChevronRight class="w-4 h-4" />
               </a>
@@ -158,3 +158,38 @@ const categories = categoriesData?.categories || [];
     />
   </section>
 </Layout>
+
+<script>
+  import { t, getStoredLanguage } from '../../i18n/translations';
+
+  function applyTranslations() {
+    const lang = getStoredLanguage();
+
+    const newsTitle = document.getElementById('newsTitle');
+    if (newsTitle) newsTitle.textContent = t('pages.news.title', lang);
+
+    const newsSubtitle = document.getElementById('newsSubtitle');
+    if (newsSubtitle) newsSubtitle.textContent = t('pages.news.subtitle', lang);
+
+    const newsEmptyText = document.getElementById('newsEmptyText');
+    if (newsEmptyText) newsEmptyText.textContent = t('pages.news.noNews', lang);
+
+    document.querySelectorAll('.news-read-more').forEach(el => {
+      const icon = el.querySelector('svg');
+      if (icon) {
+        el.innerHTML = '';
+        el.appendChild(document.createTextNode(t('pages.news.readMore', lang) + ' '));
+        el.appendChild(icon);
+      }
+    });
+
+    // Translate "All" category filter
+    const allCategoryBtn = document.querySelector('.news-category-all');
+    if (allCategoryBtn) {
+      allCategoryBtn.textContent = t('pages.news.allCategories', lang);
+    }
+  }
+
+  applyTranslations();
+  document.addEventListener('astro:page-load', applyTranslations);
+</script>

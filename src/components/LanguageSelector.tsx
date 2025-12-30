@@ -34,7 +34,8 @@ export default function LanguageSelector() {
     changeLanguage(langCode);
     setCurrentLang(langCode);
     setIsOpen(false);
-    window.location.reload();
+    // Force a full page reload bypassing View Transitions cache
+    window.location.href = window.location.href.split('?')[0] + '?lang=' + Date.now();
   };
 
   const currentLanguage = languages.find(l => l.code === currentLang) || languages[0];

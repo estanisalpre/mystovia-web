@@ -6,8 +6,8 @@ import GoldenLine from "../../components/ui/GoldenLine.astro";
 import CornerOrnaments from "../../components/ui/CornerOrnaments.astro";
 
 interface Guide {
-  title: string;
-  description: string;
+  titleKey: string;
+  descriptionKey: string;
   slug: string;
   icon: string;
   category: string;
@@ -15,43 +15,43 @@ interface Guide {
 
 const guides: Guide[] = [
   {
-    title: "Configuración de Ataque (Spells y Runas)",
-    description: "Aprende a configurar el AttackBot para usar spells y runas automáticamente contra criaturas.",
+    titleKey: "attackbot",
+    descriptionKey: "attackbot",
     slug: "attackbot-spells-runas",
     icon: "sword",
     category: "AttackBot"
   },
   {
-    title: "Mana Training",
-    description: "Guía visual para configurar el entrenamiento de mana automático.",
+    titleKey: "manaTraining",
+    descriptionKey: "manaTraining",
     slug: "mana-training",
     icon: "zap",
     category: "Training"
   },
   {
-    title: "Configuración de Health (HealBot)",
-    description: "Aprende a configurar el sistema de curación automática para mantener tu personaje con vida.",
+    titleKey: "healbot",
+    descriptionKey: "healbot",
     slug: "healbot",
     icon: "heart",
     category: "HealBot"
   },
   {
-    title: "Configuración de Target",
-    description: "Guía completa para configurar el sistema de targeting automático y atacar criaturas.",
+    titleKey: "target",
+    descriptionKey: "target",
     slug: "target",
     icon: "target",
     category: "Target"
   },
   {
-    title: "Configuración de CaveBot",
-    description: "Guía básica para crear un CaveBot desde cero y automatizar recorridos.",
+    titleKey: "cavebot",
+    descriptionKey: "cavebot",
     slug: "cavebot",
     icon: "settings",
     category: "CaveBot"
   },
   {
-    title: "Spells Cooldowns",
-    description: "Lista completa de cooldowns de spells en Mystovia por vocación.",
+    titleKey: "cooldowns",
+    descriptionKey: "cooldowns",
     slug: "spells-cooldowns",
     icon: "book",
     category: "Referencia"
@@ -82,8 +82,8 @@ const iconMap: Record<string, any> = {
         <Diamond class="w-4 h-4 text-yellow-500/70" fill="currentColor" />
         <div class="h-px w-12 bg-gradient-to-l from-transparent to-yellow-500/50"></div>
       </div>
-      <h1 class="text-3xl md:text-4xl font-bold mb-4 text-yellow-500 medieval-font">Guías del Bot</h1>
-      <p class="text-gray-400 max-w-2xl mx-auto">
+      <h1 id="guidesTitle" class="text-3xl md:text-4xl font-bold mb-4 text-yellow-500 medieval-font">Guías del Bot</h1>
+      <p id="guidesDescription" class="text-gray-400 max-w-2xl mx-auto">
         Tutoriales completos para configurar el bot del servidor. Aprende a sacar el máximo provecho de todas las funcionalidades.
       </p>
     </div>
@@ -96,8 +96,8 @@ const iconMap: Record<string, any> = {
           <BookOpen class="w-6 h-6 text-blue-400" />
         </div>
         <div>
-          <h3 class="text-blue-400 font-semibold mb-1">Importante</h3>
-          <p class="text-gray-300 text-sm">
+          <h3 id="guidesImportant" class="text-blue-400 font-semibold mb-1">Importante</h3>
+          <p id="guidesImportantNote" class="text-gray-300 text-sm">
             Los cooldowns de los spells en Mystovia son diferentes a los de Tibia Oficial.
             Asegúrate de revisar la sección de cooldowns dentro de cada guía para configurar correctamente tu bot.
           </p>
@@ -136,15 +136,15 @@ const iconMap: Record<string, any> = {
                 </div>
 
                 <!-- Content -->
-                <h2 class="text-xl font-bold text-white mb-2 group-hover:text-yellow-500 transition-colors medieval-font">
-                  {guide.title}
+                <h2 class="text-xl font-bold text-white mb-2 group-hover:text-yellow-500 transition-colors medieval-font guide-title" data-key={guide.titleKey}>
+                  {guide.titleKey}
                 </h2>
-                <p class="text-gray-400 text-sm mb-4 line-clamp-2">
-                  {guide.description}
+                <p class="text-gray-400 text-sm mb-4 line-clamp-2 guide-description" data-key={guide.descriptionKey}>
+                  {guide.descriptionKey}
                 </p>
 
                 <!-- Read More -->
-                <div class="flex items-center text-yellow-500 text-sm font-medium">
+                <div class="flex items-center text-yellow-500 text-sm font-medium guide-read-more">
                   <span>Leer guía</span>
                   <span class="ml-2 group-hover:translate-x-1 transition-transform">→</span>
                 </div>
@@ -157,6 +157,46 @@ const iconMap: Record<string, any> = {
 
   </section>
 </Layout>
+
+<script>
+  import { t, getStoredLanguage } from '../../i18n/translations';
+
+  function applyTranslations() {
+    const lang = getStoredLanguage();
+
+    // Header
+    const guidesTitle = document.getElementById('guidesTitle');
+    if (guidesTitle) guidesTitle.textContent = t('guides.title', lang);
+
+    const guidesDescription = document.getElementById('guidesDescription');
+    if (guidesDescription) guidesDescription.textContent = t('guides.description', lang);
+
+    // Info box
+    const guidesImportant = document.getElementById('guidesImportant');
+    if (guidesImportant) guidesImportant.textContent = t('guides.important', lang);
+
+    const guidesImportantNote = document.getElementById('guidesImportantNote');
+    if (guidesImportantNote) guidesImportantNote.textContent = t('guides.importantNote', lang);
+
+    // Guide cards
+    document.querySelectorAll('.guide-title').forEach(el => {
+      const key = el.getAttribute('data-key');
+      if (key) el.textContent = t(`guides.${key}.title`, lang);
+    });
+
+    document.querySelectorAll('.guide-description').forEach(el => {
+      const key = el.getAttribute('data-key');
+      if (key) el.textContent = t(`guides.${key}.description`, lang);
+    });
+
+    document.querySelectorAll('.guide-read-more span:first-child').forEach(el => {
+      el.textContent = t('guides.readGuide', lang);
+    });
+  }
+
+  applyTranslations();
+  document.addEventListener('astro:page-load', applyTranslations);
+</script>
 
 <style>
   .line-clamp-2 {

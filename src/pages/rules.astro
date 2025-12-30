@@ -160,9 +160,9 @@ const getIconComponent = (iconName: string) => {
       </div>
       <div class="flex items-center justify-center gap-3 mb-3 sm:mb-4">
         <BookOpenText class="w-6 h-6 sm:w-8 sm:h-8 text-yellow-500" />
-        <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-yellow-500 medieval-font">Reglas del Servidor</h1>
+        <h1 id="rulesTitle" class="text-2xl sm:text-3xl md:text-4xl font-bold text-yellow-500 medieval-font">Reglas del Servidor</h1>
       </div>
-      <p class="text-sm sm:text-base md:text-lg text-gray-400 max-w-2xl mx-auto">
+      <p id="rulesSubtitle" class="text-sm sm:text-base md:text-lg text-gray-400 max-w-2xl mx-auto">
         Por favor, lee y respeta las siguientes reglas para asegurar una experiencia agradable para todos los jugadores.
       </p>
     </div>
@@ -173,7 +173,7 @@ const getIconComponent = (iconName: string) => {
       <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-amber-500/50 via-transparent to-transparent"></div>
       <div class="flex items-start gap-3 relative z-10">
         <AlertTriangle class="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
-        <p class="text-xs sm:text-sm text-amber-200">
+        <p id="rulesWarning" class="text-xs sm:text-sm text-amber-200">
           El incumplimiento de estas reglas puede resultar en sanciones que van desde advertencias hasta baneos permanentes. Ignorar las reglas no es excusa.
         </p>
       </div>
@@ -185,7 +185,7 @@ const getIconComponent = (iconName: string) => {
       <DiamondPattern opacity={0.02} class="rounded-xl" />
       <GoldenLine position="top" opacity={0.4} />
 
-      <h2 class="text-lg font-bold text-yellow-500 mb-4 medieval-font relative z-10">Indice de Secciones</h2>
+      <h2 id="rulesToC" class="text-lg font-bold text-yellow-500 mb-4 medieval-font relative z-10">Indice de Secciones</h2>
       <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3 relative z-10">
         {sections.map((section, index) => (
           <a href={`#section-${section.id}`}
@@ -194,7 +194,7 @@ const getIconComponent = (iconName: string) => {
             <span class="w-6 h-6 flex items-center justify-center rounded bg-yellow-500/10 text-yellow-500 text-xs font-bold group-hover:bg-yellow-500/20 transition-colors">
               {index + 1}
             </span>
-            <span class="text-xs sm:text-sm truncate">{section.name}</span>
+            <span class="text-xs sm:text-sm truncate toc-section-name" data-section-id={section.id}>{section.name}</span>
           </a>
         ))}
       </div>
@@ -221,8 +221,8 @@ const getIconComponent = (iconName: string) => {
                   <IconComponent class="w-5 h-5 sm:w-6 sm:h-6 text-yellow-500" />
                 </div>
                 <div>
-                  <span class="text-xs text-yellow-500/60 uppercase tracking-wider">Seccion {sectionIndex + 1}</span>
-                  <h2 class="text-lg sm:text-xl md:text-2xl font-bold text-yellow-500 medieval-font">{section.name}</h2>
+                  <span class="text-xs text-yellow-500/60 uppercase tracking-wider section-label" data-section-index={sectionIndex + 1}>Seccion {sectionIndex + 1}</span>
+                  <h2 class="text-lg sm:text-xl md:text-2xl font-bold text-yellow-500 medieval-font section-name" data-section-id={section.id}>{section.name}</h2>
                 </div>
               </div>
             </div>
@@ -232,10 +232,15 @@ const getIconComponent = (iconName: string) => {
               {section.rules.map((rule, ruleIndex) => (
                 <div class="relative pl-4 sm:pl-6 border-l-2 border-yellow-500/30 hover:border-yellow-500/60 transition-colors group">
                   <div class="absolute left-[-5px] top-0 w-2 h-2 rounded-full bg-yellow-500/50 group-hover:bg-yellow-500 transition-colors"></div>
-                  <h3 class="text-sm sm:text-base font-semibold text-white mb-1 group-hover:text-yellow-500 transition-colors">
+                  <h3 class="text-sm sm:text-base font-semibold text-white mb-1 group-hover:text-yellow-500 transition-colors rule-title"
+                      data-section-id={section.id}
+                      data-rule-id={ruleIndex + 1}
+                      data-prefix={`${sectionIndex + 1}.${ruleIndex + 1}`}>
                     {sectionIndex + 1}.{ruleIndex + 1} {rule.title}
                   </h3>
-                  <p class="text-xs sm:text-sm text-gray-400 leading-relaxed">{rule.content}</p>
+                  <p class="text-xs sm:text-sm text-gray-400 leading-relaxed rule-content"
+                     data-section-id={section.id}
+                     data-rule-id={ruleIndex + 1}>{rule.content}</p>
                 </div>
               ))}
             </div>
@@ -251,8 +256,8 @@ const getIconComponent = (iconName: string) => {
       <div class="flex items-start gap-3 relative z-10">
         <Info class="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
         <div>
-          <p class="text-sm sm:text-base text-blue-200 font-medium mb-1">Aceptacion de reglas</p>
-          <p class="text-xs sm:text-sm text-blue-300/80">
+          <p id="rulesAcceptTitle" class="text-sm sm:text-base text-blue-200 font-medium mb-1">Aceptacion de reglas</p>
+          <p id="rulesAcceptText" class="text-xs sm:text-sm text-blue-300/80">
             Al jugar en Mystovia, aceptas cumplir con todas estas reglas. El desconocimiento de las mismas no exime de su cumplimiento. Si tienes dudas sobre alguna regla, contacta al staff.
           </p>
         </div>
@@ -263,8 +268,83 @@ const getIconComponent = (iconName: string) => {
     <div class="flex justify-center mt-8">
       <a href="#" class="btn-medieval btn-medieval-secondary text-sm">
         <ArrowUp class="w-4 h-4" />
-        <span>Volver arriba</span>
+        <span id="rulesBackTop">Volver arriba</span>
       </a>
     </div>
   </section>
 </Layout>
+
+<script>
+  import { t, getStoredLanguage } from '../i18n/translations';
+
+  function applyTranslations() {
+    const lang = getStoredLanguage();
+
+    const rulesTitle = document.getElementById('rulesTitle');
+    if (rulesTitle) rulesTitle.textContent = t('rules.title', lang);
+
+    const rulesSubtitle = document.getElementById('rulesSubtitle');
+    if (rulesSubtitle) rulesSubtitle.textContent = t('rules.subtitle', lang);
+
+    const rulesWarning = document.getElementById('rulesWarning');
+    if (rulesWarning) rulesWarning.textContent = t('rules.warning', lang);
+
+    const rulesToC = document.getElementById('rulesToC');
+    if (rulesToC) rulesToC.textContent = t('rules.tableOfContents', lang);
+
+    const rulesAcceptTitle = document.getElementById('rulesAcceptTitle');
+    if (rulesAcceptTitle) rulesAcceptTitle.textContent = t('rules.acceptanceTitle', lang);
+
+    const rulesAcceptText = document.getElementById('rulesAcceptText');
+    if (rulesAcceptText) rulesAcceptText.textContent = t('rules.acceptanceText', lang);
+
+    const rulesBackTop = document.getElementById('rulesBackTop');
+    if (rulesBackTop) rulesBackTop.textContent = t('rules.backToTop', lang);
+
+    // Translate table of contents section names
+    document.querySelectorAll('.toc-section-name').forEach(el => {
+      const sectionId = el.getAttribute('data-section-id');
+      if (sectionId) {
+        el.textContent = t(`rules.sections.${sectionId}.name`, lang);
+      }
+    });
+
+    // Translate section labels
+    document.querySelectorAll('.section-label').forEach(el => {
+      const sectionIndex = el.getAttribute('data-section-index');
+      if (sectionIndex) {
+        el.textContent = `${t('rules.section', lang)} ${sectionIndex}`;
+      }
+    });
+
+    // Translate section names (headers)
+    document.querySelectorAll('.section-name').forEach(el => {
+      const sectionId = el.getAttribute('data-section-id');
+      if (sectionId) {
+        el.textContent = t(`rules.sections.${sectionId}.name`, lang);
+      }
+    });
+
+    // Translate rule titles
+    document.querySelectorAll('.rule-title').forEach(el => {
+      const sectionId = el.getAttribute('data-section-id');
+      const ruleId = el.getAttribute('data-rule-id');
+      const prefix = el.getAttribute('data-prefix');
+      if (sectionId && ruleId) {
+        el.textContent = `${prefix} ${t(`rules.sections.${sectionId}.rules.${ruleId}.title`, lang)}`;
+      }
+    });
+
+    // Translate rule content
+    document.querySelectorAll('.rule-content').forEach(el => {
+      const sectionId = el.getAttribute('data-section-id');
+      const ruleId = el.getAttribute('data-rule-id');
+      if (sectionId && ruleId) {
+        el.textContent = t(`rules.sections.${sectionId}.rules.${ruleId}.content`, lang);
+      }
+    });
+  }
+
+  applyTranslations();
+  document.addEventListener('astro:page-load', applyTranslations);
+</script>

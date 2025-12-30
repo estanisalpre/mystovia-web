@@ -48,7 +48,7 @@ try {
     <div class="absolute -top-0.5 left-1/2 -translate-x-1/2">
       <div class="relative px-6 py-2 rounded-b-lg" style="background: linear-gradient(to bottom, rgb(234 179 8 / 0.9), rgb(202 138 4 / 0.9));">
         <div class="absolute inset-0 rounded-b-lg border border-yellow-400/30 pointer-events-none"></div>
-        <h2 class="text-sm font-bold text-black text-center medieval-font relative z-10">Highscores</h2>
+        <h2 id="highscoresTitle" class="text-sm font-bold text-black text-center medieval-font relative z-10">Highscores</h2>
       </div>
     </div>
 
@@ -56,7 +56,7 @@ try {
       <div class="flex items-center justify-center py-8 text-center">
         <div>
           <Award class="w-12 h-12 mx-auto text-yellow-500/30 mb-3" strokeWidth={1.5} />
-          <p class="text-gray-400 text-sm">No hay datos de highscores</p>
+          <p id="noHighscoresText" class="text-gray-400 text-sm">No hay datos de highscores</p>
         </div>
       </div>
     ) : (
@@ -64,9 +64,9 @@ try {
         <!-- Table Header -->
         <div class="grid grid-cols-12 gap-2 px-3 py-2 text-xs text-gray-400 font-semibold border-b border-yellow-600/20">
           <div class="col-span-1 text-center">#</div>
-          <div class="col-span-5">Nombre</div>
-          <div class="col-span-4">Vocación</div>
-          <div class="col-span-2 text-right">Nivel</div>
+          <div id="hsNameHeader" class="col-span-5">Nombre</div>
+          <div id="hsVocationHeader" class="col-span-4">Vocación</div>
+          <div id="hsLevelHeader" class="col-span-2 text-right">Nivel</div>
         </div>
 
         <!-- Players List -->
@@ -107,9 +107,38 @@ try {
         href="/highscores"
         class="btn-medieval btn-medieval-secondary w-full"
       >
-        <span>Ver Highscores</span>
+        <span id="viewHighscoresBtn">Ver Highscores</span>
         <ArrowRight class="w-4 h-4" />
       </a>
     </div>
   </div>
 </section>
+
+<script>
+  import { t, getStoredLanguage } from '../../../i18n/translations';
+
+  function applyTranslations() {
+    const lang = getStoredLanguage();
+
+    const highscoresTitle = document.getElementById('highscoresTitle');
+    if (highscoresTitle) highscoresTitle.textContent = t('landing.highscores', lang);
+
+    const noHighscoresText = document.getElementById('noHighscoresText');
+    if (noHighscoresText) noHighscoresText.textContent = t('landing.noHighscores', lang);
+
+    const hsNameHeader = document.getElementById('hsNameHeader');
+    if (hsNameHeader) hsNameHeader.textContent = t('landing.name', lang);
+
+    const hsVocationHeader = document.getElementById('hsVocationHeader');
+    if (hsVocationHeader) hsVocationHeader.textContent = t('landing.vocation', lang);
+
+    const hsLevelHeader = document.getElementById('hsLevelHeader');
+    if (hsLevelHeader) hsLevelHeader.textContent = t('landing.level', lang);
+
+    const viewHighscoresBtn = document.getElementById('viewHighscoresBtn');
+    if (viewHighscoresBtn) viewHighscoresBtn.textContent = t('landing.viewHighscores', lang);
+  }
+
+  applyTranslations();
+  document.addEventListener('astro:page-load', applyTranslations);
+</script>

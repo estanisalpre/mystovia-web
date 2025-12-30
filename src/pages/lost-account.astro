@@ -77,20 +77,27 @@ import { CircleHelp } from "@lucide/astro";
     import { t, getStoredLanguage } from "../i18n/translations";
 
     const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3301';
+
+    function applyTranslations() {
+      const lang = getStoredLanguage();
+
+      const lostAccountTitle = document.getElementById("lostAccountTitle");
+      if (lostAccountTitle) lostAccountTitle.textContent = t("lostAccount.title", lang);
+
+      const lostAccountDescription = document.getElementById("lostAccountDescription");
+      if (lostAccountDescription) lostAccountDescription.textContent = t("lostAccount.description", lang);
+
+      const searchBtn = document.getElementById("searchBtn");
+      if (searchBtn) searchBtn.textContent = t("lostAccount.searchButton", lang);
+
+      const backToLoginLink = document.getElementById("backToLoginLink");
+      if (backToLoginLink) backToLoginLink.textContent = t("auth.backToLogin", lang);
+    }
+
+    applyTranslations();
+    document.addEventListener('astro:page-load', applyTranslations);
+
     const lang = getStoredLanguage();
-
-    // Apply translations
-    const lostAccountTitle = document.getElementById("lostAccountTitle");
-    if (lostAccountTitle) lostAccountTitle.textContent = t("lostAccount.title", lang);
-
-    const lostAccountDescription = document.getElementById("lostAccountDescription");
-    if (lostAccountDescription) lostAccountDescription.textContent = t("lostAccount.description", lang);
-
-    const searchBtn = document.getElementById("searchBtn");
-    if (searchBtn) searchBtn.textContent = t("lostAccount.searchButton", lang);
-
-    const backToLoginLink = document.getElementById("backToLoginLink");
-    if (backToLoginLink) backToLoginLink.textContent = t("auth.backToLogin", lang);
 
     const form = document.getElementById("lostAccountForm") as HTMLFormElement & {
       accountIdentifier: HTMLInputElement;

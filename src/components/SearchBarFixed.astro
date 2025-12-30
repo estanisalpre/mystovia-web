@@ -24,6 +24,7 @@ import { Search, Bot } from "@lucide/astro";
         </div>
         <button
           type="submit"
+          id="fixedSearchBtn"
           class="h-[34px] px-5 text-sm font-semibold bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-black rounded-lg transition-all border border-yellow-400/30 whitespace-nowrap"
         >
           Buscar
@@ -46,23 +47,36 @@ import { Search, Bot } from "@lucide/astro";
 <script>
   import { t, getStoredLanguage } from '../i18n/translations';
 
-  const lang = getStoredLanguage();
+  function applyTranslations() {
+    const lang = getStoredLanguage();
 
-  const fixedInput = document.getElementById('fixedCharacterName') as HTMLInputElement;
-  if (fixedInput) {
-    fixedInput.placeholder = t('character.searchPlaceholder', lang) || 'Buscar personaje...';
-  }
-
-  const fixedForm = document.getElementById('fixedSearchForm') as HTMLFormElement;
-  fixedForm?.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const input = document.getElementById('fixedCharacterName') as HTMLInputElement;
-    const name = input?.value.trim();
-
-    if (!name) {
-      return;
+    const fixedInput = document.getElementById('fixedCharacterName') as HTMLInputElement;
+    if (fixedInput) {
+      fixedInput.placeholder = t('character.searchPlaceholder', lang) || 'Buscar personaje...';
     }
 
-    window.location.href = `/character-information?name=${encodeURIComponent(name)}`;
-  });
+    const fixedSearchBtn = document.getElementById('fixedSearchBtn');
+    if (fixedSearchBtn) {
+      fixedSearchBtn.textContent = t('common.search', lang);
+    }
+  }
+
+  function initSearchForm() {
+    const fixedForm = document.getElementById('fixedSearchForm') as HTMLFormElement;
+    fixedForm?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const input = document.getElementById('fixedCharacterName') as HTMLInputElement;
+      const name = input?.value.trim();
+
+      if (!name) {
+        return;
+      }
+
+      window.location.href = `/character-information?name=${encodeURIComponent(name)}`;
+    });
+  }
+
+  applyTranslations();
+  initSearchForm();
+  document.addEventListener('astro:page-load', applyTranslations);
 </script>
