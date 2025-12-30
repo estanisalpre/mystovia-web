@@ -288,10 +288,15 @@
   },
   "hero": {
     "welcome": "Bem-vindo a",
-    "tagline": "Forje sua lenda em Mystovia",
-    "description": "Um reino clássico, perigos reais e recompensas únicas.",
-    "playNow": "Jogar Agora",
-    "downloadClient": "Baixar Cliente Mystovia"
+    "kingdomOpen": "O Reino Está Aberto!",
+    "adventureBegins": "A aventura começa agora!",
+    "kingdomDescription": "Os portões de Mystovia se abriram. É hora de forjar sua lenda, guerreiro. Junte-se a milhares de aventureiros que já estão explorando o reino!",
+    "downloadClient": "BAIXAR CLIENTE",
+    "windowsInstall": "Windows 10/11 - Instalação rápida e segura",
+    "tagline": "Forje sua lenda",
+    "description": "Um reino clássico onde cada batalha conta, os perigos são reais e as recompensas, únicas.",
+    "createAccount": "Criar conta",
+    "viewHighscores": "Ver Highscores"
   },
   "store": {
     "title": "Loja",
@@ -299,6 +304,305 @@
     "learnMore": "Saiba mais",
     "prev": "Anterior",
     "next": "Próximo"
+  },
+  "landing": {
+    "latestNews": "Últimas Notícias",
+    "noNewsYet": "Ainda não temos notícias",
+    "viewAllNews": "Ver todas as notícias",
+    "serverInfo": "SERVER INFO",
+    "experienceRates": "Experience Rates",
+    "login": "Entrar",
+    "noAccount": "Não tem uma conta?",
+    "registerNow": "Registre-se",
+    "highscores": "Highscores",
+    "noHighscores": "Sem dados de highscores",
+    "viewHighscores": "Ver Highscores",
+    "name": "Nome",
+    "vocation": "Vocação",
+    "level": "Nível",
+    "latestDeaths": "ÚLTIMAS MORTES",
+    "loadingDeaths": "Carregando mortes...",
+    "errorLoadingDeaths": "Erro ao carregar mortes",
+    "noRecentDeaths": "Não há mortes recentes",
+    "viewMore": "Ver mais",
+    "playersOnline": "Jogadores Online",
+    "viewAll": "Ver todos",
+    "noPlayersOnline": "Nenhum jogador online",
+    "topGuilds": "Top Guilds",
+    "viewAllGuilds": "Ver todas",
+    "noGuildsYet": "Nenhuma guild criada ainda",
+    "beTheFirst": "Seja o primeiro",
+    "unknown": "Desconhecido"
+  },
+  "downloadModal": {
+    "title": "Baixar Mystovia",
+    "subtitle": "Baixe o cliente oficial para começar sua aventura",
+    "windows": "Windows",
+    "secure": "Seguro",
+    "fast": "Rápido",
+    "downloadButton": "Baixar Cliente",
+    "version": "Version 1.0 - MystoviaLauncher.exe"
+  },
+  "pages": {
+    "home": "Início",
+    "online": {
+      "title": "Jogadores Online",
+      "description": "jogadores online",
+      "noPlayers": "Nenhum jogador online",
+      "serverEmpty": "O servidor está vazio no momento",
+      "playerOnline": "jogador online",
+      "playersOnline": "jogadores online",
+      "name": "Nome",
+      "vocation": "Vocação",
+      "level": "Nível"
+    },
+    "deaths": {
+      "title": "Últimas 100 Mortes",
+      "subtitle": "Registro das quedas mais recentes em Mystovia",
+      "lastUpdate": "Última atualização",
+      "deathsCount": "Mortes",
+      "player": "Jogador",
+      "vocation": "Vocação",
+      "level": "Nível",
+      "killedBy": "Morto Por",
+      "date": "Data",
+      "loading": "Carregando mortes...",
+      "error": "Erro ao carregar dados",
+      "empty": "Nenhuma morte registrada",
+      "backHome": "Voltar ao início"
+    },
+    "highscores": {
+      "title": "Highscores",
+      "subtitle": "Os melhores jogadores de Mystovia",
+      "filters": "Filtros",
+      "vocation": "Vocação",
+      "vocations": "Todas",
+      "category": "Categoria",
+      "search": "Buscar",
+      "lastUpdate": "Última atualização",
+      "results": "Resultados",
+      "rank": "Rank",
+      "name": "Nome",
+      "level": "Nível",
+      "points": "Pontos",
+      "player": "Jogador",
+      "loading": "Carregando highscores...",
+      "error": "Erro ao carregar dados",
+      "empty": "Não há jogadores no ranking"
+    },
+    "guilds": {
+      "title": "Guilds",
+      "subtitle": "Explore as guilds de Mystovia",
+      "createGuild": "Criar Guild",
+      "members": "Membros",
+      "leader": "Líder",
+      "noGuilds": "Nenhuma guild criada ainda",
+      "beFirst": "Seja o primeiro a criar uma guild",
+      "loading": "Carregando guilds...",
+      "createTitle": "Criar Nova Guild",
+      "createSubtitle": "Funde sua própria irmandade em Mystovia",
+      "guildName": "Nome da Guild",
+      "guildNamePlaceholder": "Nome da sua guild",
+      "guildNameHint": "3-20 caracteres, apenas letras, números e espaços",
+      "leaderCharacter": "Personagem Líder",
+      "selectCharacter": "Selecione um personagem",
+      "leaderHint": "Este personagem será o líder da guild",
+      "alreadyInGuild": "Já em guild",
+      "description": "Descrição",
+      "descriptionPlaceholder": "Descrição da guild (opcional)",
+      "createButton": "Criar Guild",
+      "creating": "Criando...",
+      "loginRequired": "Você precisa estar logado para criar uma guild",
+      "needCharacter": "Você precisa de pelo menos um personagem para criar uma guild",
+      "noCharactersAvailable": "Você não tem personagens disponíveis para liderar uma guild.",
+      "createCharacter": "Criar um personagem",
+      "allInGuild": "Todos os seus personagens já pertencem a uma guild.",
+      "leaveGuildFirst": "Um personagem deve sair de sua guild atual antes de poder liderar uma nova.",
+      "importantInfo": "Informação importante",
+      "infoLeaderControl": "O líder terá controle total sobre a guild",
+      "infoInvitePlayers": "Você pode convidar outros jogadores pelo nome do personagem",
+      "infoDefaultRanks": "Ranks padrão serão criados: Leader, Vice Leader e Member",
+      "fillAllFields": "Por favor, preencha todos os campos",
+      "connectionError": "Erro de conexão. Tente novamente.",
+      "errorCreating": "Erro ao criar guild"
+    },
+    "news": {
+      "title": "Notícias",
+      "subtitle": "Fique por dentro das últimas novidades de Mystovia",
+      "readMore": "Ler mais",
+      "noNews": "Nenhuma notícia ainda",
+      "stayTuned": "Fique atento para as próximas atualizações",
+      "allCategories": "Todas"
+    },
+    "forum": {
+      "title": "Fórum",
+      "subtitle": "Participe da conversa",
+      "newTopic": "Novo Tópico",
+      "topics": "Tópicos",
+      "replies": "Respostas",
+      "views": "Visualizações",
+      "votes": "votos",
+      "lastPost": "Último post",
+      "by": "por",
+      "noTopics": "Não há tópicos neste fórum",
+      "noTopicsInCategory": "Não há tópicos nesta categoria ainda.",
+      "beFirst": "Seja o primeiro a criar um tópico",
+      "createFirstTopic": "Criar o primeiro tópico",
+      "loading": "Carregando fórum...",
+      "createTopic": "Criar Tópico",
+      "createNewTopic": "Criar Novo Tópico",
+      "shareIdeas": "Compartilhe suas ideias com a comunidade",
+      "topicTitle": "Título",
+      "topicTitlePlaceholder": "Escreva um título descritivo...",
+      "content": "Conteúdo",
+      "contentPlaceholder": "Escreva o conteúdo do seu tópico...",
+      "category": "Categoria",
+      "selectCategory": "Selecione uma categoria",
+      "selectCharacter": "Selecione um personagem",
+      "noCharacters": "Você não tem personagens",
+      "needCharacter": "Você precisa criar um personagem para publicar no fórum",
+      "postAs": "Publicar como",
+      "markdownHint": "Você pode usar Markdown para formatar seu texto",
+      "createButton": "Criar Tópico",
+      "cancel": "Cancelar",
+      "creating": "Criando...",
+      "loginRequired": "Você precisa estar logado para criar um tópico",
+      "fillAllFields": "Por favor, preencha todos os campos",
+      "errorCreating": "Erro ao criar tópico",
+      "pinned": "Fixado",
+      "locked": "Bloqueado",
+      "home": "Início",
+      "loginInfo": "para criar tópicos e participar das discussões."
+    }
+  },
+  "createCharacter": {
+    "acceptRulesPrefix": "Aceito as",
+    "acceptRulesLink": "regras",
+    "acceptRulesAnd": "e as",
+    "acceptRulesTerms": "condições",
+    "acceptRulesSuffix": "do servidor."
+  },
+  "rules": {
+    "title": "Regras do Servidor",
+    "subtitle": "Por favor, leia e respeite as seguintes regras para garantir uma experiência agradável para todos os jogadores.",
+    "warning": "O descumprimento destas regras pode resultar em sanções que variam de advertências a banimentos permanentes. Ignorar as regras não é desculpa.",
+    "tableOfContents": "Índice de Seções",
+    "section": "Seção",
+    "acceptanceTitle": "Aceitação das regras",
+    "acceptanceText": "Ao jogar em Mystovia, você concorda em cumprir todas estas regras. O desconhecimento das mesmas não o exime do cumprimento. Se tiver dúvidas sobre alguma regra, entre em contato com a equipe.",
+    "backToTop": "Voltar ao topo",
+    "sections": {
+      "1": {
+        "name": "Regras principais",
+        "rules": {
+          "1": {
+            "title": "Nome que viole a regra de suporte",
+            "content": "É estritamente proibido qualquer nome que possa ser confundido com membros de suporte ou administração, como \"GM\", \"Admin\", \"Suporte\" ou qualquer variação que sugira autoridade dentro do jogo. Isso inclui nomes que possam induzir outros jogadores a acreditar que o titular tem poderes ou responsabilidades administrativas. Esses nomes serão alterados imediatamente."
+          },
+          "2": {
+            "title": "Nome Ofensivo",
+            "content": "Nomes ofensivos incluem, entre outros, comentários racistas ou sexistas, ou qualquer forma de incitação ao ódio. O objetivo é garantir um ambiente de jogo respeitoso e seguro para todos os jogadores. A administração alterará os nomes que violarem esta regra."
+          },
+          "3": {
+            "title": "Simular ser parte da equipe de Mystovia",
+            "content": "Qualquer tentativa de enganar outros jogadores fazendo-os acreditar que você faz parte da equipe ou administração do servidor constitui uma violação grave. Isso inclui usar nomes, títulos ou qualquer comportamento que sugira falsamente autoridade ou afiliação oficial."
+          },
+          "4": {
+            "title": "Calúnias ou informações falsas sobre a empresa",
+            "content": "É estritamente proibido espalhar rumores, informações falsas ou qualquer tipo de difamação sobre a empresa, sua equipe ou seus serviços. Isso inclui publicar informações enganosas em canais, redes sociais, Discord ou qualquer outro meio de comunicação. Essas ações prejudicam a reputação da empresa e a confiança dos jogadores."
+          },
+          "5": {
+            "title": "Roubos, red skull/iscas",
+            "content": "O roubo de kills (KS), a isca (atrair monstros para outros jogadores) e formas de fazer red skull (causando perda de equipamento ao obter caveira vermelha) são práticas que, embora possam ser frustrantes, fazem parte do ambiente competitivo do jogo. Mystovia não se responsabiliza por roubos, golpes, perdas de itens, personagens ou qualquer prejuízo sofrido dentro do servidor como consequência de interações entre jogadores. Cada jogador é plenamente responsável por suas ações, decisões e acordos realizados dentro do jogo. A administração não intervirá em disputas relacionadas a essas práticas, exceto em casos em que seja detectado um prejuízo claro e significativo para a estabilidade ou ordem do servidor. É importante lembrar que situações de caveira vermelha poderão ser sancionadas se for detectado uso de multiclient ou outras práticas proibidas. Situações extremas que gerem desequilíbrio ou desordem no servidor serão analisadas individualmente e medidas apropriadas serão aplicadas se necessário. Os jogadores são encorajados a resolver este tipo de conflitos de forma amigável e com bom comportamento."
+          }
+        }
+      },
+      "2": {
+        "name": "Trapaça",
+        "rules": {
+          "1": {
+            "title": "Abuso de bugs",
+            "content": "É estritamente proibido qualquer uso intencional de erros ou falhas do jogo para obter vantagens injustas. Isso inclui, entre outros, exploits que afetem a economia do jogo, o PvP, a progressão do personagem ou qualquer outro aspecto que distorça a experiência de jogo. Recomenda-se aos jogadores que reportem os bugs à administração imediatamente."
+          },
+          "2": {
+            "title": "Verificação",
+            "content": "A administração do servidor pode realizar verificações periódicas para garantir que todos os jogadores cumpram as regras do jogo. Isso pode incluir verificações de software, análise de comportamento, verificações de banco de dados e outras formas de monitoramento. A falta de cooperação ou tentativas de obstruir essas verificações serão consideradas uma violação das regras e podem resultar em sanções severas, incluindo banimento permanente da conta. Nossas verificações manuais apresentarão situações incomuns no jogo onde você deve interagir com nossa equipe no local para evitar punição imediata. As sanções serão aplicadas junto com evidências gravadas do jogador por um membro da equipe e não serão contestáveis pelo usuário após a decisão final da equipe. Além disso, os bloqueios aplicados através de verificações externas são baseados em análise e cruzamento com nosso banco de dados e, portanto, também são situações não contestáveis pelo usuário."
+          },
+          "3": {
+            "title": "Denúncias",
+            "content": "Os jogadores são encorajados a reportar comportamentos suspeitos ou violações de regras à administração do servidor. No entanto, é proibido enviar denúncias falsas ou maliciosas para prejudicar outros jogadores. O uso responsável do sistema de denúncias ajuda a manter a integridade e imparcialidade do jogo. Use a ferramenta de denúncias do jogo diretamente no seu personagem ou nas mensagens de chat."
+          },
+          "4": {
+            "title": "Tolerância",
+            "content": "A proibição de automação dentro do servidor é nossa regra mais rigorosa; portanto, aplicaremos sanções se nossa equipe detectar. Lembre-se de que esta é uma verificação manual e dependerá exclusivamente do membro da equipe que analisar o caso naquele momento."
+          }
+        }
+      },
+      "3": {
+        "name": "Mensagens e declarações",
+        "rules": {
+          "1": {
+            "title": "Comportamento ofensivo",
+            "content": "Conflitos verbais fazem parte do jogo, mas racismo, sexismo, discriminação, ameaças reais e assédio repetido são proibidos e serão sancionados."
+          },
+          "2": {
+            "title": "Dados pessoais",
+            "content": "É estritamente proibido revelar ou solicitar dados pessoais, endereço, número de telefone, informações bancárias ou qualquer outra informação confidencial. A segurança e a privacidade dos jogadores são nossa prioridade absoluta."
+          },
+          "3": {
+            "title": "Publicidade",
+            "content": "Qualquer tipo de publicidade não autorizada, incluindo a promoção de outros jogos, produtos ou serviços comerciais, é estritamente proibida. Apenas anúncios aprovados pela administração do servidor são permitidos, os quais sempre serão feitos pela equipe. O descumprimento desta norma pode resultar em advertências ou expulsão."
+          },
+          "4": {
+            "title": "SPAM",
+            "content": "Spam inclui a repetição contínua da mesma mensagem, envio de mensagens irrelevantes no Chat Mundial, chats de Publicidade e Ajuda, uso excessivo de caracteres especiais ou qualquer comportamento que interfira na experiência de jogo de outros jogadores. O objetivo é manter os canais de comunicação claros e úteis para todos."
+          },
+          "5": {
+            "title": "Apoiar violações de regras",
+            "content": "É proibido apoiar ou incitar outros jogadores a violar as regras do servidor, seja através de instruções, estímulos ou qualquer outra forma de ajuda. Isso inclui, entre outros, ajudar a explorar vulnerabilidades, hackear, trapacear ou qualquer comportamento que comprometa a integridade do jogo."
+          }
+        }
+      },
+      "4": {
+        "name": "Equilíbrio de PvP",
+        "rules": {
+          "1": {
+            "title": "Software",
+            "content": "É permitido exclusivamente o uso do bot integrado no cliente oficial de Mystovia. É estritamente proibido o uso de qualquer programa, script, macro, bot externo, hack ou software de terceiros que automatize ações, forneça vantagens indevidas, revele informações não disponíveis para outros jogadores ou interfira de qualquer forma no desenvolvimento normal do jogo, especialmente em situações de PvP. Será dada ênfase especial na detecção e sanção do uso de ferramentas externas durante guerras, como scripts de renovação instantânea de magic walls, wild growth ou outras automações que forneçam vantagem competitiva. Todas as situações devem ser reportadas e avaliadas pela equipe de Mystovia. Imagens ou vídeos de terceiros não serão aceitos como método de verificação. O descumprimento desta norma pode resultar em banimento imediato e permanente, sem direito a recurso."
+          },
+          "2": {
+            "title": "Multiclient",
+            "content": "É estritamente proibido executar mais de um cliente de jogo simultaneamente para obter vantagens em situações de PvP, como controle de múltiplos personagens durante guerras, combates entre jogadores ou qualquer confronto jogador contra jogador. Esta prática afeta o equilíbrio do jogo e prejudica a experiência da comunidade."
+          },
+          "3": {
+            "title": "Combo bot",
+            "content": "É estritamente proibido o uso de combo bots ou qualquer tipo de automação que coordene, execute ou sincronize ataques, feitiços, runas ou ações ofensivas entre um ou mais personagens em situações de PvP. Esta proibição inclui tanto programas externos quanto configurações avançadas, scripts ou funções que permitam combos automáticos sem intervenção direta do jogador."
+          },
+          "4": {
+            "title": "Pushmax",
+            "content": "Todo empurrão em PvP deve ser realizado manualmente pelo jogador. Qualquer automação, sincronização ou repetição automática de empurrões será sancionada com banimento permanente."
+          }
+        }
+      },
+      "5": {
+        "name": "Vendas e publicações",
+        "rules": {
+          "1": {
+            "title": "Comércio permitido",
+            "content": "É permitido publicar e comercializar itens da store, personagens e contas exclusivamente usando moeda do jogo. É estritamente proibido publicar, solicitar ou acordar preços expressos em dinheiro real ou qualquer meio de pagamento externo ao jogo."
+          }
+        }
+      },
+      "6": {
+        "name": "Sanções",
+        "rules": {
+          "1": {
+            "title": "Aplicação de sanções",
+            "content": "Mystovia aplica um sistema progressivo de sanções com o objetivo de manter a ordem e equidade dentro do servidor. Cada jogador terá um máximo de quatro (4) oportunidades. As violações que não sejam consideradas graves ou determinantes para o correto funcionamento do servidor serão sancionadas através de advertências (warnings). Ao atingir três (3) warnings, o jogador será sancionado com um banimento temporário de três (3) dias. Uma vez cumprido e levantado esse banimento temporário, qualquer nova violação do regulamento resultará em banimento permanente, sem possibilidade de apelação. Violações graves, reiteradas ou que prejudiquem diretamente a estabilidade, economia ou experiência geral do servidor podem ser sancionadas com banimento permanente imediato, independentemente do número de warnings acumulados."
+          }
+        }
+      }
+    }
   },
   "legal": {
     "termsTitle": "Termos e Condições",

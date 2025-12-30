@@ -172,37 +172,42 @@ let error = "";
     import { useAuth } from "@hooks/useAuth";
     import { t, getStoredLanguage } from "../i18n/translations";
 
-    const lang = getStoredLanguage();
+    function applyTranslations() {
+      const lang = getStoredLanguage();
 
-    // Apply translations
-    const registerTitle = document.getElementById("registerTitle");
-    if (registerTitle) registerTitle.textContent = t("auth.createAccount", lang);
+      const registerTitle = document.getElementById("registerTitle");
+      if (registerTitle) registerTitle.textContent = t("auth.createAccount", lang);
 
-    const registerBtn = document.getElementById("registerBtn");
-    if (registerBtn) registerBtn.textContent = t("auth.registerButton", lang);
+      const registerBtn = document.getElementById("registerBtn");
+      if (registerBtn) registerBtn.textContent = t("auth.registerButton", lang);
 
-    const hasAccountText = document.getElementById("hasAccountText");
-    const loginLink = document.getElementById("loginLink");
-    if (hasAccountText && loginLink) {
-      hasAccountText.childNodes[0].textContent = t("auth.hasAccount", lang) + " ";
-      loginLink.textContent = t("auth.login", lang);
+      const hasAccountText = document.getElementById("hasAccountText");
+      const loginLink = document.getElementById("loginLink");
+      if (hasAccountText && loginLink) {
+        hasAccountText.childNodes[0].textContent = t("auth.hasAccount", lang) + " ";
+        loginLink.textContent = t("auth.login", lang);
+      }
+
+      const modalTitle = document.getElementById("modalTitle");
+      if (modalTitle) modalTitle.textContent = t("auth.recoveryKeyTitle", lang);
+
+      const modalSubtitle = document.getElementById("modalSubtitle");
+      if (modalSubtitle) modalSubtitle.textContent = t("auth.recoveryKeySubtitle", lang);
+
+      const copyBtnText = document.getElementById("copyBtnText");
+      if (copyBtnText) copyBtnText.textContent = t("auth.copyKey", lang);
+
+      const warningText = document.getElementById("warningText");
+      if (warningText) warningText.textContent = t("auth.recoveryKeyWarning", lang);
+
+      const finishBtn = document.getElementById("finishBtn");
+      if (finishBtn) finishBtn.textContent = t("auth.finish", lang);
     }
 
-    // Modal translations
-    const modalTitle = document.getElementById("modalTitle");
-    if (modalTitle) modalTitle.textContent = t("auth.recoveryKeyTitle", lang);
+    applyTranslations();
+    document.addEventListener('astro:page-load', applyTranslations);
 
-    const modalSubtitle = document.getElementById("modalSubtitle");
-    if (modalSubtitle) modalSubtitle.textContent = t("auth.recoveryKeySubtitle", lang);
-
-    const copyBtnText = document.getElementById("copyBtnText");
-    if (copyBtnText) copyBtnText.textContent = t("auth.copyKey", lang);
-
-    const warningText = document.getElementById("warningText");
-    if (warningText) warningText.textContent = t("auth.recoveryKeyWarning", lang);
-
-    const finishBtn = document.getElementById("finishBtn");
-    if (finishBtn) finishBtn.textContent = t("auth.finish", lang);
+    const lang = getStoredLanguage();
 
     const form = document.getElementById("registerForm") as HTMLFormElement & {
       username: HTMLInputElement;

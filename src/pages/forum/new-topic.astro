@@ -67,12 +67,12 @@ const selectedCategory = Astro.url.searchParams.get('category');
     <nav class="flex items-center gap-2 text-xs sm:text-sm text-gray-400 mb-4 sm:mb-6">
       <a href="/" class="hover:text-yellow-500 transition-colors flex items-center gap-1">
         <Home class="w-3 h-3" />
-        Inicio
+        <span id="breadcrumbHome">Inicio</span>
       </a>
       <ChevronRight class="w-3 h-3 text-gray-600" />
-      <a href="/forum" class="hover:text-yellow-500 transition-colors">Foro</a>
+      <a href="/forum" class="hover:text-yellow-500 transition-colors" id="breadcrumbForum">Foro</a>
       <ChevronRight class="w-3 h-3 text-gray-600" />
-      <span class="text-yellow-500">Nuevo Tema</span>
+      <span class="text-yellow-500" id="breadcrumbNewTopic">Nuevo Tema</span>
     </nav>
 
     <!-- Main Card -->
@@ -93,15 +93,15 @@ const selectedCategory = Astro.url.searchParams.get('category');
             <PenLine class="w-5 h-5 sm:w-6 sm:h-6 text-yellow-500/70" />
             <div class="h-px w-8 sm:w-12 bg-gradient-to-l from-transparent to-yellow-500/50"></div>
           </div>
-          <h1 class="text-2xl sm:text-3xl font-bold text-white medieval-font">Crear Nuevo Tema</h1>
-          <p class="text-sm text-gray-400 mt-2">Comparte tus ideas con la comunidad</p>
+          <h1 id="formTitle" class="text-2xl sm:text-3xl font-bold text-white medieval-font">Crear Nuevo Tema</h1>
+          <p id="formSubtitle" class="text-sm text-gray-400 mt-2">Comparte tus ideas con la comunidad</p>
         </div>
 
         <!-- Character Select -->
         <div class="space-y-2">
-          <label class="flex items-center gap-2 text-sm font-semibold text-gray-300">
+          <label id="postAsLabel" class="flex items-center gap-2 text-sm font-semibold text-gray-300">
             <User class="w-4 h-4 text-yellow-500/70" />
-            Publicar como
+            <span>Publicar como</span>
           </label>
           <div class="relative">
             <select
@@ -110,10 +110,10 @@ const selectedCategory = Astro.url.searchParams.get('category');
               required
             >
               {userCharacters.length === 0 ? (
-                <option value="">No tienes personajes</option>
+                <option value="" id="optNoChars">No tienes personajes</option>
               ) : (
                 <>
-                  <option value="">Selecciona un personaje</option>
+                  <option value="" id="optSelectChar">Selecciona un personaje</option>
                   {userCharacters.map((char: any) => (
                     <option value={char.id}>
                       {char.name} - Nivel {char.level} {char.vocation}
@@ -127,18 +127,18 @@ const selectedCategory = Astro.url.searchParams.get('category');
             </div>
           </div>
           {userCharacters.length === 0 && (
-            <p class="text-xs text-yellow-500/70 flex items-center gap-1">
+            <p id="needCharWarning" class="text-xs text-yellow-500/70 flex items-center gap-1">
               <AlertTriangle class="w-3 h-3" fill="currentColor" />
-              Necesitas crear un personaje para publicar en el foro
+              <span>Necesitas crear un personaje para publicar en el foro</span>
             </p>
           )}
         </div>
 
         <!-- Category Select -->
         <div class="space-y-2">
-          <label class="flex items-center gap-2 text-sm font-semibold text-gray-300">
+          <label id="categoryLabel" class="flex items-center gap-2 text-sm font-semibold text-gray-300">
             <FolderOpen class="w-4 h-4 text-yellow-500/70" />
-            Categoría
+            <span>Categoría</span>
           </label>
           <div class="relative">
             <select
@@ -146,7 +146,7 @@ const selectedCategory = Astro.url.searchParams.get('category');
               class="w-full px-4 py-3 bg-gray-800/80 border border-gray-700/50 rounded-lg text-white focus:outline-none focus:border-yellow-500/50 focus:ring-1 focus:ring-yellow-500/30 transition-all appearance-none cursor-pointer"
               required
             >
-              <option value="">Selecciona una categoría</option>
+              <option value="" id="optSelectCategory">Selecciona una categoría</option>
               {categories.map((cat: any) => (
                 <option
                   value={cat.id}
@@ -164,9 +164,9 @@ const selectedCategory = Astro.url.searchParams.get('category');
 
         <!-- Title Input -->
         <div class="space-y-2">
-          <label class="flex items-center gap-2 text-sm font-semibold text-gray-300">
+          <label id="titleLabel" class="flex items-center gap-2 text-sm font-semibold text-gray-300">
             <Type class="w-4 h-4 text-yellow-500/70" />
-            Título
+            <span>Título</span>
           </label>
           <input
             type="text"
@@ -180,9 +180,9 @@ const selectedCategory = Astro.url.searchParams.get('category');
 
         <!-- Content Textarea -->
         <div class="space-y-2">
-          <label class="flex items-center gap-2 text-sm font-semibold text-gray-300">
+          <label id="contentLabel" class="flex items-center gap-2 text-sm font-semibold text-gray-300">
             <FileText class="w-4 h-4 text-yellow-500/70" />
-            Contenido
+            <span>Contenido</span>
           </label>
           <textarea
             id="content"
@@ -191,9 +191,9 @@ const selectedCategory = Astro.url.searchParams.get('category');
             placeholder="Escribe el contenido de tu tema..."
             required
           ></textarea>
-          <p class="text-xs text-gray-500 flex items-center gap-1">
+          <p id="markdownHint" class="text-xs text-gray-500 flex items-center gap-1">
             <Info class="w-3 h-3" fill="currentColor" />
-            Puedes usar Markdown para dar formato a tu texto
+            <span>Puedes usar Markdown para dar formato a tu texto</span>
           </p>
         </div>
 
@@ -210,10 +210,11 @@ const selectedCategory = Astro.url.searchParams.get('category');
             class="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-b from-yellow-600 to-yellow-700 hover:from-yellow-500 hover:to-yellow-600 text-white font-semibold rounded-lg transition-all duration-300 border border-yellow-500/30 shadow-[0_0_15px_rgba(202,138,4,0.2)] hover:shadow-[0_0_20px_rgba(202,138,4,0.4)]"
           >
             <PenLine class="w-4 h-4" />
-            <span>Crear Tema</span>
+            <span id="submitBtnText">Crear Tema</span>
           </button>
           <a
             href="/forum"
+            id="cancelBtn"
             class="flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-b from-gray-700 to-gray-800 hover:from-gray-600 hover:to-gray-700 text-white font-semibold rounded-lg transition-all duration-300 border border-gray-600/30"
           >
             Cancelar
@@ -225,6 +226,95 @@ const selectedCategory = Astro.url.searchParams.get('category');
 </Layout>
 
 <script>
+  import { t, getStoredLanguage } from '../../i18n/translations';
+
+  function applyTranslations() {
+    const lang = getStoredLanguage();
+
+    // Breadcrumb
+    const breadcrumbHome = document.getElementById('breadcrumbHome');
+    if (breadcrumbHome) breadcrumbHome.textContent = t('pages.forum.home', lang);
+
+    const breadcrumbForum = document.getElementById('breadcrumbForum');
+    if (breadcrumbForum) breadcrumbForum.textContent = t('pages.forum.title', lang);
+
+    const breadcrumbNewTopic = document.getElementById('breadcrumbNewTopic');
+    if (breadcrumbNewTopic) breadcrumbNewTopic.textContent = t('pages.forum.newTopic', lang);
+
+    // Form title
+    const formTitle = document.getElementById('formTitle');
+    if (formTitle) formTitle.textContent = t('pages.forum.createNewTopic', lang);
+
+    const formSubtitle = document.getElementById('formSubtitle');
+    if (formSubtitle) formSubtitle.textContent = t('pages.forum.shareIdeas', lang);
+
+    // Labels
+    const postAsLabel = document.getElementById('postAsLabel');
+    if (postAsLabel) {
+      const span = postAsLabel.querySelector('span');
+      if (span) span.textContent = t('pages.forum.postAs', lang);
+    }
+
+    const categoryLabel = document.getElementById('categoryLabel');
+    if (categoryLabel) {
+      const span = categoryLabel.querySelector('span');
+      if (span) span.textContent = t('pages.forum.category', lang);
+    }
+
+    const titleLabel = document.getElementById('titleLabel');
+    if (titleLabel) {
+      const span = titleLabel.querySelector('span');
+      if (span) span.textContent = t('pages.forum.topicTitle', lang);
+    }
+
+    const contentLabel = document.getElementById('contentLabel');
+    if (contentLabel) {
+      const span = contentLabel.querySelector('span');
+      if (span) span.textContent = t('pages.forum.content', lang);
+    }
+
+    // Placeholders
+    const titleInput = document.getElementById('title') as HTMLInputElement;
+    if (titleInput) titleInput.placeholder = t('pages.forum.topicTitlePlaceholder', lang);
+
+    const contentTextarea = document.getElementById('content') as HTMLTextAreaElement;
+    if (contentTextarea) contentTextarea.placeholder = t('pages.forum.contentPlaceholder', lang);
+
+    // Options
+    const optNoChars = document.getElementById('optNoChars');
+    if (optNoChars) optNoChars.textContent = t('pages.forum.noCharacters', lang);
+
+    const optSelectChar = document.getElementById('optSelectChar');
+    if (optSelectChar) optSelectChar.textContent = t('pages.forum.selectCharacter', lang);
+
+    const optSelectCategory = document.getElementById('optSelectCategory');
+    if (optSelectCategory) optSelectCategory.textContent = t('pages.forum.selectCategory', lang);
+
+    // Warnings and hints
+    const needCharWarning = document.getElementById('needCharWarning');
+    if (needCharWarning) {
+      const span = needCharWarning.querySelector('span');
+      if (span) span.textContent = t('pages.forum.needCharacter', lang);
+    }
+
+    const markdownHint = document.getElementById('markdownHint');
+    if (markdownHint) {
+      const span = markdownHint.querySelector('span');
+      if (span) span.textContent = t('pages.forum.markdownHint', lang);
+    }
+
+    // Buttons
+    const submitBtnText = document.getElementById('submitBtnText');
+    if (submitBtnText) submitBtnText.textContent = t('pages.forum.createButton', lang);
+
+    const cancelBtn = document.getElementById('cancelBtn');
+    if (cancelBtn) cancelBtn.textContent = t('pages.forum.cancel', lang);
+  }
+
+  applyTranslations();
+  document.addEventListener('astro:page-load', applyTranslations);
+
+  const lang = getStoredLanguage();
   const form = document.getElementById('topicForm') as HTMLFormElement;
   const characterSelect = document.getElementById('characterId') as HTMLSelectElement;
   const categorySelect = document.getElementById('categoryId') as HTMLSelectElement;
@@ -241,7 +331,7 @@ const selectedCategory = Astro.url.searchParams.get('category');
     const content = contentTextarea.value;
 
     if (!characterId || !categoryId || !title || !content) {
-      alert('Por favor completa todos los campos');
+      alert(t('pages.forum.fillAllFields', lang));
       return;
     }
 
@@ -253,7 +343,7 @@ const selectedCategory = Astro.url.searchParams.get('category');
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
       </svg>
-      <span>Creando...</span>
+      <span>${t('pages.forum.creating', lang)}</span>
     `;
 
     try {
@@ -275,13 +365,13 @@ const selectedCategory = Astro.url.searchParams.get('category');
       if (data.success) {
         window.location.href = `/forum/topic/${data.topicId}`;
       } else {
-        alert(data.error || 'Error al crear el tema');
+        alert(data.error || t('pages.forum.errorCreating', lang));
         submitBtn.disabled = false;
         submitBtn.innerHTML = originalContent;
       }
     } catch (error) {
       console.error('Error:', error);
-      alert('Error al crear el tema');
+      alert(t('pages.forum.errorCreating', lang));
       submitBtn.disabled = false;
       submitBtn.innerHTML = originalContent;
     }

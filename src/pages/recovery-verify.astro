@@ -155,6 +155,26 @@ import { Check } from "@lucide/astro";
     import { t, getStoredLanguage } from "../i18n/translations";
 
     const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3301';
+
+    function applyTranslations() {
+      const lang = getStoredLanguage();
+
+      const verifyTitle = document.getElementById("verifyTitle");
+      if (verifyTitle) verifyTitle.textContent = t("recovery.verifyRecoveryKey", lang);
+
+      const verifyDescription = document.getElementById("verifyDescription");
+      if (verifyDescription) verifyDescription.textContent = t("recovery.enterRecoveryKey", lang);
+
+      const verifyBtn = document.getElementById("verifyBtn");
+      if (verifyBtn) verifyBtn.textContent = t("recovery.verify", lang);
+
+      const backLink = document.getElementById("backLink");
+      if (backLink) backLink.textContent = t("common.back", lang);
+    }
+
+    applyTranslations();
+    document.addEventListener('astro:page-load', applyTranslations);
+
     const lang = getStoredLanguage();
 
     // Check if we have account info
@@ -174,19 +194,6 @@ import { Check } from "@lucide/astro";
     // Display account info
     const accountNameEl = document.getElementById('accountName');
     if (accountNameEl) accountNameEl.textContent = `${accountName} (${maskedEmail})`;
-
-    // Apply translations
-    const verifyTitle = document.getElementById("verifyTitle");
-    if (verifyTitle) verifyTitle.textContent = t("recovery.verifyRecoveryKey", lang);
-
-    const verifyDescription = document.getElementById("verifyDescription");
-    if (verifyDescription) verifyDescription.textContent = t("recovery.enterRecoveryKey", lang);
-
-    const verifyBtn = document.getElementById("verifyBtn");
-    if (verifyBtn) verifyBtn.textContent = t("recovery.verify", lang);
-
-    const backLink = document.getElementById("backLink");
-    if (backLink) backLink.textContent = t("common.back", lang);
 
     // Format recovery key input as user types
     const recoveryKeyInput = document.getElementById('recoveryKey') as HTMLInputElement;

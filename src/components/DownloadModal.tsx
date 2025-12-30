@@ -1,9 +1,11 @@
 import { useEffect, useRef } from 'react';
 import { X, Download, Monitor, Shield, Zap, Diamond } from 'lucide-react';
 import { DiamondPattern, GoldenLine, CornerOrnaments } from './ui';
+import { useTranslation } from 'react-i18next';
 
 export default function DownloadModal() {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const { t } = useTranslation();
 
   // Listen for custom event to open modal
   useEffect(() => {
@@ -70,10 +72,10 @@ export default function DownloadModal() {
             <span className="h-px w-12 bg-gradient-to-l from-transparent to-yellow-500/50" />
           </figure>
           <h2 id="download-modal-title" className="text-2xl sm:text-3xl font-bold text-yellow-500 mb-2" style={{ fontFamily: '"Cinzel", serif' }}>
-            Descargar Mystovia
+            {t('downloadModal.title')}
           </h2>
           <p className="text-gray-400 text-sm sm:text-base">
-            Descarga el cliente oficial para comenzar tu aventura
+            {t('downloadModal.subtitle')}
           </p>
         </header>
 
@@ -82,17 +84,17 @@ export default function DownloadModal() {
           <li className="text-center p-3 rounded-lg border border-yellow-600/20"
               style={{ background: 'linear-gradient(to bottom, rgb(31 41 55 / 0.5), rgb(17 24 39 / 0.7))' }}>
             <Monitor className="w-5 h-5 text-yellow-500 mx-auto mb-1" aria-hidden="true" />
-            <span className="text-xs text-gray-400">Windows</span>
+            <span className="text-xs text-gray-400">{t('downloadModal.windows')}</span>
           </li>
           <li className="text-center p-3 rounded-lg border border-yellow-600/20"
               style={{ background: 'linear-gradient(to bottom, rgb(31 41 55 / 0.5), rgb(17 24 39 / 0.7))' }}>
             <Shield className="w-5 h-5 text-yellow-500 mx-auto mb-1" aria-hidden="true" />
-            <span className="text-xs text-gray-400">Seguro</span>
+            <span className="text-xs text-gray-400">{t('downloadModal.secure')}</span>
           </li>
           <li className="text-center p-3 rounded-lg border border-yellow-600/20"
               style={{ background: 'linear-gradient(to bottom, rgb(31 41 55 / 0.5), rgb(17 24 39 / 0.7))' }}>
             <Zap className="w-5 h-5 text-yellow-500 mx-auto mb-1" aria-hidden="true" />
-            <span className="text-xs text-gray-400">Rapido</span>
+            <span className="text-xs text-gray-400">{t('downloadModal.fast')}</span>
           </li>
         </ul>
 
@@ -109,12 +111,12 @@ export default function DownloadModal() {
           onClick={closeModal}
         >
           <Download className="w-5 h-5" aria-hidden="true" />
-          <span>Descargar Cliente</span>
+          <span>{t('downloadModal.downloadButton')}</span>
         </a>
 
         {/* Version info */}
         <footer className="text-center text-xs text-gray-500 mt-4">
-          <p>Version 1.0 - MystoviaLauncher.exe</p>
+          <p>{t('downloadModal.version')}</p>
         </footer>
       </article>
     </dialog>

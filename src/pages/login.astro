@@ -110,44 +110,54 @@ let error = "";
     import { useAuth } from "@hooks/useAuth";
     import { t, getStoredLanguage } from "../i18n/translations";
 
-    const lang = getStoredLanguage();
+    function applyTranslations() {
+      const lang = getStoredLanguage();
 
-    // Apply translations
-    const loginTitle = document.getElementById("loginTitle");
-    if (loginTitle) loginTitle.textContent = t("auth.login", lang);
+      const loginTitle = document.getElementById("loginTitle");
+      if (loginTitle) loginTitle.textContent = t("auth.login", lang);
 
-    const loginBtn = document.getElementById("loginBtn");
-    if (loginBtn) loginBtn.textContent = t("auth.loginButton", lang);
+      const loginBtn = document.getElementById("loginBtn");
+      if (loginBtn) loginBtn.textContent = t("auth.loginButton", lang);
 
-    const noAccountText = document.getElementById("noAccountText");
-    const registerLink = document.getElementById("registerLink");
-    if (noAccountText && registerLink) {
-      noAccountText.childNodes[0].textContent = t("auth.noAccount", lang) + " ";
-      registerLink.textContent = t("auth.register", lang);
+      const noAccountText = document.getElementById("noAccountText");
+      const registerLink = document.getElementById("registerLink");
+      if (noAccountText && registerLink) {
+        noAccountText.childNodes[0].textContent = t("auth.noAccount", lang) + " ";
+        registerLink.textContent = t("auth.register", lang);
+      }
+
+      const forgotPasswordLink = document.getElementById("forgotPasswordLink");
+      if (forgotPasswordLink) forgotPasswordLink.textContent = t("auth.forgotPasswordLink", lang);
+
+      const lostAccountLink = document.getElementById("lostAccountLink");
+      if (lostAccountLink) {
+        const span = lostAccountLink.querySelector("span");
+        if (span) span.textContent = t("auth.lostAccount", lang);
+      }
     }
 
-    const forgotPasswordLink = document.getElementById("forgotPasswordLink");
-    if (forgotPasswordLink) forgotPasswordLink.textContent = t("auth.forgotPasswordLink", lang);
+    function setupForm() {
+      const form = document.getElementById("loginForm") as HTMLFormElement & {
+        email: HTMLInputElement;
+        password: HTMLInputElement;
+      };
 
-    const lostAccountLink = document.getElementById("lostAccountLink");
-    if (lostAccountLink) {
-      const span = lostAccountLink.querySelector("span");
-      if (span) span.textContent = t("auth.lostAccount", lang);
+      form?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const email = form.email.value;
+        const password = form.password.value;
+
+        const res = await useAuth("login", { email, password });
+        if (res.success) window.location.href = "/create-character";
+        else alert(res.error);
+      });
     }
 
-    const form = document.getElementById("loginForm") as HTMLFormElement & {
-      email: HTMLInputElement;
-      password: HTMLInputElement;
-    };
-
-    form?.addEventListener("submit", async (e) => {
-      e.preventDefault();
-      const email = form.email.value;
-      const password = form.password.value;
-
-      const res = await useAuth("login", { email, password });
-      if (res.success) window.location.href = "/create-character";
-      else alert(res.error);
+    applyTranslations();
+    setupForm();
+    document.addEventListener('astro:page-load', () => {
+      applyTranslations();
+      setupForm();
     });
   </script>
 </Layout>

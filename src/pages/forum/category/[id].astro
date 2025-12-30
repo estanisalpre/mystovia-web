@@ -84,10 +84,10 @@ const { topics, pagination } = topicsData;
     <nav class="flex items-center gap-2 text-xs sm:text-sm text-gray-400 mb-4 sm:mb-6">
       <a href="/" class="hover:text-yellow-500 transition-colors flex items-center gap-1">
         <Home class="w-3 h-3" />
-        Inicio
+        <span class="forum-breadcrumb-home">Inicio</span>
       </a>
       <ChevronRight class="w-3 h-3 text-gray-600" />
-      <a href="/forum" class="hover:text-yellow-500 transition-colors">Foro</a>
+      <a href="/forum" class="hover:text-yellow-500 transition-colors forum-breadcrumb-forum">Foro</a>
       <ChevronRight class="w-3 h-3 text-gray-600" />
       <span class="text-yellow-500">{categoryData.name}</span>
     </nav>
@@ -108,9 +108,9 @@ const { topics, pagination } = topicsData;
 
         {canWriteForum && (
           <a href={`/forum/new-topic?category=${id}`}
-             class="flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-semibold text-black bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-lg hover:from-yellow-400 hover:to-yellow-500 transition-all">
+             class="flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-semibold text-black bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-lg hover:from-yellow-400 hover:to-yellow-500 transition-all forum-new-topic-btn">
             <Plus class="w-4 h-4" />
-            Nuevo Tema
+            <span>Nuevo Tema</span>
           </a>
         )}
       </div>
@@ -119,14 +119,14 @@ const { topics, pagination } = topicsData;
     <!-- Topics List -->
     {topics.length === 0 ? (
       <div class="text-center py-8 sm:py-12">
-        <p class="text-sm sm:text-base text-gray-400 mb-4">
+        <p class="text-sm sm:text-base text-gray-400 mb-4 forum-no-topics-text">
           No hay temas en esta categoría aún.
         </p>
         {canWriteForum && (
           <a href={`/forum/new-topic?category=${id}`}
-             class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-black bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-lg hover:from-yellow-400 hover:to-yellow-500 transition-all">
+             class="inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-black bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-lg hover:from-yellow-400 hover:to-yellow-500 transition-all forum-create-first-btn">
             <Plus class="w-4 h-4" />
-            Crear el primer tema
+            <span>Crear el primer tema</span>
           </a>
         )}
       </div>
@@ -155,22 +155,22 @@ const { topics, pagination } = topicsData;
               ]}>
                 {formatVotes(topic.total_votes || 0)}
               </div>
-              <div class="text-xs text-gray-500">votos</div>
+              <div class="text-xs text-gray-500 forum-votes-label">votos</div>
             </div>
 
             <!-- Topic Info -->
             <div class="flex-1 relative z-10">
               <div class="flex items-center gap-2 mb-2 flex-wrap">
                 {topic.is_pinned && (
-                  <span class="inline-flex items-center gap-1 text-xs bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded border border-amber-500/30">
+                  <span class="inline-flex items-center gap-1 text-xs bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded border border-amber-500/30 forum-pinned-label">
                     <Pin class="w-3 h-3" />
-                    Fijado
+                    <span>Fijado</span>
                   </span>
                 )}
                 {topic.is_locked && (
-                  <span class="inline-flex items-center gap-1 text-xs bg-red-500/20 text-red-400 px-2 py-0.5 rounded border border-red-500/30">
+                  <span class="inline-flex items-center gap-1 text-xs bg-red-500/20 text-red-400 px-2 py-0.5 rounded border border-red-500/30 forum-locked-label">
                     <Lock class="w-3 h-3" />
-                    Cerrado
+                    <span>Cerrado</span>
                   </span>
                 )}
               </div>
@@ -215,3 +215,52 @@ const { topics, pagination } = topicsData;
     />
   </section>
 </Layout>
+
+<script>
+  import { t, getStoredLanguage } from '../../../i18n/translations';
+
+  function applyTranslations() {
+    const lang = getStoredLanguage();
+
+    // Breadcrumb
+    document.querySelectorAll('.forum-breadcrumb-home').forEach(el => {
+      el.textContent = t('pages.forum.home', lang);
+    });
+    document.querySelectorAll('.forum-breadcrumb-forum').forEach(el => {
+      el.textContent = t('pages.forum.title', lang);
+    });
+
+    // New topic button
+    document.querySelectorAll('.forum-new-topic-btn span').forEach(el => {
+      el.textContent = t('pages.forum.newTopic', lang);
+    });
+
+    // No topics text
+    document.querySelectorAll('.forum-no-topics-text').forEach(el => {
+      el.textContent = t('pages.forum.noTopicsInCategory', lang);
+    });
+
+    // Create first topic button
+    document.querySelectorAll('.forum-create-first-btn span').forEach(el => {
+      el.textContent = t('pages.forum.createFirstTopic', lang);
+    });
+
+    // Votes label
+    document.querySelectorAll('.forum-votes-label').forEach(el => {
+      el.textContent = t('pages.forum.votes', lang);
+    });
+
+    // Pinned label
+    document.querySelectorAll('.forum-pinned-label span').forEach(el => {
+      el.textContent = t('pages.forum.pinned', lang);
+    });
+
+    // Locked label
+    document.querySelectorAll('.forum-locked-label span').forEach(el => {
+      el.textContent = t('pages.forum.locked', lang);
+    });
+  }
+
+  applyTranslations();
+  document.addEventListener('astro:page-load', applyTranslations);
+</script>

@@ -33,7 +33,7 @@ let error = "";
     <div class="absolute -top-0.5 left-1/2 -translate-x-1/2">
       <div class="relative px-6 py-2 rounded-b-lg" style="background: linear-gradient(to bottom, rgb(234 179 8 / 0.9), rgb(202 138 4 / 0.9));">
         <div class="absolute inset-0 rounded-b-lg border border-yellow-400/30 pointer-events-none"></div>
-        <h2 class="text-sm font-bold text-black text-center medieval-font relative z-10">Ingresar</h2>
+        <h2 id="loginTitle" class="text-sm font-bold text-black text-center medieval-font relative z-10">Ingresar</h2>
       </div>
     </div>
 
@@ -57,7 +57,7 @@ let error = "";
       visible={!!error}
     />
 
-    <SubmitBtn label="INGRESAR" />
+    <SubmitBtn label="INGRESAR" id="loginSubmitBtn" />
 
     <!-- Decorative divider -->
     <div class="flex items-center gap-2 my-3">
@@ -66,8 +66,9 @@ let error = "";
       <div class="flex-1 h-px bg-gradient-to-r from-transparent via-yellow-500/20 to-transparent"></div>
     </div>
 
-    <p class="text-center text-sm text-gray-400">
+    <p id="noAccountText" class="text-center text-sm text-gray-400">
       ¿No tenes una cuenta? <a
+        id="registerLink"
         href="/register"
         class="text-yellow-500 hover:text-yellow-400 font-medium transition-colors"
         >Registrate</a
@@ -78,6 +79,41 @@ let error = "";
 
 <script>
   import { useAuth } from "@hooks/useAuth";
+  import { t, getStoredLanguage } from '../../../i18n/translations';
+
+  function applyTranslations() {
+    const lang = getStoredLanguage();
+
+    const loginTitle = document.getElementById('loginTitle');
+    if (loginTitle) loginTitle.textContent = t('landing.login', lang);
+
+    const loginSubmitBtn = document.getElementById('loginSubmitBtn');
+    if (loginSubmitBtn) loginSubmitBtn.textContent = t('auth.loginButton', lang);
+
+    const noAccountText = document.getElementById('noAccountText');
+    const registerLink = document.getElementById('registerLink');
+    if (noAccountText && registerLink) {
+      noAccountText.childNodes[0].textContent = t('landing.noAccount', lang) + ' ';
+      registerLink.textContent = t('landing.registerNow', lang);
+    }
+
+    // Update input labels
+    const emailInput = document.getElementById('email') as HTMLInputElement;
+    if (emailInput) {
+      const label = emailInput.parentElement?.querySelector('label');
+      if (label) label.textContent = t('auth.email', lang);
+      emailInput.placeholder = t('auth.emailPlaceholder', lang);
+    }
+
+    const passwordInput = document.getElementById('password') as HTMLInputElement;
+    if (passwordInput) {
+      const label = passwordInput.parentElement?.querySelector('label');
+      if (label) label.textContent = t('auth.password', lang);
+    }
+  }
+
+  applyTranslations();
+  document.addEventListener('astro:page-load', applyTranslations);
 
   const form = document.getElementById("loginForm") as HTMLFormElement & {
     email: HTMLInputElement;

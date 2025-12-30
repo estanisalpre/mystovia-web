@@ -66,12 +66,12 @@ function getVocationName(vocationId: number): string {
     <nav class="flex items-center gap-2 text-xs sm:text-sm text-gray-400 mb-6">
       <a href="/" class="hover:text-yellow-500 transition-colors flex items-center gap-1">
         <Home class="w-3 h-3" />
-        Inicio
+        <span id="gcBreadcrumbHome">Inicio</span>
       </a>
       <ChevronRight class="w-3 h-3 text-gray-600" />
-      <a href="/guilds" class="hover:text-yellow-500 transition-colors">Guilds</a>
+      <a href="/guilds" class="hover:text-yellow-500 transition-colors" id="gcBreadcrumbGuilds">Guilds</a>
       <ChevronRight class="w-3 h-3 text-gray-600" />
-      <span class="text-yellow-500">Crear Guild</span>
+      <span id="gcBreadcrumbCreate" class="text-yellow-500">Crear Guild</span>
     </nav>
 
     <!-- Create Guild Form -->
@@ -88,29 +88,29 @@ function getVocationName(vocationId: number): string {
             <Shield class="w-10 h-10 text-yellow-500" />
             <div class="h-px w-12 bg-gradient-to-l from-transparent to-yellow-500/50"></div>
           </div>
-          <h1 class="text-2xl sm:text-3xl font-bold text-yellow-500 medieval-font">Crear Nueva Guild</h1>
-          <p class="text-gray-400 mt-2">Funda tu propia hermandad en Mystovia</p>
+          <h1 id="gcTitle" class="text-2xl sm:text-3xl font-bold text-yellow-500 medieval-font">Crear Nueva Guild</h1>
+          <p id="gcSubtitle" class="text-gray-400 mt-2">Funda tu propia hermandad en Mystovia</p>
         </div>
 
         {userCharacters.length === 0 ? (
           <div class="text-center py-8">
             <AlertCircle class="w-12 h-12 mx-auto text-yellow-500/50 mb-4" />
-            <p class="text-gray-400 mb-4">No tienes personajes disponibles para liderar una guild.</p>
-            <a href="/create-character" class="text-yellow-500 hover:text-yellow-400 transition-colors">
+            <p id="gcNoCharsMsg" class="text-gray-400 mb-4">No tienes personajes disponibles para liderar una guild.</p>
+            <a href="/create-character" id="gcCreateCharLink" class="text-yellow-500 hover:text-yellow-400 transition-colors">
               Crear un personaje
             </a>
           </div>
         ) : availableCharacters.length === 0 ? (
           <div class="text-center py-8">
             <AlertCircle class="w-12 h-12 mx-auto text-yellow-500/50 mb-4" />
-            <p class="text-gray-400 mb-4">Todos tus personajes ya pertenecen a una guild.</p>
-            <p class="text-gray-500 text-sm">Un personaje debe abandonar su guild actual antes de poder liderar una nueva.</p>
+            <p id="gcAllInGuildMsg" class="text-gray-400 mb-4">Todos tus personajes ya pertenecen a una guild.</p>
+            <p id="gcLeaveGuildMsg" class="text-gray-500 text-sm">Un personaje debe abandonar su guild actual antes de poder liderar una nueva.</p>
           </div>
         ) : (
           <form id="createGuildForm" class="space-y-6">
             <!-- Guild Name -->
             <div>
-              <label class="form-label">Nombre de la Guild</label>
+              <label id="gcNameLabel" class="form-label">Nombre de la Guild</label>
               <input
                 type="text"
                 id="guildName"
@@ -121,36 +121,36 @@ function getVocationName(vocationId: number): string {
                 pattern="[A-Za-z0-9 ]+"
                 required
               />
-              <p class="text-gray-500 text-xs mt-1">3-20 caracteres, solo letras, números y espacios</p>
+              <p id="gcNameHint" class="text-gray-500 text-xs mt-1">3-20 caracteres, solo letras, números y espacios</p>
             </div>
 
             <!-- Select Leader -->
             <div>
-              <label class="form-label flex items-center gap-2">
+              <label id="gcLeaderLabel" class="form-label flex items-center gap-2">
                 <Crown class="w-4 h-4 text-yellow-500" />
-                Personaje Líder
+                <span>Personaje Líder</span>
               </label>
               <select id="leaderId" class="form-input w-full" required>
-                <option value="">Selecciona un personaje</option>
+                <option value="" id="gcSelectCharOpt">Selecciona un personaje</option>
                 {userCharacters.map((char) => {
                   const isInGuild = char.rank_id && char.rank_id > 0;
                   return (
-                    <option value={char.id} disabled={isInGuild}>
+                    <option value={char.id} disabled={isInGuild} data-in-guild={isInGuild ? 'true' : 'false'}>
                       {char.name} - {getVocationName(char.vocation)} Level {char.level}{isInGuild ? ' (Ya en guild)' : ''}
                     </option>
                   );
                 })}
               </select>
-              <p class="text-gray-500 text-xs mt-1">Este personaje será el líder de la guild</p>
+              <p id="gcLeaderHint" class="text-gray-500 text-xs mt-1">Este personaje será el líder de la guild</p>
             </div>
 
             <!-- Info Box -->
             <div class="p-4 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
-              <h4 class="text-yellow-500 font-semibold mb-2">Información importante</h4>
+              <h4 id="gcImportantTitle" class="text-yellow-500 font-semibold mb-2">Información importante</h4>
               <ul class="text-gray-400 text-sm space-y-1">
-                <li>• El líder tendrá control total sobre la guild</li>
-                <li>• Podrás invitar a otros jugadores por nombre de personaje</li>
-                <li>• Se crearán rangos por defecto: Leader, Vice Leader y Member</li>
+                <li id="gcInfoLeader">• El líder tendrá control total sobre la guild</li>
+                <li id="gcInfoInvite">• Podrás invitar a otros jugadores por nombre de personaje</li>
+                <li id="gcInfoRanks">• Se crearán rangos por defecto: Leader, Vice Leader y Member</li>
               </ul>
             </div>
 
@@ -164,7 +164,7 @@ function getVocationName(vocationId: number): string {
               class="w-full flex items-center justify-center gap-2 py-3 px-6 bg-gradient-to-b from-yellow-600 to-yellow-700 hover:from-yellow-500 hover:to-yellow-600 text-white font-semibold rounded-lg transition-all border border-yellow-500/30 shadow-[0_0_15px_rgba(234,179,8,0.2)] hover:shadow-[0_0_20px_rgba(234,179,8,0.4)]"
             >
               <Shield class="w-5 h-5" />
-              <span>Crear Guild</span>
+              <span id="gcSubmitText">Crear Guild</span>
             </button>
           </form>
         )}
@@ -174,7 +174,84 @@ function getVocationName(vocationId: number): string {
 </Layout>
 
 <script>
+  import { t, getStoredLanguage } from '../../i18n/translations';
+
+  function applyTranslations() {
+    const lang = getStoredLanguage();
+
+    // Breadcrumb
+    const gcBreadcrumbHome = document.getElementById('gcBreadcrumbHome');
+    if (gcBreadcrumbHome) gcBreadcrumbHome.textContent = t('pages.home', lang);
+
+    const gcBreadcrumbGuilds = document.getElementById('gcBreadcrumbGuilds');
+    if (gcBreadcrumbGuilds) gcBreadcrumbGuilds.textContent = t('pages.guilds.title', lang);
+
+    const gcBreadcrumbCreate = document.getElementById('gcBreadcrumbCreate');
+    if (gcBreadcrumbCreate) gcBreadcrumbCreate.textContent = t('pages.guilds.createTitle', lang);
+
+    // Header
+    const gcTitle = document.getElementById('gcTitle');
+    if (gcTitle) gcTitle.textContent = t('pages.guilds.createTitle', lang);
+
+    const gcSubtitle = document.getElementById('gcSubtitle');
+    if (gcSubtitle) gcSubtitle.textContent = t('pages.guilds.createSubtitle', lang);
+
+    // No characters message
+    const gcNoCharsMsg = document.getElementById('gcNoCharsMsg');
+    if (gcNoCharsMsg) gcNoCharsMsg.textContent = t('pages.guilds.noCharactersAvailable', lang);
+
+    const gcCreateCharLink = document.getElementById('gcCreateCharLink');
+    if (gcCreateCharLink) gcCreateCharLink.textContent = t('pages.guilds.createCharacter', lang);
+
+    // All in guild message
+    const gcAllInGuildMsg = document.getElementById('gcAllInGuildMsg');
+    if (gcAllInGuildMsg) gcAllInGuildMsg.textContent = t('pages.guilds.allInGuild', lang);
+
+    const gcLeaveGuildMsg = document.getElementById('gcLeaveGuildMsg');
+    if (gcLeaveGuildMsg) gcLeaveGuildMsg.textContent = t('pages.guilds.leaveGuildFirst', lang);
+
+    // Form labels and hints
+    const gcNameLabel = document.getElementById('gcNameLabel');
+    if (gcNameLabel) gcNameLabel.textContent = t('pages.guilds.guildName', lang);
+
+    const guildNameInput = document.getElementById('guildName') as HTMLInputElement;
+    if (guildNameInput) guildNameInput.placeholder = t('pages.guilds.guildNamePlaceholder', lang);
+
+    const gcNameHint = document.getElementById('gcNameHint');
+    if (gcNameHint) gcNameHint.textContent = t('pages.guilds.guildNameHint', lang);
+
+    const gcLeaderLabel = document.getElementById('gcLeaderLabel');
+    if (gcLeaderLabel) {
+      const span = gcLeaderLabel.querySelector('span');
+      if (span) span.textContent = t('pages.guilds.leaderCharacter', lang);
+    }
+
+    const gcSelectCharOpt = document.getElementById('gcSelectCharOpt');
+    if (gcSelectCharOpt) gcSelectCharOpt.textContent = t('pages.guilds.selectCharacter', lang);
+
+    const gcLeaderHint = document.getElementById('gcLeaderHint');
+    if (gcLeaderHint) gcLeaderHint.textContent = t('pages.guilds.leaderHint', lang);
+
+    // Info box
+    const gcImportantTitle = document.getElementById('gcImportantTitle');
+    if (gcImportantTitle) gcImportantTitle.textContent = t('pages.guilds.importantInfo', lang);
+
+    const gcInfoLeader = document.getElementById('gcInfoLeader');
+    if (gcInfoLeader) gcInfoLeader.textContent = '• ' + t('pages.guilds.infoLeaderControl', lang);
+
+    const gcInfoInvite = document.getElementById('gcInfoInvite');
+    if (gcInfoInvite) gcInfoInvite.textContent = '• ' + t('pages.guilds.infoInvitePlayers', lang);
+
+    const gcInfoRanks = document.getElementById('gcInfoRanks');
+    if (gcInfoRanks) gcInfoRanks.textContent = '• ' + t('pages.guilds.infoDefaultRanks', lang);
+
+    // Submit button
+    const gcSubmitText = document.getElementById('gcSubmitText');
+    if (gcSubmitText) gcSubmitText.textContent = t('pages.guilds.createButton', lang);
+  }
+
   function init() {
+    const lang = getStoredLanguage();
     const form = document.getElementById('createGuildForm') as HTMLFormElement;
     const errorMessage = document.getElementById('errorMessage');
     const submitBtn = document.getElementById('submitBtn');
@@ -186,7 +263,7 @@ function getVocationName(vocationId: number): string {
       const leaderId = (document.getElementById('leaderId') as HTMLSelectElement)?.value;
 
       if (!name || !leaderId) {
-        showError('Por favor completa todos los campos');
+        showError(t('pages.guilds.fillAllFields', lang));
         return;
       }
 
@@ -195,7 +272,7 @@ function getVocationName(vocationId: number): string {
         submitBtn.setAttribute('disabled', 'true');
         submitBtn.innerHTML = `
           <svg class="w-5 h-5 animate-spin lucide lucide-loader-2" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
-          <span>Creando...</span>
+          <span>${t('pages.guilds.creating', lang)}</span>
         `;
       }
 
@@ -213,12 +290,12 @@ function getVocationName(vocationId: number): string {
         if (data.success) {
           window.location.href = `/guilds/${data.guildId}`;
         } else {
-          showError(data.error || 'Error al crear la guild');
+          showError(data.error || t('pages.guilds.errorCreating', lang));
           resetButton();
         }
       } catch (error) {
         console.error('Error:', error);
-        showError('Error de conexión. Intenta de nuevo.');
+        showError(t('pages.guilds.connectionError', lang));
         resetButton();
       }
     });
@@ -235,12 +312,16 @@ function getVocationName(vocationId: number): string {
         submitBtn.removeAttribute('disabled');
         submitBtn.innerHTML = `
           <svg class="w-5 h-5 lucide lucide-shield" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg>
-          <span>Crear Guild</span>
+          <span>${t('pages.guilds.createButton', lang)}</span>
         `;
       }
     }
   }
 
   init();
-  document.addEventListener('astro:page-load', init);
+  applyTranslations();
+  document.addEventListener('astro:page-load', () => {
+    init();
+    applyTranslations();
+  });
 </script>

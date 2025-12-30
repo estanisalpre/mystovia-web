@@ -56,9 +56,9 @@ if (userId && userEmail) {
       </div>
       <div class="flex items-center justify-center gap-3 mb-3 sm:mb-4">
         <MessagesSquare class="w-6 h-6 sm:w-8 sm:h-8 text-yellow-500" />
-        <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-yellow-500 medieval-font">Foro de la Comunidad</h1>
+        <h1 id="forumTitle" class="text-2xl sm:text-3xl md:text-4xl font-bold text-yellow-500 medieval-font">Foro de la Comunidad</h1>
       </div>
-      <p class="text-sm sm:text-base md:text-lg text-gray-400">
+      <p id="forumSubtitle" class="text-sm sm:text-base md:text-lg text-gray-400">
         Únete a las discusiones, comparte tus ideas y conecta con otros miembros de la comunidad.
       </p>
     </div>
@@ -67,7 +67,7 @@ if (userId && userEmail) {
     {
       categories.length === 0 ? (
         <div class="text-center py-8 sm:py-12">
-          <p class="text-sm sm:text-base text-gray-400">
+          <p id="forumNoCategories" class="text-sm sm:text-base text-gray-400">
             No hay categorías disponibles.
           </p>
         </div>
@@ -93,7 +93,7 @@ if (userId && userEmail) {
                 <MessageCircle class="w-4 h-4 text-yellow-500" />
                 <div class="text-center">
                   <div class="text-lg sm:text-xl font-bold text-yellow-500">{category.topics_count || 0}</div>
-                  <div class="text-xs text-gray-400">Temas</div>
+                  <div class="text-xs text-gray-400 forum-topics-label">Temas</div>
                 </div>
               </div>
             </a>
@@ -110,7 +110,7 @@ if (userId && userEmail) {
           <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-blue-500/50 via-transparent to-transparent"></div>
           <div class="flex items-start gap-3 relative z-10">
             <Info class="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
-            <p class="text-xs sm:text-sm text-blue-200">
+            <p id="forumLoginInfo" class="text-xs sm:text-sm text-blue-200">
               <a href="/login" class="text-yellow-500 hover:text-yellow-400 font-semibold">Inicia sesión</a> para crear temas y participar en las discusiones.
             </p>
           </div>
@@ -119,3 +119,32 @@ if (userId && userEmail) {
     }
   </section>
 </Layout>
+
+<script>
+  import { t, getStoredLanguage } from '../../i18n/translations';
+
+  function applyTranslations() {
+    const lang = getStoredLanguage();
+
+    const forumTitle = document.getElementById('forumTitle');
+    if (forumTitle) forumTitle.textContent = t('pages.forum.title', lang);
+
+    const forumSubtitle = document.getElementById('forumSubtitle');
+    if (forumSubtitle) forumSubtitle.textContent = t('pages.forum.subtitle', lang);
+
+    const forumNoCategories = document.getElementById('forumNoCategories');
+    if (forumNoCategories) forumNoCategories.textContent = t('pages.forum.noTopics', lang);
+
+    document.querySelectorAll('.forum-topics-label').forEach(el => {
+      el.textContent = t('pages.forum.topics', lang);
+    });
+
+    const forumLoginInfo = document.getElementById('forumLoginInfo');
+    if (forumLoginInfo) {
+      forumLoginInfo.innerHTML = `<a href="/login" class="text-yellow-500 hover:text-yellow-400 font-semibold">${t('auth.login', lang)}</a> ${t('pages.forum.loginInfo', lang)}`;
+    }
+  }
+
+  applyTranslations();
+  document.addEventListener('astro:page-load', applyTranslations);
+</script>

@@ -37,7 +37,7 @@ import OnlinePreview from "../store/OnlinePreview.astro";
             <HighscoresPreview />
         </div>
         <div class="md:col-span-1">
-            <ServerStats client:load />
+            <ServerStats client:only="react" />
         </div>
 
         <!-- ROW 4: Store Carousel (3 cols) -->

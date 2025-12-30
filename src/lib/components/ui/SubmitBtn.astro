@@ -6,9 +6,10 @@ interface Props {
   loading?: boolean;
   id?: string;
   variant?: 'primary' | 'secondary' | 'danger';
+  loadingText?: string;
 }
 
-const { label, loading = false, id, variant = 'primary' } = Astro.props;
+const { label, loading = false, id, variant = 'primary', loadingText = 'Cargando...' } = Astro.props;
 
 const variants = {
   primary: 'medieval-btn-primary',
@@ -30,7 +31,7 @@ const variants = {
   {loading ? (
     <LoaderCircle class="animate-spin h-4 w-4" />
   ) : null}
-  <span>{loading ? "Cargando..." : label}</span>
+  <span class="submit-btn-text" data-label={label} data-loading-text={loadingText}>{loading ? loadingText : label}</span>
 </button>
 
 <style>

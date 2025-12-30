@@ -120,6 +120,55 @@ import { Diamond } from "@lucide/astro";
   <script>
     import { t, getStoredLanguage } from "../i18n/translations";
 
+    function applyTranslations() {
+      const lang = getStoredLanguage();
+
+      const pageTitle = document.getElementById("pageTitle");
+      if (pageTitle) pageTitle.textContent = t("recovery.specifyProblem", lang);
+
+      const accountLabel = document.getElementById("accountLabel");
+      if (accountLabel) accountLabel.textContent = t("recovery.account", lang) + ":";
+
+      const passwordSectionTitle = document.getElementById("passwordSectionTitle");
+      if (passwordSectionTitle) passwordSectionTitle.textContent = t("recovery.password", lang);
+
+      const forgotPasswordOption = document.getElementById("forgotPasswordOption");
+      if (forgotPasswordOption) forgotPasswordOption.textContent = t("recovery.forgotPassword", lang);
+
+      const hackedOption = document.getElementById("hackedOption");
+      if (hackedOption) hackedOption.textContent = t("recovery.accountHacked", lang);
+
+      const emailSectionTitle = document.getElementById("emailSectionTitle");
+      if (emailSectionTitle) emailSectionTitle.textContent = t("recovery.email", lang);
+
+      const emailDescription = document.getElementById("emailDescription");
+      if (emailDescription) emailDescription.textContent = t("recovery.changeEmailInstantly", lang);
+
+      const recoveryKeyOption = document.getElementById("recoveryKeyOption");
+      if (recoveryKeyOption) recoveryKeyOption.textContent = t("recovery.haveRecoveryKey", lang);
+
+      const recoveryKeySectionTitle = document.getElementById("recoveryKeySectionTitle");
+      if (recoveryKeySectionTitle) recoveryKeySectionTitle.textContent = t("recovery.recoveryKey", lang);
+
+      const newRecoveryKeyOption = document.getElementById("newRecoveryKeyOption");
+      if (newRecoveryKeyOption) newRecoveryKeyOption.textContent = t("recovery.needNewRecoveryKey", lang);
+
+      const backBtn = document.getElementById("backBtn");
+      if (backBtn) {
+        const span = backBtn.querySelector('span');
+        if (span) span.textContent = t("common.back", lang);
+      }
+
+      const continueBtn = document.getElementById("continueBtn");
+      if (continueBtn) {
+        const span = continueBtn.querySelector('span');
+        if (span) span.textContent = t("recovery.continue", lang);
+      }
+    }
+
+    applyTranslations();
+    document.addEventListener('astro:page-load', applyTranslations);
+
     const lang = getStoredLanguage();
 
     // Check if we have account info
@@ -134,49 +183,6 @@ import { Diamond } from "@lucide/astro";
     // Display account info
     const accountNameEl = document.getElementById('accountName');
     if (accountNameEl) accountNameEl.textContent = `${accountName} (${maskedEmail})`;
-
-    // Apply translations
-    const pageTitle = document.getElementById("pageTitle");
-    if (pageTitle) pageTitle.textContent = t("recovery.specifyProblem", lang);
-
-    const accountLabel = document.getElementById("accountLabel");
-    if (accountLabel) accountLabel.textContent = t("recovery.account", lang) + ":";
-
-    const passwordSectionTitle = document.getElementById("passwordSectionTitle");
-    if (passwordSectionTitle) passwordSectionTitle.textContent = t("recovery.password", lang);
-
-    const forgotPasswordOption = document.getElementById("forgotPasswordOption");
-    if (forgotPasswordOption) forgotPasswordOption.textContent = t("recovery.forgotPassword", lang);
-
-    const hackedOption = document.getElementById("hackedOption");
-    if (hackedOption) hackedOption.textContent = t("recovery.accountHacked", lang);
-
-    const emailSectionTitle = document.getElementById("emailSectionTitle");
-    if (emailSectionTitle) emailSectionTitle.textContent = t("recovery.email", lang);
-
-    const emailDescription = document.getElementById("emailDescription");
-    if (emailDescription) emailDescription.textContent = t("recovery.changeEmailInstantly", lang);
-
-    const recoveryKeyOption = document.getElementById("recoveryKeyOption");
-    if (recoveryKeyOption) recoveryKeyOption.textContent = t("recovery.haveRecoveryKey", lang);
-
-    const recoveryKeySectionTitle = document.getElementById("recoveryKeySectionTitle");
-    if (recoveryKeySectionTitle) recoveryKeySectionTitle.textContent = t("recovery.recoveryKey", lang);
-
-    const newRecoveryKeyOption = document.getElementById("newRecoveryKeyOption");
-    if (newRecoveryKeyOption) newRecoveryKeyOption.textContent = t("recovery.needNewRecoveryKey", lang);
-
-    const backBtn = document.getElementById("backBtn");
-    if (backBtn) {
-      const span = backBtn.querySelector('span');
-      if (span) span.textContent = t("common.back", lang);
-    }
-
-    const continueBtn = document.getElementById("continueBtn");
-    if (continueBtn) {
-      const span = continueBtn.querySelector('span');
-      if (span) span.textContent = t("recovery.continue", lang);
-    }
 
     // Enable continue button when a radio is selected
     const radios = document.querySelectorAll('input[name="problem"]');

@@ -25,7 +25,7 @@ import GoldenLine from "./ui/GoldenLine.astro";
   </a>
 
   <!-- Desktop Navigation -->
-  <HeaderNav client:load />
+  <HeaderNav client:only="react" />
 
   <!-- Desktop Auth/Cart -->
   <aside class="hidden lg:flex items-center gap-2 lg:gap-4 flex-shrink-0 relative z-10">
@@ -36,6 +36,6 @@ import GoldenLine from "./ui/GoldenLine.astro";
   <!-- Mobile Cart + Menu -->
   <div class="flex lg:hidden items-center gap-2 flex-shrink-0 relative z-10">
     <CartButton client:only="react" />
-    <MobileNav client:load />
+    <MobileNav client:only="react" />
   </div>
 </header>

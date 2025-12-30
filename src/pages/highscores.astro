@@ -11,8 +11,8 @@ import { AlertTriangle, Award } from '@lucide/astro';
   <section class="page-container">
     <!-- Header -->
     <header class="text-center mb-8">
-      <h1 class="text-3xl md:text-4xl font-bold text-yellow-500 medieval-font mb-2">Highscores</h1>
-      <p class="text-gray-400">Los mejores jugadores de Mystovia</p>
+      <h1 id="hsTitle" class="text-3xl md:text-4xl font-bold text-yellow-500 medieval-font mb-2">Highscores</h1>
+      <p id="hsSubtitle" class="text-gray-400">Los mejores jugadores de Mystovia</p>
     </header>
 
     <!-- Filters -->
@@ -20,14 +20,14 @@ import { AlertTriangle, Award } from '@lucide/astro';
          style="background: linear-gradient(to bottom, rgb(31 41 55 / 0.6), rgb(17 24 39 / 0.8)); border: 1px solid rgb(234 179 8 / 0.15);">
       <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-yellow-500/30 to-transparent"></div>
 
-      <h3 class="text-yellow-500 font-semibold mb-4 medieval-font">Filtros</h3>
+      <h3 id="hsFiltersLabel" class="text-yellow-500 font-semibold mb-4 medieval-font">Filtros</h3>
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <!-- Vocation Filter -->
         <div>
-          <label class="form-label">Vocación</label>
+          <label id="hsVocationLabel" class="form-label">Vocación</label>
           <select id="vocationFilter" class="form-input w-full">
-            <option value="">Todas</option>
+            <option value="" id="hsAllVocations">Todas</option>
             <option value="1">Sorcerer</option>
             <option value="2">Druid</option>
             <option value="3">Paladin</option>
@@ -37,9 +37,9 @@ import { AlertTriangle, Award } from '@lucide/astro';
 
         <!-- Category Filter -->
         <div>
-          <label class="form-label">Categoría</label>
+          <label id="hsCategoryLabel" class="form-label">Categoría</label>
           <select id="categoryFilter" class="form-input w-full">
-            <option value="experience">Experiencia</option>
+            <option value="experience" id="hsCatExperience">Experiencia</option>
             <option value="magiclevel">Magic Level</option>
             <option value="skill_fist">Fist Fighting</option>
             <option value="skill_club">Club Fighting</option>
@@ -54,7 +54,7 @@ import { AlertTriangle, Award } from '@lucide/astro';
         <!-- Submit Button -->
         <div class="flex items-end">
           <button id="filterBtn" class="btn-medieval btn-medieval-primary w-full">
-            <span>Buscar</span>
+            <span id="hsSearchBtn">Buscar</span>
           </button>
         </div>
       </div>
@@ -88,19 +88,19 @@ import { AlertTriangle, Award } from '@lucide/astro';
       <!-- Loading State -->
       <div id="loadingState" class="py-12 text-center">
         <div class="w-8 h-8 border-2 border-yellow-500/30 border-t-yellow-500 rounded-full animate-spin mx-auto mb-3"></div>
-        <p class="text-gray-400">Cargando highscores...</p>
+        <p id="hsLoadingText" class="text-gray-400">Cargando highscores...</p>
       </div>
 
       <!-- Error State -->
       <div id="errorState" class="hidden py-12 text-center">
         <AlertTriangle class="w-12 h-12 mx-auto text-red-500/50 mb-3" />
-        <p class="text-red-400">Error al cargar los datos</p>
+        <p id="hsErrorText" class="text-red-400">Error al cargar los datos</p>
       </div>
 
       <!-- Empty State -->
       <div id="emptyState" class="hidden py-12 text-center">
         <Award class="w-12 h-12 mx-auto text-yellow-500/30 mb-3" />
-        <p class="text-gray-400">No hay jugadores en el ranking</p>
+        <p id="hsEmptyText" class="text-gray-400">No hay jugadores en el ranking</p>
       </div>
 
       <!-- Players List -->
@@ -117,6 +117,8 @@ import { AlertTriangle, Award } from '@lucide/astro';
 </Layout>
 
 <script>
+  import { t, getStoredLanguage } from '../i18n/translations';
+
   const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3301';
 
   interface Player {
@@ -339,8 +341,70 @@ import { AlertTriangle, Award } from '@lucide/astro';
     }
   }
 
+  function applyTranslations() {
+    const lang = getStoredLanguage();
+
+    const hsTitle = document.getElementById('hsTitle');
+    if (hsTitle) hsTitle.textContent = t('pages.highscores.title', lang);
+
+    const hsSubtitle = document.getElementById('hsSubtitle');
+    if (hsSubtitle) hsSubtitle.textContent = t('pages.highscores.subtitle', lang);
+
+    const hsFiltersLabel = document.getElementById('hsFiltersLabel');
+    if (hsFiltersLabel) hsFiltersLabel.textContent = t('pages.highscores.filters', lang);
+
+    const hsVocationLabel = document.getElementById('hsVocationLabel');
+    if (hsVocationLabel) hsVocationLabel.textContent = t('pages.highscores.vocation', lang);
+
+    const hsAllVocations = document.getElementById('hsAllVocations');
+    if (hsAllVocations) hsAllVocations.textContent = t('pages.highscores.vocations', lang);
+
+    const hsCategoryLabel = document.getElementById('hsCategoryLabel');
+    if (hsCategoryLabel) hsCategoryLabel.textContent = t('pages.highscores.category', lang);
+
+    const hsCatExperience = document.getElementById('hsCatExperience');
+    if (hsCatExperience) hsCatExperience.textContent = t('highscores.experience', lang);
+
+    const hsSearchBtn = document.getElementById('hsSearchBtn');
+    if (hsSearchBtn) hsSearchBtn.textContent = t('pages.highscores.search', lang);
+
+    const headerRank = document.getElementById('headerRank');
+    if (headerRank) headerRank.textContent = t('pages.highscores.rank', lang);
+
+    const headerName = document.getElementById('headerName');
+    if (headerName) headerName.textContent = t('pages.highscores.name', lang);
+
+    const headerVocation = document.getElementById('headerVocation');
+    if (headerVocation) headerVocation.textContent = t('pages.highscores.vocation', lang);
+
+    const headerLevel = document.getElementById('headerLevel');
+    if (headerLevel) headerLevel.textContent = t('pages.highscores.level', lang);
+
+    const headerPoints = document.getElementById('headerPoints');
+    if (headerPoints) headerPoints.textContent = t('pages.highscores.points', lang);
+
+    const mobileHeaderPlayer = document.getElementById('mobileHeaderPlayer');
+    if (mobileHeaderPlayer) mobileHeaderPlayer.textContent = t('pages.highscores.player', lang);
+
+    const mobileHeaderPoints = document.getElementById('mobileHeaderPoints');
+    if (mobileHeaderPoints) mobileHeaderPoints.textContent = t('pages.highscores.points', lang);
+
+    const hsLoadingText = document.getElementById('hsLoadingText');
+    if (hsLoadingText) hsLoadingText.textContent = t('pages.highscores.loading', lang);
+
+    const hsErrorText = document.getElementById('hsErrorText');
+    if (hsErrorText) hsErrorText.textContent = t('pages.highscores.error', lang);
+
+    const hsEmptyText = document.getElementById('hsEmptyText');
+    if (hsEmptyText) hsEmptyText.textContent = t('pages.highscores.empty', lang);
+  }
+
   init();
-  document.addEventListener('astro:page-load', init);
+  applyTranslations();
+  document.addEventListener('astro:page-load', () => {
+    init();
+    applyTranslations();
+  });
 </script>
 
 <style>

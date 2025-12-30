@@ -49,7 +49,7 @@ try {
     <div class="absolute -top-0.5 left-1/2 -translate-x-1/2">
       <div class="relative px-6 py-2 rounded-b-lg" style="background: linear-gradient(to bottom, rgb(234 179 8 / 0.9), rgb(202 138 4 / 0.9));">
         <div class="absolute inset-0 rounded-b-lg border border-yellow-400/30 pointer-events-none"></div>
-        <h2 class="text-sm font-bold text-black text-center medieval-font relative z-10">Tienda</h2>
+        <h2 id="storeTitle" class="text-sm font-bold text-black text-center medieval-font relative z-10">Tienda</h2>
       </div>
     </div>
 
@@ -57,7 +57,7 @@ try {
       <div class="flex items-center justify-center py-12 text-center">
         <div>
           <ShoppingBag class="w-12 h-12 mx-auto text-yellow-500/30 mb-3" strokeWidth={1.5} />
-          <p class="text-gray-400 text-sm">No hay productos disponibles</p>
+          <p id="noProductsText" class="text-gray-400 text-sm">No hay productos disponibles</p>
         </div>
       </div>
     ) : (
@@ -114,7 +114,7 @@ try {
 
                     <a
                       href="/marketplace"
-                      class="mt-auto btn-medieval btn-medieval-primary btn-medieval-sm text-xs"
+                      class="mt-auto btn-medieval btn-medieval-primary btn-medieval-sm text-xs store-learn-more"
                     >
                       <span>Conocer más</span>
                     </a>
@@ -135,6 +135,33 @@ try {
 </section>
 
 <script>
+  import { t, getStoredLanguage } from '../../../i18n/translations';
+
+  function applyTranslations() {
+    const lang = getStoredLanguage();
+
+    const storeTitle = document.getElementById('storeTitle');
+    if (storeTitle) storeTitle.textContent = t('store.title', lang);
+
+    const noProductsText = document.getElementById('noProductsText');
+    if (noProductsText) noProductsText.textContent = t('store.noProducts', lang);
+
+    // Update all "Learn more" buttons
+    document.querySelectorAll('.store-learn-more span').forEach(el => {
+      el.textContent = t('store.learnMore', lang);
+    });
+
+    // Update carousel nav buttons aria-labels
+    const prevBtn = document.getElementById('carousel-prev');
+    if (prevBtn) prevBtn.setAttribute('aria-label', t('store.prev', lang));
+
+    const nextBtn = document.getElementById('carousel-next');
+    if (nextBtn) nextBtn.setAttribute('aria-label', t('store.next', lang));
+  }
+
+  applyTranslations();
+  document.addEventListener('astro:page-load', applyTranslations);
+
   function initCarousel() {
     const track = document.getElementById('carousel-track');
     const prevBtn = document.getElementById('carousel-prev');

@@ -141,79 +141,85 @@ import CornerOrnaments from "./ui/CornerOrnaments.astro";
 <script>
   import { t, getStoredLanguage } from '../i18n/translations';
 
-  const lang = getStoredLanguage();
+  function applyTranslations() {
+    const lang = getStoredLanguage();
 
-  const footerDesc = document.getElementById('footerDescription');
-  if (footerDesc) footerDesc.textContent = t('footer.description', lang);
+    const footerDesc = document.getElementById('footerDescription');
+    if (footerDesc) footerDesc.textContent = t('footer.description', lang);
 
-  const gameTitle = document.getElementById('footerGameTitle');
-  if (gameTitle) {
-    const icon = gameTitle.querySelector('svg');
-    gameTitle.textContent = '';
-    if (icon) gameTitle.appendChild(icon);
-    gameTitle.appendChild(document.createTextNode(t('footer.game', lang)));
+    const gameTitle = document.getElementById('footerGameTitle');
+    if (gameTitle) {
+      const icon = gameTitle.querySelector('svg');
+      gameTitle.textContent = '';
+      if (icon) gameTitle.appendChild(icon);
+      gameTitle.appendChild(document.createTextNode(t('footer.game', lang)));
+    }
+
+    const community = document.getElementById('communityTitle');
+    if (community) {
+      const icon = community.querySelector('svg');
+      community.textContent = '';
+      if (icon) community.appendChild(icon);
+      community.appendChild(document.createTextNode(t('footer.community', lang)));
+    }
+
+    const supportTitle = document.getElementById('footerSupportTitle');
+    if (supportTitle) {
+      const icon = supportTitle.querySelector('svg');
+      supportTitle.textContent = '';
+      if (icon) supportTitle.appendChild(icon);
+      supportTitle.appendChild(document.createTextNode(t('footer.support', lang)));
+    }
+
+    const downloadClient = document.getElementById('downloadClientLink');
+    if (downloadClient) {
+      const bullet = downloadClient.querySelector('span');
+      downloadClient.textContent = '';
+      if (bullet) downloadClient.appendChild(bullet);
+      downloadClient.appendChild(document.createTextNode(t('footer.downloadClient', lang)));
+
+      downloadClient.addEventListener('click', () => {
+        window.dispatchEvent(new CustomEvent('openDownloadModal'));
+      });
+    }
+
+    const serverRules = document.getElementById('serverRulesLink');
+    if (serverRules) {
+      const bullet = serverRules.querySelector('span');
+      serverRules.textContent = '';
+      if (bullet) serverRules.appendChild(bullet);
+      serverRules.appendChild(document.createTextNode(t('footer.serverRules', lang)));
+    }
+
+    const marketplace = document.getElementById('footerMarketplace');
+    if (marketplace) marketplace.textContent = t('footer.marketplace', lang);
+
+    const characters = document.getElementById('footerCharacters');
+    if (characters) characters.textContent = t('footer.searchCharacters', lang);
+
+    const news = document.getElementById('footerNews');
+    if (news) news.textContent = t('footer.news', lang);
+
+    const forum = document.getElementById('footerForum');
+    if (forum) forum.textContent = t('footer.forum', lang);
+
+    const support = document.getElementById('footerSupport');
+    if (support) support.textContent = t('footer.helpCenter', lang);
+
+    const lostAccount = document.getElementById('footerLostAccount');
+    if (lostAccount) lostAccount.textContent = t('footer.lostAccount', lang);
+
+    const terms = document.getElementById('footerTerms');
+    if (terms) terms.textContent = t('footer.terms', lang);
+
+    const privacy = document.getElementById('footerPrivacy');
+    if (privacy) privacy.textContent = t('footer.privacy', lang);
+
+    const copyright = document.getElementById('footerCopyright');
+    if (copyright) copyright.textContent = `© 2025 Mystovia. ${t('footer.allRightsReserved', lang)}`;
   }
 
-  const community = document.getElementById('communityTitle');
-  if (community) {
-    const icon = community.querySelector('svg');
-    community.textContent = '';
-    if (icon) community.appendChild(icon);
-    community.appendChild(document.createTextNode(t('footer.community', lang)));
-  }
-
-  const supportTitle = document.getElementById('footerSupportTitle');
-  if (supportTitle) {
-    const icon = supportTitle.querySelector('svg');
-    supportTitle.textContent = '';
-    if (icon) supportTitle.appendChild(icon);
-    supportTitle.appendChild(document.createTextNode(t('footer.support', lang)));
-  }
-
-  const downloadClient = document.getElementById('downloadClientLink');
-  if (downloadClient) {
-    const bullet = downloadClient.querySelector('span');
-    downloadClient.textContent = '';
-    if (bullet) downloadClient.appendChild(bullet);
-    downloadClient.appendChild(document.createTextNode(t('footer.downloadClient', lang)));
-
-    downloadClient.addEventListener('click', () => {
-      window.dispatchEvent(new CustomEvent('openDownloadModal'));
-    });
-  }
-
-  const serverRules = document.getElementById('serverRulesLink');
-  if (serverRules) {
-    const bullet = serverRules.querySelector('span');
-    serverRules.textContent = '';
-    if (bullet) serverRules.appendChild(bullet);
-    serverRules.appendChild(document.createTextNode(t('footer.serverRules', lang)));
-  }
-
-  const marketplace = document.getElementById('footerMarketplace');
-  if (marketplace) marketplace.textContent = t('footer.marketplace', lang);
-
-  const characters = document.getElementById('footerCharacters');
-  if (characters) characters.textContent = t('footer.searchCharacters', lang);
-
-  const news = document.getElementById('footerNews');
-  if (news) news.textContent = t('footer.news', lang);
-
-  const forum = document.getElementById('footerForum');
-  if (forum) forum.textContent = t('footer.forum', lang);
-
-  const support = document.getElementById('footerSupport');
-  if (support) support.textContent = t('footer.helpCenter', lang);
-
-  const lostAccount = document.getElementById('footerLostAccount');
-  if (lostAccount) lostAccount.textContent = t('footer.lostAccount', lang);
-
-  const terms = document.getElementById('footerTerms');
-  if (terms) terms.textContent = t('footer.terms', lang);
-
-  const privacy = document.getElementById('footerPrivacy');
-  if (privacy) privacy.textContent = t('footer.privacy', lang);
-
-  const copyright = document.getElementById('footerCopyright');
-  if (copyright) copyright.textContent = `© 2025 Mystovia. ${t('footer.allRightsReserved', lang)}`;
+  // Run on initial load and on View Transitions navigation
+  applyTranslations();
+  document.addEventListener('astro:page-load', applyTranslations);
 </script>

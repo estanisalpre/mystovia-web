@@ -16,22 +16,24 @@ import AccountManagement from '../components/account/AccountManagement';
       </p>
     </header>
 
-    <AccountManagement client:load />
+    <AccountManagement client:only="react" />
   </section>
 </Layout>
 
 <script>
   import { t, getStoredLanguage } from '../i18n/translations';
 
-  const lang = getStoredLanguage();
-
-  const title = document.getElementById('accountTitle');
-  if (title) title.textContent = t('account.title', lang);
-
-  const desc = document.getElementById('accountDesc');
-  if (desc) desc.textContent = t('account.description', lang);
-
   const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3301';
+
+  function applyTranslations() {
+    const lang = getStoredLanguage();
+
+    const title = document.getElementById('accountTitle');
+    if (title) title.textContent = t('account.title', lang);
+
+    const desc = document.getElementById('accountDesc');
+    if (desc) desc.textContent = t('account.description', lang);
+  }
 
   async function checkAuth() {
     try {
@@ -47,5 +49,7 @@ import AccountManagement from '../components/account/AccountManagement';
     }
   }
 
+  applyTranslations();
   checkAuth();
+  document.addEventListener('astro:page-load', applyTranslations);
 </script>
