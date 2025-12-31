@@ -278,7 +278,7 @@ const { topic, comments } = topicData;
                       </span>
                     </div>
 
-                    <p class="text-gray-300 text-sm leading-relaxed">{comment.content}</p>
+                    <p class="text-gray-300 text-sm leading-relaxed whitespace-pre-line">{comment.content}</p>
 
                     {canManageForum && (
                       <button
@@ -594,6 +594,7 @@ const { topic, comments } = topicData;
 <style>
   .prose {
     color: inherit;
+    white-space: pre-line;
   }
   .prose p {
     margin-bottom: 1em;

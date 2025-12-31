@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
-import { X, AlertCircle, Check } from 'lucide-react';
+import { X, AlertCircle, Check, Clock, XCircle } from 'lucide-react';
 import { getCharacters } from '../../utils/api';
 import MercadoPagoCardForm from './MercadoPagoCardForm';
 import '../../i18n';
@@ -32,7 +32,7 @@ export default function CheckoutModal({
   const [characters, setCharacters] = useState<Character[]>([]);
   const [selectedCharacter, setSelectedCharacter] = useState<number | null>(null);
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
+  const [paymentStatus, setPaymentStatus] = useState<'idle' | 'success' | 'pending' | 'rejected'>('idle');
   const [showPaymentForm, setShowPaymentForm] = useState(false);
 
   useEffect(() => {
@@ -40,7 +40,7 @@ export default function CheckoutModal({
       dialogRef.current?.showModal();
       loadCharacters();
       setError('');
-      setSuccess(false);
+      setPaymentStatus('idle');
       setShowPaymentForm(false);
     } else {
       dialogRef.current?.close();
@@ -75,15 +75,27 @@ export default function CheckoutModal({
   };
 
   const handlePaymentSuccess = (paymentData: any) => {
-    //console.log('Payment successful:', paymentData);
-    setSuccess(true);
+    // Check if payment is pending (e.g., cash payment, bank transfer)
+    if (paymentData.status === 'pending' || paymentData.status === 'in_process') {
+      setPaymentStatus('pending');
+    } else {
+      setPaymentStatus('success');
+    }
 
     window.dispatchEvent(new Event('cart-updated'));
 
-    setTimeout(() => {
-      onSuccess?.();
-      onClose();
-    }, 2000);
+    // Only auto-close on success
+    if (paymentData.status !== 'pending' && paymentData.status !== 'in_process') {
+      setTimeout(() => {
+        onSuccess?.();
+        onClose();
+      }, 2000);
+    }
+  };
+
+  const handlePaymentRejected = (errorMessage: string) => {
+    setPaymentStatus('rejected');
+    setError(errorMessage);
   };
 
   const handlePaymentError = (error: string) => {
@@ -144,7 +156,7 @@ export default function CheckoutModal({
 
       {/* Content */}
       <article className="relative p-4 sm:p-6">
-        {success ? (
+        {paymentStatus === 'success' ? (
           <section className="text-center py-6 sm:py-8">
             <figure className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-r from-green-500 to-green-400 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 border border-green-400/30">
               <Check size={28} className="text-white" aria-hidden="true" />
@@ -153,6 +165,62 @@ export default function CheckoutModal({
             <p className="text-gray-400 text-sm sm:text-base">
               {t('cart.paymentSuccessMessage')}
             </p>
+          </section>
+        ) : paymentStatus === 'pending' ? (
+          <section className="text-center py-6 sm:py-8">
+            <figure className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-r from-yellow-500 to-yellow-400 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 border border-yellow-400/30">
+              <Clock size={28} className="text-white" aria-hidden="true" />
+            </figure>
+            <h3 className="text-lg sm:text-xl font-bold text-white mb-2 medieval-font">{t('cart.paymentPending')}</h3>
+            <p className="text-gray-400 text-sm sm:text-base mb-4">
+              {t('cart.paymentPendingMessage')}
+            </p>
+            <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-3 sm:p-4 text-left">
+              <p className="text-yellow-500/80 text-xs sm:text-sm">
+                <strong>Nota:</strong> {t('cart.paymentPendingNote')}
+              </p>
+            </div>
+            <button
+              onClick={onClose}
+              className="mt-4 w-full bg-gray-700 hover:bg-gray-600 text-white py-3 rounded-lg font-bold transition-all"
+            >
+              {t('cart.understood')}
+            </button>
+          </section>
+        ) : paymentStatus === 'rejected' ? (
+          <section className="text-center py-6 sm:py-8">
+            <figure className="w-14 h-14 sm:w-16 sm:h-16 bg-gradient-to-r from-red-500 to-red-400 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 border border-red-400/30">
+              <XCircle size={28} className="text-white" aria-hidden="true" />
+            </figure>
+            <h3 className="text-lg sm:text-xl font-bold text-white mb-2 medieval-font">{t('cart.paymentRejected')}</h3>
+            <p className="text-gray-400 text-sm sm:text-base mb-4">
+              {t('cart.paymentRejectedMessage')}
+            </p>
+            {error && (
+              <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 sm:p-4 text-left mb-4">
+                <p className="text-red-400 text-xs sm:text-sm">
+                  <strong>{t('cart.paymentRejectedReason')}:</strong> {error}
+                </p>
+              </div>
+            )}
+            <div className="flex gap-3">
+              <button
+                onClick={onClose}
+                className="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-3 rounded-lg font-bold transition-all"
+              >
+                {t('common.cancel')}
+              </button>
+              <button
+                onClick={() => {
+                  setPaymentStatus('idle');
+                  setError('');
+                  setShowPaymentForm(false);
+                }}
+                className="flex-1 bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-black py-3 rounded-lg font-bold transition-all"
+              >
+                {t('cart.retry')}
+              </button>
+            </div>
           </section>
         ) : showPaymentForm ? (
           <MercadoPagoCardForm
@@ -198,7 +266,7 @@ export default function CheckoutModal({
               <span className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-yellow-500/30 to-transparent" aria-hidden="true" />
               <dl className="flex items-center justify-between mb-1 sm:mb-2">
                 <dt className="text-gray-400 text-sm sm:text-base">{t('cart.totalAmount')}</dt>
-                <dd className="text-yellow-500 text-xl sm:text-2xl font-bold m-0">${total.toFixed(2)}</dd>
+                <dd className="text-yellow-500 text-xl sm:text-2xl font-bold m-0">AR$ {total.toFixed(2)}</dd>
               </dl>
               <p className="text-gray-500 text-xs sm:text-sm">
                 {t('cart.itemsDeliveryNote')}

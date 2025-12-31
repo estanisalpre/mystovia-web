@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { AlertCircle, CreditCard } from 'lucide-react';
+import '../../i18n';
 
 interface MercadoPagoCardFormProps {
   amount: number;
@@ -23,6 +25,7 @@ export default function MercadoPagoCardForm({
   onPaymentError,
   onCancel
 }: MercadoPagoCardFormProps) {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [processing, setProcessing] = useState(false);
@@ -230,9 +233,9 @@ export default function MercadoPagoCardForm({
         <div className="inline-flex items-center justify-center w-12 h-12 sm:w-16 sm:h-16 bg-yellow-500/20 rounded-full mb-3 sm:mb-4 border border-yellow-500/30">
           <CreditCard className="text-yellow-500" size={24} />
         </div>
-        <h2 className="text-lg sm:text-2xl font-bold text-white mb-2 medieval-font">Pago con Tarjeta</h2>
+        <h2 className="text-lg sm:text-2xl font-bold text-white mb-2 medieval-font">{t('paymentForm.cardPayment')}</h2>
         <p className="text-gray-400 text-sm sm:text-base">
-          Total a pagar: <span className="text-xl sm:text-2xl font-bold text-yellow-500">${amount.toFixed(2)}</span>
+          {t('paymentForm.totalToPay')}: <span className="text-xl sm:text-2xl font-bold text-yellow-500">AR$ {amount.toFixed(2)}</span>
         </p>
       </div>
 
@@ -240,7 +243,7 @@ export default function MercadoPagoCardForm({
       {loading && (
         <div className="text-center py-8 sm:py-12">
           <div className="inline-block w-10 h-10 sm:w-12 sm:h-12 border-4 border-yellow-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-          <p className="text-gray-400 text-sm sm:text-base">Cargando formulario de pago...</p>
+          <p className="text-gray-400 text-sm sm:text-base">{t('paymentForm.loadingForm')}</p>
         </div>
       )}
 
@@ -381,14 +384,14 @@ export default function MercadoPagoCardForm({
 
         {/* Card Number */}
         <div className='text-white'>
-          <label className="block text-white font-semibold text-sm sm:text-base mb-1.5 sm:mb-2">Número de Tarjeta</label>
+          <label className="block text-white font-semibold text-sm sm:text-base mb-1.5 sm:mb-2">{t('paymentForm.cardNumber')}</label>
           <div id="form-checkout__cardNumber" className="mp-container"></div>
         </div>
 
         {/* Expiration & CVV */}
         <div className="grid grid-cols-2 gap-2 sm:gap-4">
           <div>
-            <label className="block text-white font-semibold text-sm sm:text-base mb-1.5 sm:mb-2">Vencimiento</label>
+            <label className="block text-white font-semibold text-sm sm:text-base mb-1.5 sm:mb-2">{t('paymentForm.expiration')}</label>
             <div id="form-checkout__expirationDate" className="mp-container"></div>
           </div>
           <div>
@@ -399,7 +402,7 @@ export default function MercadoPagoCardForm({
 
         {/* Cardholder Name */}
         <div>
-          <label className="block text-white font-semibold text-sm sm:text-base mb-1.5 sm:mb-2">Titular de la Tarjeta</label>
+          <label className="block text-white font-semibold text-sm sm:text-base mb-1.5 sm:mb-2">{t('paymentForm.cardholderName')}</label>
           <input type="text" id="form-checkout__cardholderName" />
         </div>
 
@@ -412,24 +415,24 @@ export default function MercadoPagoCardForm({
         {/* Identification Type & Number */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
           <div>
-            <label className="block text-white font-semibold text-sm sm:text-base mb-1.5 sm:mb-2">Tipo de Documento</label>
+            <label className="block text-white font-semibold text-sm sm:text-base mb-1.5 sm:mb-2">{t('paymentForm.documentType')}</label>
             <select id="form-checkout__identificationType"></select>
           </div>
           <div>
-            <label className="block text-white font-semibold text-sm sm:text-base mb-1.5 sm:mb-2">Número de Documento</label>
+            <label className="block text-white font-semibold text-sm sm:text-base mb-1.5 sm:mb-2">{t('paymentForm.documentNumber')}</label>
             <input type="text" id="form-checkout__identificationNumber" />
           </div>
         </div>
 
         {/* Issuer */}
         <div>
-          <label className="block text-white font-semibold text-sm sm:text-base mb-1.5 sm:mb-2">Banco Emisor</label>
+          <label className="block text-white font-semibold text-sm sm:text-base mb-1.5 sm:mb-2">{t('paymentForm.issuerBank')}</label>
           <select id="form-checkout__issuer"></select>
         </div>
 
         {/* Installments */}
         <div>
-          <label className="block text-white font-semibold text-sm sm:text-base mb-1.5 sm:mb-2">Cuotas</label>
+          <label className="block text-white font-semibold text-sm sm:text-base mb-1.5 sm:mb-2">{t('paymentForm.installments')}</label>
           <select id="form-checkout__installments"></select>
         </div>
 
@@ -452,22 +455,39 @@ export default function MercadoPagoCardForm({
             disabled={processing}
             className="flex-1 order-2 sm:order-1 bg-gray-800/80 text-gray-300 py-2.5 sm:py-3 rounded-lg font-bold hover:bg-gray-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed border border-yellow-600/20 text-sm sm:text-base"
           >
-            Cancelar
+            {t('common.cancel')}
           </button>
           <button
             type="submit"
             disabled={processing}
             className="flex-1 order-1 sm:order-2 bg-gradient-to-r from-yellow-600 to-yellow-500 hover:from-yellow-500 hover:to-yellow-400 text-black py-2.5 sm:py-3 rounded-lg font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed border border-yellow-400/30 text-sm sm:text-base"
           >
-            {processing ? 'Procesando...' : `Pagar $${amount.toFixed(2)}`}
+            {processing ? t('paymentForm.processing') : `${t('paymentForm.pay')} AR$ ${amount.toFixed(2)}`}
           </button>
         </div>
       </form>
 
       {/* Security Notice */}
-      <div className="mt-4 sm:mt-6 text-center">
-        <p className="text-gray-500 text-xs sm:text-sm">
-          Pago seguro procesado por MercadoPago
+      <div className="mt-4 sm:mt-6 p-3 sm:p-4 rounded-lg bg-blue-500/5 border border-blue-500/20">
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <svg className="w-5 h-5 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          </svg>
+          <span className="text-blue-400 font-semibold text-sm">{t('paymentForm.securePayment')}</span>
+        </div>
+        <p className="text-gray-400 text-xs sm:text-sm text-center mb-2">
+          {t('paymentForm.securePaymentDescription')}{' '}
+          <a
+            href="https://www.mercadopago.com.ar/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-400 hover:text-blue-300 underline font-semibold"
+          >
+            MercadoPago
+          </a>
+        </p>
+        <p className="text-gray-500 text-xs text-center">
+          {t('paymentForm.pciCertification')}
         </p>
       </div>
     </div>

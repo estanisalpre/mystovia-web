@@ -158,7 +158,7 @@ export default function ShoppingCartSidebar({
                     <section className="flex-1 min-w-0">
                       <h3 className="text-white font-semibold text-sm sm:text-base mb-0.5 sm:mb-1 truncate">{item.name}</h3>
                       <p className="text-yellow-500/70 text-xs sm:text-sm mb-1.5 sm:mb-2">
-                        ${item.price.toFixed(2)}
+                        AR$ {item.price.toFixed(2)}
                       </p>
 
                       <button
@@ -174,7 +174,7 @@ export default function ShoppingCartSidebar({
 
                     {/* Subtotal */}
                     <data className="text-right shrink-0 text-yellow-500 font-bold text-sm sm:text-base" value={item.subtotal}>
-                      ${item.subtotal.toFixed(2)}
+                      AR$ {item.subtotal.toFixed(2)}
                     </data>
                   </article>
                 </li>
@@ -207,7 +207,7 @@ export default function ShoppingCartSidebar({
             <dl className="flex items-center justify-between">
               <dt className="text-gray-400 text-sm sm:text-lg">{t('common.total')}:</dt>
               <dd className="text-yellow-500 font-bold text-xl sm:text-2xl m-0">
-                ${total.toFixed(2)}
+                AR$ {total.toFixed(2)}
               </dd>
             </dl>
 
