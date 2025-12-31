@@ -140,6 +140,29 @@ export default function MercadoPagoCardForm({
             //console.log("MercadoPago CardForm mounted successfully");
             setLoading(false);
           },
+          onError: (error: any) => {
+            console.error("MercadoPago form error:", error);
+            // Parse the error array/object to get meaningful message
+            let errorMessage = 'Error en el formulario de pago.';
+            if (Array.isArray(error)) {
+              const errorMessages = error.map((e: any) => {
+                if (e.message) return e.message;
+                if (e.cause) return e.cause;
+                return JSON.stringify(e);
+              });
+              errorMessage = errorMessages.join('. ');
+            } else if (error?.message) {
+              errorMessage = error.message;
+            }
+            setError(errorMessage);
+            setProcessing(false);
+          },
+          onValidityChange: (error: any, field: string) => {
+            // Log field validation errors for debugging
+            if (error) {
+              console.log(`Validation error in ${field}:`, error);
+            }
+          },
           onSubmit: async (event: Event) => {
             event.preventDefault();
             setProcessing(true);
@@ -159,6 +182,13 @@ export default function MercadoPagoCardForm({
                 identificationNumber,
                 identificationType,
               } = cardFormData;
+
+              // Validate that we have a token (card data was validated)
+              if (!token) {
+                setError('Por favor, verifica los datos de tu tarjeta. Asegúrate de completar todos los campos correctamente.');
+                setProcessing(false);
+                return;
+              }
 
               // Send payment to backend
               const response = await fetch(`${import.meta.env.PUBLIC_API_URL || 'http://localhost:3301'}/api/marketplace/process-payment`, {
@@ -201,9 +231,7 @@ export default function MercadoPagoCardForm({
               setProcessing(false);
             }
           },
-          onFetching: (resource: string) => {
-            //console.log("Fetching resource:", resource);
-
+          onFetching: () => {
             const progressBar = document.querySelector(".progress-bar");
             if (progressBar) {
               progressBar.removeAttribute("value");
@@ -214,6 +242,56 @@ export default function MercadoPagoCardForm({
                 progressBar.setAttribute("value", "0");
               }
             };
+          },
+          onCardTokenReceived: (errorData: any, _token: string) => {
+            if (errorData) {
+              console.error("Card token error:", errorData);
+              let errorMsg = 'Error al procesar los datos de la tarjeta.';
+
+              // Parse common MercadoPago token errors
+              if (Array.isArray(errorData)) {
+                const messages: string[] = [];
+                errorData.forEach((err: any) => {
+                  switch (err.cause || err.code) {
+                    case 'E301':
+                    case '316':
+                      messages.push('Número de tarjeta inválido');
+                      break;
+                    case 'E302':
+                    case '324':
+                      messages.push('Código de seguridad inválido');
+                      break;
+                    case '325':
+                    case 'E205':
+                      messages.push('Fecha de vencimiento inválida');
+                      break;
+                    case '326':
+                      messages.push('Fecha de vencimiento expirada');
+                      break;
+                    case 'E203':
+                      messages.push('Nombre del titular requerido');
+                      break;
+                    case 'E212':
+                      messages.push('Tipo de documento requerido');
+                      break;
+                    case 'E213':
+                      messages.push('Número de documento requerido');
+                      break;
+                    case 'E214':
+                      messages.push('Número de documento inválido');
+                      break;
+                    default:
+                      if (err.message) messages.push(err.message);
+                  }
+                });
+                if (messages.length > 0) {
+                  errorMsg = messages.join('. ');
+                }
+              }
+
+              setError(errorMsg);
+              setProcessing(false);
+            }
           },
         },
       });
