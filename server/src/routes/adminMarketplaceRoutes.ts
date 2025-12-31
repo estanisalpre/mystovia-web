@@ -6,6 +6,7 @@ import {
   deleteMarketItem,
   toggleMarketItemStatus,
   getAllOrders,
+  getOrderItems,
   updateOrderStatus,
   getMarketplaceStats
 } from '../controllers/adminMarketplaceController.js';
@@ -24,6 +25,7 @@ router.delete('/items/:id', deleteMarketItem);
 router.patch('/items/:id/toggle', toggleMarketItemStatus);
 
 router.get('/orders', getAllOrders);
+router.get('/orders/:id/items', getOrderItems);
 router.patch('/orders/:id/status', updateOrderStatus);
 router.get('/stats', getMarketplaceStats);
 

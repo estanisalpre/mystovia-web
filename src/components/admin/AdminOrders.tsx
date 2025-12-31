@@ -27,6 +27,16 @@ interface Stats {
   cancelled_count: number;
 }
 
+interface OrderItem {
+  id: number;
+  market_item_id: number;
+  quantity: number;
+  price: number;
+  item_name: string;
+  image_url: string | null;
+  category: string;
+}
+
 interface Pagination {
   page: number;
   limit: number;
@@ -51,6 +61,8 @@ export default function AdminOrders() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
+  const [loadingItems, setLoadingItems] = useState(false);
 
   useEffect(() => {
     loadOrders();
@@ -111,6 +123,31 @@ export default function AdminOrders() {
     }).format(amount);
   };
 
+  const loadOrderItems = async (orderId: number) => {
+    try {
+      setLoadingItems(true);
+      const response = await fetch(`${API_URL}/api/admin/marketplace/orders/${orderId}/items`, {
+        credentials: 'include'
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setOrderItems(data.items);
+      }
+    } catch (error) {
+      console.error('Error loading order items:', error);
+    } finally {
+      setLoadingItems(false);
+    }
+  };
+
+  const handleViewOrder = (order: Order) => {
+    setSelectedOrder(order);
+    setOrderItems([]);
+    loadOrderItems(order.id);
+  };
+
   return (
     <div>
       {/* Header */}
@@ -160,12 +197,12 @@ export default function AdminOrders() {
 
           <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-emerald-500/10 rounded-lg">
-                <Truck size={20} className="text-emerald-500" />
+              <div className="p-2 bg-green-500/10 rounded-lg">
+                <CheckCircle size={20} className="text-green-500" />
               </div>
               <div>
-                <p className="text-gray-400 text-sm">Entregados</p>
-                <p className="text-white text-xl font-bold">{stats.delivered_count}</p>
+                <p className="text-gray-400 text-sm">Aprobados</p>
+                <p className="text-white text-xl font-bold">{stats.approved_count}</p>
               </div>
             </div>
           </div>
@@ -276,7 +313,7 @@ export default function AdminOrders() {
                       <td className="px-6 py-4">
                         <div className="flex items-center justify-end gap-2">
                           <button
-                            onClick={() => setSelectedOrder(order)}
+                            onClick={() => handleViewOrder(order)}
                             className="p-2 bg-gray-700 hover:bg-gray-600 text-white rounded transition-colors"
                             title="Ver detalles"
                           >
@@ -370,9 +407,44 @@ export default function AdminOrders() {
                 <span className="text-gray-400">Monto:</span>
                 <span className="text-green-400 font-semibold">{formatCurrency(Number(selectedOrder.total_amount))}</span>
               </div>
-              <div className="flex justify-between py-2 border-b border-gray-700">
-                <span className="text-gray-400">Items:</span>
-                <span className="text-white">{selectedOrder.total_items}</span>
+              <div className="py-2 border-b border-gray-700">
+                <div className="flex justify-between mb-2">
+                  <span className="text-gray-400">Items ({selectedOrder.total_items}):</span>
+                </div>
+                {loadingItems ? (
+                  <div className="flex items-center justify-center py-4">
+                    <div className="w-6 h-6 border-2 border-yellow-400 border-t-transparent rounded-full animate-spin"></div>
+                  </div>
+                ) : orderItems.length > 0 ? (
+                  <div className="space-y-2 mt-2">
+                    {orderItems.map((item) => (
+                      <div key={item.id} className="flex items-center gap-3 p-2 bg-gray-800 rounded-lg">
+                        {item.image_url ? (
+                          <img
+                            src={item.image_url}
+                            alt={item.item_name}
+                            className="w-10 h-10 rounded object-cover"
+                          />
+                        ) : (
+                          <div className="w-10 h-10 bg-gray-700 rounded flex items-center justify-center">
+                            <Package size={16} className="text-gray-500" />
+                          </div>
+                        )}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-white text-sm font-medium truncate">{item.item_name}</p>
+                          <p className="text-gray-400 text-xs">
+                            {item.quantity}x {formatCurrency(Number(item.price))}
+                          </p>
+                        </div>
+                        <span className="text-yellow-500 font-semibold text-sm">
+                          {formatCurrency(Number(item.price) * item.quantity)}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-500 text-sm">No se encontraron items</p>
+                )}
               </div>
               <div className="flex justify-between py-2 border-b border-gray-700">
                 <span className="text-gray-400">Estado:</span>

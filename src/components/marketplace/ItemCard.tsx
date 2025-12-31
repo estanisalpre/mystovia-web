@@ -149,7 +149,7 @@ export default function ItemCard({ item, onAddToCart, isFlipped, onFlip, onUnfli
               <div>
                 <p className="text-xs text-gray-500">{t('common.price')}</p>
                 <p className="text-2xl font-bold text-white">
-                  ${Number(item.price).toFixed(2)}
+                  AR$ {Number(item.price).toFixed(2)}
                 </p>
               </div>
 
@@ -218,7 +218,7 @@ export default function ItemCard({ item, onAddToCart, isFlipped, onFlip, onUnfli
               <div>
                 <p className="text-xs text-gray-500">{t('common.price')}</p>
                 <p className="text-xl font-bold text-white">
-                  ${Number(item.price).toFixed(2)}
+                  AR$ {Number(item.price).toFixed(2)}
                 </p>
               </div>
 

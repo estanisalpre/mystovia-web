@@ -459,6 +459,54 @@ export const updateOrderStatus = async (req: Request, res: Response) => {
 };
 
 /**
+ * Get order items
+ * Admin only
+ */
+export const getOrderItems = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+
+    // Check if order exists
+    const [orderResult] = await db.query(
+      'SELECT id FROM orders WHERE id = ?',
+      [id]
+    ) as any[];
+
+    if (!orderResult || orderResult.length === 0) {
+      return res.status(404).json({
+        error: 'Order not found'
+      });
+    }
+
+    // Get order items
+    const [items] = await db.query(
+      `SELECT
+        oi.id,
+        oi.market_item_id,
+        oi.quantity,
+        oi.price,
+        oi.item_name,
+        mi.image_url,
+        mi.category
+      FROM order_items oi
+      LEFT JOIN market_items mi ON oi.market_item_id = mi.id
+      WHERE oi.order_id = ?`,
+      [id]
+    ) as any[];
+
+    res.json({
+      success: true,
+      items
+    });
+  } catch (error) {
+    console.error('Error fetching order items:', error);
+    res.status(500).json({
+      error: 'Failed to fetch order items'
+    });
+  }
+};
+
+/**
  * Get marketplace statistics
  * Admin only
  */
