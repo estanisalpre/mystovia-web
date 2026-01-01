@@ -1,14 +1,11 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Input from "@ui/Input.astro";
-import ErrorMessage from "@ui/ErrorMessage.astro";
 import SubmitBtn from "@ui/SubmitBtn.astro";
 import { Star, TriangleAlert, ClipboardCopy } from '@lucide/astro';
 import DiamondPattern from "../components/ui/DiamondPattern.astro";
 import GoldenLine from "../components/ui/GoldenLine.astro";
 import CornerOrnaments from "../components/ui/CornerOrnaments.astro";
-
-let error = "";
 ---
 
 <Layout
@@ -79,10 +76,8 @@ let error = "";
           required
         />
 
-        <ErrorMessage
-          message={error}
-          visible={!!error}
-        />
+        <!-- Error container for frontend validation -->
+        <div id="errorContainer" class="hidden bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-lg text-sm"></div>
 
         <SubmitBtn label="REGISTRARSE" id="registerBtn" />
 
@@ -219,6 +214,24 @@ let error = "";
     const modal = document.getElementById("recoveryKeyModal");
     const recoveryKeyDisplay = document.getElementById("recoveryKeyDisplay");
     const copyKeyBtn = document.getElementById("copyKeyBtn");
+    const copyBtnText = document.getElementById("copyBtnText");
+    const finishBtn = document.getElementById("finishBtn");
+
+    function showError(message: string) {
+      const errorContainer = document.getElementById("errorContainer");
+      if (errorContainer) {
+        errorContainer.textContent = message;
+        errorContainer.classList.remove("hidden");
+        errorContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+
+    function hideError() {
+      const errorContainer = document.getElementById("errorContainer");
+      if (errorContainer) {
+        errorContainer.classList.add("hidden");
+      }
+    }
 
     // Format recovery key with dashes for display
     function formatRecoveryKey(key: string): string {
@@ -261,16 +274,26 @@ let error = "";
 
     form?.addEventListener("submit", async (e) => {
       e.preventDefault();
+      hideError();
 
-      const username = form.username.value;
-      const email = form.email.value;
+      // Use native HTML5 validation first
+      if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+      }
+
       const password = form.password.value;
       const confirmPassword = form.confirmPassword.value;
 
+      // Password match validation (can't be done with HTML5)
       if (password !== confirmPassword) {
-        alert(t("auth.passwordsDontMatch", lang) || "Las contraseñas no coinciden");
+        showError(t("account.passwordsDontMatch", lang) || "Las contraseñas no coinciden");
+        form.confirmPassword.focus();
         return;
       }
+
+      const username = form.username.value.trim();
+      const email = form.email.value.trim();
 
       const res = await useAuth("register", { username, email, password }) as { success: boolean; recoveryKey?: string; error?: string };
 
@@ -281,7 +304,7 @@ let error = "";
           window.location.href = "/create-character";
         }
       } else {
-        alert(res.error);
+        showError(res.error || "Error al registrar");
       }
     });
   </script>
