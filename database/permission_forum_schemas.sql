@@ -421,3 +421,34 @@ SET fc.character_id = (
   LIMIT 1
 )
 WHERE fc.character_id IS NULL;
+
+-- ============================================
+-- TABLA: STREAMING ACCOUNTS (Twitch, YouTube, Kick)
+-- ============================================
+
+CREATE TABLE IF NOT EXISTS `user_streaming_accounts` (
+  `id` INT AUTO_INCREMENT PRIMARY KEY,
+  `account_id` INT NOT NULL,
+  `platform` ENUM('twitch', 'youtube', 'kick') NOT NULL,
+  `platform_user_id` VARCHAR(100),
+  `platform_username` VARCHAR(100) NOT NULL,
+  `platform_display_name` VARCHAR(100),
+  `platform_profile_image` VARCHAR(500),
+  `access_token` TEXT,
+  `refresh_token` TEXT,
+  `token_expires_at` TIMESTAMP NULL,
+  `is_live` BOOLEAN DEFAULT FALSE,
+  `last_live_check` TIMESTAMP NULL,
+  `stream_title` VARCHAR(255),
+  `stream_game` VARCHAR(100),
+  `viewer_count` INT DEFAULT 0,
+  `is_verified` BOOLEAN DEFAULT TRUE,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  FOREIGN KEY (`account_id`) REFERENCES `accounts`(`id`) ON DELETE CASCADE,
+  UNIQUE KEY `unique_platform_account` (`account_id`, `platform`),
+  UNIQUE KEY `unique_platform_user` (`platform`, `platform_user_id`),
+  INDEX `idx_platform` (`platform`),
+  INDEX `idx_is_live` (`is_live`),
+  INDEX `idx_account` (`account_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

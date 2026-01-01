@@ -9,6 +9,7 @@ import StoreCarousel from "../store/StoreCarousel.astro";
 import HighscoresPreview from "../store/HighscoresPreview.astro";
 import GuildsPreview from "../store/GuildsPreview.astro";
 import OnlinePreview from "../store/OnlinePreview.astro";
+import LiveStreams from "../store/LiveStreams.astro";
 ---
 
 <section class="min-h-screen w-full max-w-[1150px] mx-auto px-4 py-8 bg-transparent">
@@ -17,6 +18,11 @@ import OnlinePreview from "../store/OnlinePreview.astro";
         <!-- MOBILE ONLY: Search Character (full width, first) -->
         <div class="md:hidden col-span-1">
             <SearchCharacter />
+        </div>
+
+        <!-- ROW 0: Live Streams (full width) -->
+        <div class="md:col-span-3">
+            <LiveStreams />
         </div>
 
         <!-- ROW 1: News (full width) -->

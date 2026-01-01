@@ -1,0 +1,287 @@
+---
+import { Tv, ChevronLeft, ChevronRight, ExternalLink, Users, Gamepad2 } from '@lucide/astro';
+import DiamondPattern from "../../ui/DiamondPattern.astro";
+import GoldenLine from "../../ui/GoldenLine.astro";
+import CornerOrnaments from "../../ui/CornerOrnaments.astro";
+
+// For internal SSR calls, use localhost (same Express server)
+const INTERNAL_API_URL = `http://localhost:${process.env.PORT || 3301}`;
+
+// Get user from cookies
+const userId = Astro.cookies.get('userId')?.value;
+const isLoggedIn = !!userId;
+
+let streams: any[] = [];
+
+try {
+  const response = await fetch(`${INTERNAL_API_URL}/api/twitch/live`);
+  if (response.ok) {
+    const data = await response.json();
+    streams = data.streams || [];
+  }
+} catch (error) {
+  console.error('Error fetching live streams:', error);
+}
+
+const hasStreams = streams.length > 0;
+const hasMultipleStreams = streams.length > 1;
+---
+
+<section class="relative w-full rounded-xl overflow-hidden"
+         style="background: linear-gradient(to bottom, rgb(17 24 39 / 0.98), rgb(17 24 39), rgb(0 0 0 / 0.98));">
+  <!-- Diamond pattern overlay -->
+  <DiamondPattern opacity={0.03} class="rounded-xl" />
+
+  <!-- Top golden line -->
+  <GoldenLine position="top" />
+
+  <!-- Border -->
+  <span class="absolute inset-0 rounded-xl border border-yellow-600/20 pointer-events-none" aria-hidden="true"></span>
+
+  <!-- Corner ornaments -->
+  <CornerOrnaments variant="curve" size="md" opacity={0.2} offset={2} />
+
+  <!-- Content -->
+  <div class="relative z-10 p-5 pt-12">
+    <!-- Header badge -->
+    <div class="absolute -top-0.5 left-1/2 -translate-x-1/2">
+      <div class="relative px-6 py-2 rounded-b-lg" style="background: linear-gradient(to bottom, rgb(145 70 255 / 0.9), rgb(120 50 220 / 0.9));">
+        <div class="absolute inset-0 rounded-b-lg border border-purple-400/30 pointer-events-none"></div>
+        <div class="flex items-center gap-2 relative z-10">
+          <Tv class="w-4 h-4 text-white" />
+          <h2 id="streamsTitle" class="text-sm font-bold text-white text-center medieval-font">En Vivo Ahora</h2>
+          {hasStreams && (
+            <span class="relative flex h-2 w-2">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
+            </span>
+          )}
+        </div>
+      </div>
+    </div>
+
+    {hasStreams ? (
+      <!-- Has Live Streams -->
+      <div class="relative">
+        <!-- Streams Carousel -->
+        <div id="streamsCarousel" class="overflow-hidden">
+          <div id="streamsTrack" class="flex transition-transform duration-300 ease-in-out" style="transform: translateX(0);">
+            {streams.map((stream: any, index: number) => (
+              <div class="stream-slide w-full flex-shrink-0 px-2" data-index={index}>
+                <div class="relative rounded-lg overflow-hidden border border-purple-600/30 hover:border-purple-500/50 transition-colors"
+                     style="background: linear-gradient(to bottom, rgb(31 41 55 / 0.6), rgb(17 24 39 / 0.8));">
+                  <!-- Twitch Embed -->
+                  <div class="aspect-video bg-black relative">
+                    <iframe
+                      src={`https://player.twitch.tv/?channel=${stream.username}&parent=${Astro.url.hostname}&muted=true`}
+                      height="100%"
+                      width="100%"
+                      allowfullscreen
+                      class="absolute inset-0 w-full h-full"
+                    ></iframe>
+                  </div>
+
+                  <!-- Stream Info -->
+                  <div class="p-4">
+                    <div class="flex items-start gap-3">
+                      <!-- Streamer Avatar -->
+                      <img
+                        src={stream.profileImage || '/images/default-avatar.png'}
+                        alt={stream.displayName}
+                        class="w-12 h-12 rounded-lg border-2 border-purple-500/50"
+                      />
+
+                      <div class="flex-1 min-w-0">
+                        <!-- Streamer Name & Character -->
+                        <div class="flex items-center gap-2 mb-1">
+                          <h3 class="text-white font-bold truncate">{stream.displayName}</h3>
+                          {stream.character && (
+                            <span class="text-xs bg-yellow-500/20 text-yellow-500 px-2 py-0.5 rounded border border-yellow-500/30 flex-shrink-0">
+                              {stream.character.name} Lvl {stream.character.level}
+                            </span>
+                          )}
+                        </div>
+
+                        <!-- Stream Title -->
+                        <p class="text-gray-400 text-sm truncate mb-2">{stream.title || 'Jugando Mystovia'}</p>
+
+                        <!-- Meta -->
+                        <div class="flex items-center gap-4 text-xs text-gray-500">
+                          <span class="flex items-center gap-1 text-red-400">
+                            <Users class="w-3 h-3" />
+                            {stream.viewerCount || 0} viendo
+                          </span>
+                          {stream.game && (
+                            <span class="flex items-center gap-1">
+                              <Gamepad2 class="w-3 h-3 text-purple-400" />
+                              {stream.game}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      <!-- External Link -->
+                      <a
+                        href={`https://twitch.tv/${stream.username}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="p-2 rounded-lg bg-purple-600/20 hover:bg-purple-600/40 text-purple-400 hover:text-white transition-colors flex-shrink-0"
+                        title="Ver en Twitch"
+                      >
+                        <ExternalLink class="w-4 h-4" />
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <!-- Navigation Arrows (only if multiple streams) -->
+        {hasMultipleStreams && (
+          <>
+            <button
+              id="prevStream"
+              class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-2 z-20 p-2 rounded-full bg-gray-900/90 border border-purple-500/30 text-white hover:bg-purple-600/50 transition-colors"
+              aria-label="Stream anterior"
+            >
+              <ChevronLeft class="w-5 h-5" />
+            </button>
+            <button
+              id="nextStream"
+              class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-2 z-20 p-2 rounded-full bg-gray-900/90 border border-purple-500/30 text-white hover:bg-purple-600/50 transition-colors"
+              aria-label="Siguiente stream"
+            >
+              <ChevronRight class="w-5 h-5" />
+            </button>
+
+            <!-- Dots indicator -->
+            <div class="flex justify-center gap-2 mt-4">
+              {streams.map((_: any, index: number) => (
+                <button
+                  class="stream-dot w-2 h-2 rounded-full transition-colors"
+                  class:list={[index === 0 ? 'bg-purple-500' : 'bg-gray-600']}
+                  data-index={index}
+                  aria-label={`Ir al stream ${index + 1}`}
+                ></button>
+              ))}
+            </div>
+          </>
+        )}
+
+        <!-- Footer links -->
+        <div class="mt-4 pt-4 border-t border-purple-600/20 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <a
+            href="/streams"
+            class="inline-flex items-center gap-2 text-purple-400 hover:text-purple-300 text-sm font-medium transition-colors group"
+          >
+            <span id="viewAllStreamsText">Ver todos los streams</span>
+            <ExternalLink class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          </a>
+
+          <a
+            href={isLoggedIn ? '/account-management' : '/login?redirect=/account-management'}
+            class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-600/20 hover:bg-purple-600/30 text-purple-400 hover:text-white text-sm font-medium transition-colors border border-purple-500/30"
+          >
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/>
+            </svg>
+            <span id="connectTwitchText">Conecta tu Twitch</span>
+          </a>
+        </div>
+      </div>
+    ) : (
+      <!-- No Live Streams - Show CTA Banner -->
+      <div class="text-center py-8">
+        <!-- Twitch Logo with glow effect -->
+        <div class="relative inline-block mb-6">
+          <div class="absolute inset-0 bg-purple-500/20 blur-xl rounded-full"></div>
+          <div class="relative bg-gradient-to-br from-purple-600 to-purple-800 p-6 rounded-2xl border border-purple-500/30">
+            <svg class="w-12 h-12 text-white" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/>
+            </svg>
+          </div>
+        </div>
+
+        <h3 id="noStreamsTitle" class="text-xl font-bold text-white mb-2 medieval-font">
+          Nadie está transmitiendo ahora mismo
+        </h3>
+        <p id="noStreamsDesc" class="text-gray-400 mb-6 max-w-md mx-auto">
+          ¿Eres streamer? Conecta tu cuenta de Twitch y aparece aquí cuando juegues Mystovia. ¡Muestra tus aventuras al mundo!
+        </p>
+
+        <a
+          href={isLoggedIn ? '/account-management' : '/login?redirect=/account-management'}
+          class="inline-flex items-center gap-3 px-6 py-3 rounded-lg font-semibold transition-all duration-300 border border-purple-500/50 shadow-[0_0_20px_rgba(147,51,234,0.3)] hover:shadow-[0_0_30px_rgba(147,51,234,0.5)]"
+          style="background: linear-gradient(to bottom, rgb(147 51 234), rgb(126 34 206));"
+        >
+          <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/>
+          </svg>
+          <span id="connectTwitchCTA" class="text-white">Conectar mi cuenta de Twitch</span>
+        </a>
+
+        {!isLoggedIn && (
+          <p id="loginFirst" class="text-xs text-gray-500 mt-3">
+            Necesitas iniciar sesión primero
+          </p>
+        )}
+      </div>
+    )}
+  </div>
+</section>
+
+<script>
+  // Carousel functionality
+  const track = document.getElementById('streamsTrack');
+  const prevBtn = document.getElementById('prevStream');
+  const nextBtn = document.getElementById('nextStream');
+  const dots = document.querySelectorAll('.stream-dot');
+  const slides = document.querySelectorAll('.stream-slide');
+
+  if (track && slides.length > 1) {
+    let currentIndex = 0;
+    const totalSlides = slides.length;
+
+    function updateCarousel() {
+      if (track) {
+        track.style.transform = `translateX(-${currentIndex * 100}%)`;
+      }
+
+      dots.forEach((dot, index) => {
+        if (index === currentIndex) {
+          dot.classList.remove('bg-gray-600');
+          dot.classList.add('bg-purple-500');
+        } else {
+          dot.classList.remove('bg-purple-500');
+          dot.classList.add('bg-gray-600');
+        }
+      });
+    }
+
+    prevBtn?.addEventListener('click', () => {
+      currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+      updateCarousel();
+    });
+
+    nextBtn?.addEventListener('click', () => {
+      currentIndex = (currentIndex + 1) % totalSlides;
+      updateCarousel();
+    });
+
+    dots.forEach((dot) => {
+      dot.addEventListener('click', () => {
+        const index = parseInt((dot as HTMLElement).dataset.index || '0');
+        currentIndex = index;
+        updateCarousel();
+      });
+    });
+
+    // Auto-advance every 30 seconds
+    setInterval(() => {
+      currentIndex = (currentIndex + 1) % totalSlides;
+      updateCarousel();
+    }, 30000);
+  }
+</script>

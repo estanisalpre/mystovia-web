@@ -22,6 +22,7 @@ import userManagementRoutes from './routes/userManagementRoutes.js';
 import highscoresRoutes from './routes/highscoresRoutes.js';
 import deathsRoutes from './routes/deathsRoutes.js';
 import guildRoutes from './routes/guildRoutes.js';
+import twitchRoutes from './routes/twitchRoutes.js';
 
 // Load .env from project root
 const __filename = fileURLToPath(import.meta.url);
@@ -69,6 +70,7 @@ app.use('/api/support', supportRoutes);
 app.use('/api/highscores', highscoresRoutes);
 app.use('/api/deaths', deathsRoutes);
 app.use('/api/guilds', guildRoutes);
+app.use('/api/twitch', twitchRoutes);
 
 // Admin routes
 app.use('/api/admin/users', userManagementRoutes);

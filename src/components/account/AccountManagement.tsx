@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Mail, Calendar, Clock, Crown, Key, AtSign, X, AlertCircle, Check, Loader2 } from 'lucide-react';
+import { Mail, Calendar, Clock, Crown, Key, AtSign, X, AlertCircle, Check, Loader2, Twitch, ExternalLink, Unlink } from 'lucide-react';
 import { getAccountDetails, changePassword, changeEmail } from '../../utils/api';
 import '../../i18n';
+
+const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3301';
 
 interface AccountDetails {
   email: string;
@@ -11,16 +13,46 @@ interface AccountDetails {
   premdays: number;
 }
 
+interface StreamingAccount {
+  id: number;
+  platform: string;
+  platform_username: string;
+  platform_display_name: string;
+  platform_profile_image: string;
+  is_live: boolean;
+  is_verified: boolean;
+  created_at: string;
+}
+
 export default function AccountManagement() {
   const { t } = useTranslation();
   const [accountDetails, setAccountDetails] = useState<AccountDetails | null>(null);
+  const [streamingAccounts, setStreamingAccounts] = useState<StreamingAccount[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [showEmailModal, setShowEmailModal] = useState(false);
+  const [twitchLoading, setTwitchLoading] = useState(false);
 
   useEffect(() => {
     loadAccountDetails();
+    loadStreamingAccounts();
+
+    // Check for Twitch callback messages
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('twitch_success') === 'true') {
+      loadStreamingAccounts();
+      // Clean URL
+      window.history.replaceState({}, '', '/account-management');
+    }
+    if (params.get('twitch_error')) {
+      const errorCode = params.get('twitch_error');
+      let errorMessage = 'Error al conectar con Twitch';
+      if (errorCode === 'already_connected') errorMessage = 'Esta cuenta de Twitch ya está conectada a otro usuario';
+      if (errorCode === 'access_denied') errorMessage = 'Acceso denegado por el usuario';
+      setError(errorMessage);
+      window.history.replaceState({}, '', '/account-management');
+    }
   }, []);
 
   const loadAccountDetails = async () => {
@@ -39,6 +71,65 @@ export default function AccountManagement() {
       setError(t('account.errorLoading'));
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadStreamingAccounts = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/twitch/my-accounts`, {
+        credentials: 'include'
+      });
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setStreamingAccounts(data.accounts || []);
+        }
+      }
+    } catch (err) {
+      console.error('Error loading streaming accounts:', err);
+    }
+  };
+
+  const connectTwitch = async () => {
+    setTwitchLoading(true);
+    try {
+      const response = await fetch(`${API_URL}/api/twitch/auth-url`, {
+        credentials: 'include'
+      });
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.authUrl) {
+          window.location.href = data.authUrl;
+          return;
+        }
+      }
+      setError('Error al iniciar conexión con Twitch');
+    } catch (err) {
+      setError('Error al conectar con Twitch');
+    } finally {
+      setTwitchLoading(false);
+    }
+  };
+
+  const disconnectTwitch = async () => {
+    if (!confirm('¿Estás seguro de desconectar tu cuenta de Twitch?')) return;
+
+    setTwitchLoading(true);
+    try {
+      const response = await fetch(`${API_URL}/api/twitch/disconnect`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setStreamingAccounts(prev => prev.filter(a => a.platform !== 'twitch'));
+        }
+      }
+    } catch (err) {
+      setError('Error al desconectar Twitch');
+    } finally {
+      setTwitchLoading(false);
     }
   };
 
@@ -176,6 +267,114 @@ export default function AccountManagement() {
             {t('account.changeEmail')}
           </button>
         </nav>
+
+        {/* Twitch Connection Section */}
+        <section className="bg-gray-800 border border-purple-600/30 rounded-xl overflow-hidden mt-8">
+          <header className="p-6 border-b border-purple-600/30 bg-gradient-to-r from-purple-900/30 to-gray-800">
+            <h2 className="text-xl font-bold text-white flex items-center gap-2">
+              <Twitch className="w-5 h-5 text-purple-400" aria-hidden="true" />
+              Conexión de Streaming
+            </h2>
+            <p className="text-gray-400 text-sm mt-1">
+              Conecta tu cuenta de Twitch para aparecer en nuestra página de streams cuando transmitas
+            </p>
+          </header>
+
+          <div className="p-6">
+            {(() => {
+              const twitchAccount = streamingAccounts.find(a => a.platform === 'twitch');
+
+              if (twitchAccount) {
+                return (
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <img
+                        src={twitchAccount.platform_profile_image || '/images/default-avatar.png'}
+                        alt={twitchAccount.platform_display_name}
+                        className="w-14 h-14 rounded-full border-2 border-purple-500"
+                      />
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-white font-bold text-lg">{twitchAccount.platform_display_name}</span>
+                          {twitchAccount.is_live && (
+                            <span className="flex items-center gap-1 bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded">
+                              <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span>
+                              EN VIVO
+                            </span>
+                          )}
+                        </div>
+                        <span className="text-purple-400 text-sm">@{twitchAccount.platform_username}</span>
+                        <p className="text-gray-500 text-xs mt-1">
+                          Conectado el {new Date(twitchAccount.created_at).toLocaleDateString('es-ES')}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-3">
+                      <a
+                        href={`https://twitch.tv/${twitchAccount.platform_username}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 px-4 py-2 bg-purple-600/20 hover:bg-purple-600/30 text-purple-400 rounded-lg border border-purple-500/30 transition"
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                        Ver canal
+                      </a>
+                      <button
+                        onClick={disconnectTwitch}
+                        disabled={twitchLoading}
+                        className="flex items-center gap-2 px-4 py-2 bg-red-600/20 hover:bg-red-600/30 text-red-400 rounded-lg border border-red-500/30 transition disabled:opacity-50"
+                        type="button"
+                      >
+                        {twitchLoading ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <Unlink className="w-4 h-4" />
+                        )}
+                        Desconectar
+                      </button>
+                    </div>
+                  </div>
+                );
+              }
+
+              return (
+                <div className="text-center py-6">
+                  <div className="relative inline-block mb-4">
+                    <div className="absolute inset-0 bg-purple-500/20 blur-xl rounded-full"></div>
+                    <div className="relative bg-gradient-to-br from-purple-600/20 to-purple-800/20 p-4 rounded-xl border border-purple-500/30">
+                      <Twitch className="w-10 h-10 text-purple-400" />
+                    </div>
+                  </div>
+
+                  <h3 className="text-lg font-bold text-white mb-2">
+                    Conecta tu cuenta de Twitch
+                  </h3>
+                  <p className="text-gray-400 text-sm mb-6 max-w-md mx-auto">
+                    Cuando transmitas Mystovia, aparecerás automáticamente en nuestra página de streams para que otros jugadores te vean.
+                  </p>
+
+                  <button
+                    onClick={connectTwitch}
+                    disabled={twitchLoading}
+                    className="inline-flex items-center gap-3 px-6 py-3 rounded-lg font-semibold transition-all duration-300 border border-purple-500/50 disabled:opacity-50"
+                    style={{
+                      background: 'linear-gradient(to bottom, rgb(147 51 234), rgb(126 34 206))'
+                    }}
+                    type="button"
+                  >
+                    {twitchLoading ? (
+                      <Loader2 className="w-5 h-5 text-white animate-spin" />
+                    ) : (
+                      <Twitch className="w-5 h-5 text-white" />
+                    )}
+                    <span className="text-white">Conectar con Twitch</span>
+                  </button>
+                </div>
+              );
+            })()}
+          </div>
+        </section>
       </article>
 
       {/* Change Password Modal */}
