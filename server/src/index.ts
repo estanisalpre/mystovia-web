@@ -23,6 +23,7 @@ import highscoresRoutes from './routes/highscoresRoutes.js';
 import deathsRoutes from './routes/deathsRoutes.js';
 import guildRoutes from './routes/guildRoutes.js';
 import twitchRoutes from './routes/twitchRoutes.js';
+import { refreshLiveStatusInternal } from './controllers/twitchController.js';
 
 // Load .env from project root
 const __filename = fileURLToPath(import.meta.url);
@@ -97,4 +98,23 @@ app.use((req, res, next) => {
 
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
+
+  // Twitch live status check every 3 minutes
+  const TWITCH_CHECK_INTERVAL = 3 * 60 * 1000; // 3 minutes in ms
+
+  const checkTwitchLiveStatus = async () => {
+    try {
+      const result = await refreshLiveStatusInternal();
+      if (result.success && (result.total ?? 0) > 0) {
+        console.log(`📺 Twitch check: ${result.live}/${result.total} streams live`);
+      }
+    } catch (error) {
+      console.error('❌ Twitch live check error:', error);
+    }
+  };
+
+  // Run immediately on startup, then every 3 minutes
+  checkTwitchLiveStatus();
+  setInterval(checkTwitchLiveStatus, TWITCH_CHECK_INTERVAL);
+  console.log('📺 Twitch live status checker started (every 3 min)');
 });
