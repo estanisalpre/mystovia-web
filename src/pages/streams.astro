@@ -1,0 +1,340 @@
+---
+export const prerender = false;
+
+import Layout from '../layouts/Layout.astro';
+import { Tv, Users, Gamepad2, ExternalLink, ChevronRight, Home, X } from '@lucide/astro';
+import DiamondPattern from "../components/ui/DiamondPattern.astro";
+import GoldenLine from "../components/ui/GoldenLine.astro";
+import CornerOrnaments from "../components/ui/CornerOrnaments.astro";
+
+const INTERNAL_API_URL = `http://localhost:${process.env.PORT || 3301}`;
+
+const userId = Astro.cookies.get('userId')?.value;
+const isLoggedIn = !!userId;
+
+let streams: any[] = [];
+
+try {
+  const response = await fetch(`${INTERNAL_API_URL}/api/twitch/live`);
+  if (response.ok) {
+    const data = await response.json();
+    streams = data.streams || [];
+  }
+} catch (error) {
+  console.error('Error fetching live streams:', error);
+}
+
+const hasStreams = streams.length > 0;
+---
+
+<Layout
+  title="Streams en Vivo - Mystovia"
+  description="Mira a jugadores de Mystovia transmitiendo en vivo. Conecta tu cuenta de Twitch y aparece aquí cuando juegues."
+  keywords="mystovia streams, twitch mystovia, streaming tibia, jugadores en vivo"
+>
+  <section class="page-container max-w-6xl mx-auto">
+    <!-- Breadcrumb -->
+    <nav class="flex items-center gap-2 text-xs sm:text-sm text-gray-400 mb-4 sm:mb-6">
+      <a href="/" class="hover:text-yellow-500 transition-colors flex items-center gap-1">
+        <Home class="w-3 h-3" />
+        <span>Inicio</span>
+      </a>
+      <ChevronRight class="w-3 h-3 text-gray-600" />
+      <span class="text-purple-400">Streams en Vivo</span>
+    </nav>
+
+    <!-- Main Card -->
+    <div class="relative overflow-hidden rounded-xl">
+      <!-- Medieval container background -->
+      <div class="absolute inset-0 bg-gradient-to-b from-gray-900/95 via-gray-900/98 to-black/95 border border-purple-600/20 rounded-xl"></div>
+
+      <GoldenLine position="top" />
+      <DiamondPattern opacity={0.03} class="rounded-xl" />
+      <CornerOrnaments variant="curve" size="md" opacity={0.2} />
+
+      <!-- Content -->
+      <div class="relative z-10 p-6 sm:p-8">
+        <!-- Header -->
+        <div class="text-center mb-8">
+          <div class="flex items-center justify-center gap-3 mb-3">
+            <div class="h-px w-8 sm:w-12 bg-gradient-to-r from-transparent to-purple-500/50"></div>
+            <div class="relative">
+              <Tv class="w-6 h-6 sm:w-8 sm:h-8 text-purple-500" />
+              {hasStreams && (
+                <span class="absolute -top-1 -right-1 flex h-3 w-3">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                </span>
+              )}
+            </div>
+            <div class="h-px w-8 sm:w-12 bg-gradient-to-l from-transparent to-purple-500/50"></div>
+          </div>
+          <h1 class="text-2xl sm:text-3xl font-bold text-white medieval-font mb-2">
+            Jugadores de Mystovia en Vivo
+          </h1>
+          <p class="text-gray-400">
+            {hasStreams
+              ? `${streams.length} ${streams.length === 1 ? 'jugador transmitiendo' : 'jugadores transmitiendo'} ahora mismo`
+              : 'No hay streams en vivo en este momento'}
+          </p>
+        </div>
+
+        {hasStreams ? (
+          <!-- Streams Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            {streams.map((stream: any) => (
+              <button
+                class="stream-card relative rounded-lg overflow-hidden border border-purple-600/30 hover:border-purple-500/50 transition-all duration-300 hover:scale-[1.02] cursor-pointer text-left w-full"
+                style="background: linear-gradient(to bottom, rgb(31 41 55 / 0.6), rgb(17 24 39 / 0.8));"
+                data-username={stream.username}
+                data-display-name={stream.displayName}
+                data-title={stream.title}
+                data-profile-image={stream.profileImage}
+                data-viewer-count={stream.viewerCount}
+                data-game={stream.game}
+                data-character-name={stream.character?.name}
+                data-character-level={stream.character?.level}
+              >
+                <!-- Thumbnail placeholder (Twitch doesn't provide thumbnails easily without API) -->
+                <div class="aspect-video bg-gradient-to-br from-purple-900/50 to-gray-900 relative overflow-hidden">
+                  <div class="absolute inset-0 flex items-center justify-center">
+                    <svg class="w-16 h-16 text-purple-500/30" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/>
+                    </svg>
+                  </div>
+                  <!-- Live badge -->
+                  <div class="absolute top-2 left-2 flex items-center gap-1 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded">
+                    <span class="w-2 h-2 bg-white rounded-full animate-pulse"></span>
+                    EN VIVO
+                  </div>
+                  <!-- Viewer count -->
+                  <div class="absolute bottom-2 right-2 flex items-center gap-1 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                    <Users class="w-3 h-3" />
+                    {stream.viewerCount}
+                  </div>
+                </div>
+
+                <!-- Stream Info -->
+                <div class="p-4">
+                  <div class="flex items-start gap-3">
+                    <!-- Streamer Avatar -->
+                    <img
+                      src={stream.profileImage || '/images/default-avatar.png'}
+                      alt={stream.displayName}
+                      class="w-10 h-10 rounded-full border-2 border-purple-500/50 flex-shrink-0"
+                    />
+
+                    <div class="flex-1 min-w-0">
+                      <!-- Streamer Name -->
+                      <h3 class="text-white font-bold truncate">{stream.displayName}</h3>
+
+                      <!-- Stream Title -->
+                      <p class="text-gray-400 text-sm truncate">{stream.title || 'Jugando Mystovia'}</p>
+
+                      <!-- Character & Game -->
+                      <div class="flex items-center gap-2 mt-2 flex-wrap">
+                        {stream.character && (
+                          <span class="text-xs bg-yellow-500/20 text-yellow-500 px-2 py-0.5 rounded border border-yellow-500/30">
+                            {stream.character.name} Lvl {stream.character.level}
+                          </span>
+                        )}
+                        {stream.game && (
+                          <span class="text-xs text-gray-500 flex items-center gap-1">
+                            <Gamepad2 class="w-3 h-3" />
+                            {stream.game}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+        ) : (
+          <!-- No Streams CTA -->
+          <div class="text-center py-12">
+            <div class="relative inline-block mb-6">
+              <div class="absolute inset-0 bg-purple-500/20 blur-xl rounded-full"></div>
+              <div class="relative bg-gradient-to-br from-purple-600 to-purple-800 p-8 rounded-2xl border border-purple-500/30">
+                <svg class="w-16 h-16 text-white" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/>
+                </svg>
+              </div>
+            </div>
+
+            <h3 class="text-2xl font-bold text-white mb-3 medieval-font">
+              No hay streams en vivo
+            </h3>
+            <p class="text-gray-400 mb-8 max-w-lg mx-auto">
+              ¿Eres streamer? Conecta tu cuenta de Twitch y aparece aquí automáticamente cuando juegues Mystovia. ¡Muestra tus aventuras al mundo!
+            </p>
+
+            <a
+              href={isLoggedIn ? '/account-management' : '/login?redirect=/account-management'}
+              class="inline-flex items-center gap-3 px-8 py-4 rounded-lg font-bold text-lg transition-all duration-300 border border-purple-500/50 shadow-[0_0_25px_rgba(147,51,234,0.3)] hover:shadow-[0_0_35px_rgba(147,51,234,0.5)]"
+              style="background: linear-gradient(to bottom, rgb(147 51 234), rgb(126 34 206));"
+            >
+              <svg class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/>
+              </svg>
+              <span class="text-white">Conectar mi cuenta de Twitch</span>
+            </a>
+
+            {!isLoggedIn && (
+              <p class="text-xs text-gray-500 mt-4">
+                Necesitas iniciar sesión primero
+              </p>
+            )}
+          </div>
+        )}
+
+        <!-- CTA Footer -->
+        {hasStreams && (
+          <div class="text-center pt-6 border-t border-purple-600/20">
+            <p class="text-gray-400 mb-4">¿Quieres aparecer aquí cuando transmitas?</p>
+            <a
+              href={isLoggedIn ? '/account-management' : '/login?redirect=/account-management'}
+              class="inline-flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition-all duration-300 border border-purple-500/40"
+              style="background: linear-gradient(to bottom, rgb(147 51 234 / 0.2), rgb(126 34 206 / 0.3));"
+            >
+              <svg class="w-5 h-5 text-purple-400" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/>
+              </svg>
+              <span class="text-purple-300">Conectar mi Twitch</span>
+            </a>
+          </div>
+        )}
+      </div>
+    </div>
+  </section>
+
+  <!-- Stream Player Modal -->
+  <div id="streamModal" class="fixed inset-0 z-[1000] hidden">
+    <!-- Backdrop -->
+    <div id="modalBackdrop" class="absolute inset-0 bg-black/90 backdrop-blur-sm"></div>
+
+    <!-- Modal Content -->
+    <div class="relative z-10 flex items-center justify-center min-h-screen p-4">
+      <div class="w-full max-w-5xl">
+        <!-- Close button -->
+        <button
+          id="closeModal"
+          class="absolute top-4 right-4 p-2 rounded-full bg-gray-800/80 hover:bg-gray-700 text-white transition-colors z-20"
+        >
+          <X class="w-6 h-6" />
+        </button>
+
+        <!-- Stream container -->
+        <div class="relative rounded-xl overflow-hidden border border-purple-600/30 bg-gray-900">
+          <!-- Video -->
+          <div id="streamEmbed" class="aspect-video bg-black"></div>
+
+          <!-- Stream Info Bar -->
+          <div id="streamInfo" class="p-4 bg-gray-800/80 border-t border-purple-600/20">
+            <div class="flex items-center gap-4">
+              <img id="modalProfileImage" src="" alt="" class="w-12 h-12 rounded-full border-2 border-purple-500/50" />
+              <div class="flex-1 min-w-0">
+                <h3 id="modalDisplayName" class="text-white font-bold text-lg"></h3>
+                <p id="modalTitle" class="text-gray-400 text-sm truncate"></p>
+              </div>
+              <div class="flex items-center gap-4">
+                <span id="modalViewers" class="flex items-center gap-1 text-red-400">
+                  <Users class="w-4 h-4" />
+                  <span></span>
+                </span>
+                <a
+                  id="modalTwitchLink"
+                  href=""
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="flex items-center gap-2 px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-500 text-white font-medium transition-colors"
+                >
+                  <ExternalLink class="w-4 h-4" />
+                  Ver en Twitch
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  const modal = document.getElementById('streamModal');
+  const modalBackdrop = document.getElementById('modalBackdrop');
+  const closeModal = document.getElementById('closeModal');
+  const streamEmbed = document.getElementById('streamEmbed');
+  const modalProfileImage = document.getElementById('modalProfileImage') as HTMLImageElement;
+  const modalDisplayName = document.getElementById('modalDisplayName');
+  const modalTitle = document.getElementById('modalTitle');
+  const modalViewers = document.getElementById('modalViewers');
+  const modalTwitchLink = document.getElementById('modalTwitchLink') as HTMLAnchorElement;
+
+  const streamCards = document.querySelectorAll('.stream-card');
+
+  function openStream(card: HTMLElement) {
+    const username = card.dataset.username;
+    const displayName = card.dataset.displayName;
+    const title = card.dataset.title;
+    const profileImage = card.dataset.profileImage;
+    const viewerCount = card.dataset.viewerCount;
+
+    if (!username || !modal || !streamEmbed) return;
+
+    // Update modal content
+    if (modalProfileImage) modalProfileImage.src = profileImage || '/images/default-avatar.png';
+    if (modalDisplayName) modalDisplayName.textContent = displayName || username;
+    if (modalTitle) modalTitle.textContent = title || 'Jugando Mystovia';
+    if (modalViewers) {
+      const viewerSpan = modalViewers.querySelector('span:last-child');
+      if (viewerSpan) viewerSpan.textContent = `${viewerCount || 0} viendo`;
+    }
+    if (modalTwitchLink) modalTwitchLink.href = `https://twitch.tv/${username}`;
+
+    // Create Twitch embed
+    const hostname = window.location.hostname;
+    streamEmbed.innerHTML = `
+      <iframe
+        src="https://player.twitch.tv/?channel=${username}&parent=${hostname}"
+        height="100%"
+        width="100%"
+        allowfullscreen
+        class="absolute inset-0 w-full h-full"
+      ></iframe>
+    `;
+
+    // Show modal
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeStreamModal() {
+    if (!modal || !streamEmbed) return;
+
+    modal.classList.add('hidden');
+    streamEmbed.innerHTML = '';
+    document.body.style.overflow = '';
+  }
+
+  // Event listeners
+  streamCards.forEach(card => {
+    card.addEventListener('click', () => openStream(card as HTMLElement));
+  });
+
+  closeModal?.addEventListener('click', closeStreamModal);
+  modalBackdrop?.addEventListener('click', closeStreamModal);
+
+  // Close on escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeStreamModal();
+  });
+</script>
+
+<style>
+  .stream-card:hover .aspect-video {
+    background: linear-gradient(to br, rgb(88 28 135 / 0.6), rgb(17 24 39));
+  }
+</style>

@@ -4,6 +4,7 @@ import CartButton from "./CartButton";
 import HeaderAuth from "./HeaderAuth";
 import HeaderNav from "./HeaderNav";
 import MobileNav from "./MobileNav";
+import TwitchButton from "./TwitchButton";
 import DiamondPattern from "./ui/DiamondPattern.astro";
 import GoldenLine from "./ui/GoldenLine.astro";
 ---
@@ -29,6 +30,7 @@ import GoldenLine from "./ui/GoldenLine.astro";
 
   <!-- Desktop Auth/Cart -->
   <aside class="hidden lg:flex items-center gap-2 lg:gap-4 flex-shrink-0 relative z-10">
+    <TwitchButton client:only="react" />
     <CartButton client:only="react" />
     <HeaderAuth client:only="react" />
   </aside>
