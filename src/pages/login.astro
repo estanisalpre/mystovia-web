@@ -70,10 +70,8 @@ let error = "";
           </a>
         </div>
 
-        <ErrorMessage
-          message={error}
-          visible={!!error}
-        />
+        <!-- Error container for frontend validation -->
+        <div id="errorContainer" class="hidden bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-3 rounded-lg text-sm"></div>
 
         <SubmitBtn label="INICIAR SESIÓN" id="loginBtn" />
 
@@ -136,6 +134,22 @@ let error = "";
       }
     }
 
+    function showError(message: string) {
+      const errorContainer = document.getElementById("errorContainer");
+      if (errorContainer) {
+        errorContainer.textContent = message;
+        errorContainer.classList.remove("hidden");
+        errorContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+
+    function hideError() {
+      const errorContainer = document.getElementById("errorContainer");
+      if (errorContainer) {
+        errorContainer.classList.add("hidden");
+      }
+    }
+
     function setupForm() {
       const form = document.getElementById("loginForm") as HTMLFormElement & {
         email: HTMLInputElement;
@@ -144,12 +158,20 @@ let error = "";
 
       form?.addEventListener("submit", async (e) => {
         e.preventDefault();
-        const email = form.email.value;
+        hideError();
+
+        // Use native HTML5 validation
+        if (!form.checkValidity()) {
+          form.reportValidity();
+          return;
+        }
+
+        const email = form.email.value.trim();
         const password = form.password.value;
 
         const res = await useAuth("login", { email, password });
         if (res.success) window.location.href = "/create-character";
-        else alert(res.error);
+        else showError(res.error || "Error al iniciar sesión");
       });
     }
 

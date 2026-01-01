@@ -382,3 +382,42 @@ INSERT INTO `rule_sections` (`name`, `order_position`) VALUES
 
 -- added
 ALTER TABLE accounts ADD COLUMN creation INT UNSIGNED NOT NULL DEFAULT UNIX_TIMESTAMP();
+
+-- ============================================
+-- MIGRACIÓN: Agregar character_id al foro
+-- ============================================
+
+-- Agregar character_id a forum_topics
+ALTER TABLE forum_topics ADD COLUMN character_id INT NULL AFTER author_id;
+ALTER TABLE forum_topics ADD INDEX idx_character (character_id);
+
+-- Agregar character_id a forum_comments
+ALTER TABLE forum_comments ADD COLUMN character_id INT NULL AFTER author_id;
+ALTER TABLE forum_comments ADD INDEX idx_character (character_id);
+
+-- ============================================
+-- MIGRACIÓN: Actualizar posts existentes con character_id
+-- Asigna el primer personaje disponible del usuario a posts antiguos
+-- ============================================
+
+-- Actualizar forum_topics existentes que no tienen character_id
+UPDATE forum_topics ft
+SET ft.character_id = (
+  SELECT p.id FROM players p
+  WHERE p.account_id = ft.author_id
+    AND p.deleted = 0
+  ORDER BY p.id ASC
+  LIMIT 1
+)
+WHERE ft.character_id IS NULL;
+
+-- Actualizar forum_comments existentes que no tienen character_id
+UPDATE forum_comments fc
+SET fc.character_id = (
+  SELECT p.id FROM players p
+  WHERE p.account_id = fc.author_id
+    AND p.deleted = 0
+  ORDER BY p.id ASC
+  LIMIT 1
+)
+WHERE fc.character_id IS NULL;

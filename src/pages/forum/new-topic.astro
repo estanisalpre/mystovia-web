@@ -325,15 +325,16 @@ const selectedCategory = Astro.url.searchParams.get('category');
   form?.addEventListener('submit', async (e) => {
     e.preventDefault();
 
+    // Use native HTML5 validation
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+
     const characterId = characterSelect.value;
     const categoryId = categorySelect.value;
     const title = titleInput.value;
     const content = contentTextarea.value;
-
-    if (!characterId || !categoryId || !title || !content) {
-      alert(t('pages.forum.fillAllFields', lang));
-      return;
-    }
 
     // Disable button and show loading
     submitBtn.disabled = true;

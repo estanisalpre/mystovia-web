@@ -48,11 +48,12 @@ export const getTopicsByCategory = async (req: Request, res: Response) => {
         ft.views_count,
         ft.created_at,
         ft.updated_at,
-        a.name as author_name,
+        COALESCE(p.name, a.name) as author_name,
         (SELECT COUNT(*) FROM forum_comments WHERE topic_id = ft.id) as comments_count,
         COALESCE(SUM(ftv.vote), 0) as total_votes
       FROM forum_topics ft
-      INNER JOIN accounts a ON ft.author_id = a.id
+      LEFT JOIN players p ON ft.character_id = p.id
+      LEFT JOIN accounts a ON ft.author_id = a.id
       LEFT JOIN forum_topic_votes ftv ON ft.id = ftv.topic_id
       WHERE ft.category_id = ?
       GROUP BY ft.id
@@ -106,11 +107,12 @@ export const getTopic = async (req: Request, res: Response) => {
         ft.views_count,
         ft.created_at,
         ft.updated_at,
-        ft.author_id,
-        a.name as author_name,
+        ft.character_id,
+        COALESCE(p.name, a.name) as author_name,
         COALESCE(SUM(ftv.vote), 0) as total_votes
       FROM forum_topics ft
-      INNER JOIN accounts a ON ft.author_id = a.id
+      LEFT JOIN players p ON ft.character_id = p.id
+      LEFT JOIN accounts a ON ft.author_id = a.id
       LEFT JOIN forum_topic_votes ftv ON ft.id = ftv.topic_id
       WHERE ft.id = ?
       GROUP BY ft.id`,
@@ -140,10 +142,11 @@ export const getTopic = async (req: Request, res: Response) => {
         fc.content,
         fc.created_at,
         fc.updated_at,
-        fc.author_id,
-        a.name as author_name
+        fc.character_id,
+        COALESCE(p.name, a.name) as author_name
       FROM forum_comments fc
-      INNER JOIN accounts a ON fc.author_id = a.id
+      LEFT JOIN players p ON fc.character_id = p.id
+      LEFT JOIN accounts a ON fc.author_id = a.id
       WHERE fc.topic_id = ?
       ORDER BY fc.created_at ASC`,
       [topicId]
@@ -163,17 +166,27 @@ export const getTopic = async (req: Request, res: Response) => {
 /** Crear un nuevo tema */
 export const createTopic = async (req: Request, res: Response) => {
   try {
-    const { categoryId, title, content } = req.body;
+    const { categoryId, characterId, title, content } = req.body;
     const userId = (req as any).user.userId;
 
-    if (!categoryId || !title || !content) {
-      return res.status(400).json({ error: 'Categoría, título y contenido son requeridos' });
+    if (!categoryId || !characterId || !title || !content) {
+      return res.status(400).json({ error: 'Categoría, personaje, título y contenido son requeridos' });
+    }
+
+    // Verificar que el personaje pertenece al usuario
+    const [characters] = await db.query(
+      'SELECT id FROM players WHERE id = ? AND account_id = ? AND deleted = 0',
+      [characterId, userId]
+    ) as any[];
+
+    if (characters.length === 0) {
+      return res.status(403).json({ error: 'No tienes permiso para publicar con este personaje' });
     }
 
     const [result] = await db.query(
-      `INSERT INTO forum_topics (category_id, author_id, title, content)
-       VALUES (?, ?, ?, ?)`,
-      [categoryId, userId, title, content]
+      `INSERT INTO forum_topics (category_id, author_id, character_id, title, content)
+       VALUES (?, ?, ?, ?, ?)`,
+      [categoryId, userId, characterId, title, content]
     ) as any;
 
     res.status(201).json({
@@ -255,11 +268,21 @@ export const voteTopic = async (req: Request, res: Response) => {
 export const addComment = async (req: Request, res: Response) => {
   try {
     const { topicId } = req.params;
-    const { content } = req.body;
+    const { content, characterId } = req.body;
     const userId = (req as any).user.userId;
 
-    if (!content) {
-      return res.status(400).json({ error: 'El contenido es requerido' });
+    if (!content || !characterId) {
+      return res.status(400).json({ error: 'El contenido y personaje son requeridos' });
+    }
+
+    // Verificar que el personaje pertenece al usuario
+    const [characters] = await db.query(
+      'SELECT id FROM players WHERE id = ? AND account_id = ? AND deleted = 0',
+      [characterId, userId]
+    ) as any[];
+
+    if (characters.length === 0) {
+      return res.status(403).json({ error: 'No tienes permiso para comentar con este personaje' });
     }
 
     // Verificar que el tema existe y no está bloqueado
@@ -273,12 +296,12 @@ export const addComment = async (req: Request, res: Response) => {
     }
 
     if (topics[0].is_locked) {
-      return res.status(403).json({ error: 'Este tema está bloqueado' });
+      return res.status(403).json({ error: 'Este tema está cerrado y no admite más comentarios' });
     }
 
     const [result] = await db.query(
-      'INSERT INTO forum_comments (topic_id, author_id, content) VALUES (?, ?, ?)',
-      [topicId, userId, content]
+      'INSERT INTO forum_comments (topic_id, author_id, character_id, content) VALUES (?, ?, ?, ?)',
+      [topicId, userId, characterId, content]
     ) as any;
 
     // Actualizar el updated_at del tema

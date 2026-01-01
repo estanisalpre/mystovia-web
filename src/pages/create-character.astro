@@ -321,6 +321,12 @@ import { Star } from "@lucide/astro";
     errorDiv.classList.add("hidden");
     successDiv.classList.add("hidden");
 
+    // Use native HTML5 validation
+    if (!characterForm.checkValidity()) {
+      characterForm.reportValidity();
+      return;
+    }
+
     const formData = new FormData(characterForm);
     const name = formData.get("characterName") as string;
     const vocation = formData.get("vocation") as string;
