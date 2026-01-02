@@ -1,5 +1,5 @@
 ---
-import { Search, Bot } from "@lucide/astro";
+import { Search, Bot, Radio } from "@lucide/astro";
 ---
 
 <header class="hidden md:block fixed top-[60px] left-0 right-0 z-800 h-[50px]">
@@ -10,8 +10,19 @@ import { Search, Bot } from "@lucide/astro";
     <!-- Bottom golden line -->
     <div class="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-yellow-500/30 to-transparent"></div>
 
-    <!-- Search Form + Bot Guide Button -->
+    <!-- Live Streams + Search Form + Bot Guide Button -->
     <div class="relative z-10 flex items-center gap-4 w-full mt-2 max-w-[60%]">
+      <!-- Live Streams Button -->
+      <a
+        href="/streams"
+        id="liveStreamsBtn"
+        class="twitch-btn flex items-center gap-2 h-[34px] px-4 text-sm font-semibold rounded-lg transition-all whitespace-nowrap"
+        title="Streams en Vivo"
+      >
+        <Radio class="w-4 h-4" />
+        <span id="liveStreamsText" class="hidden lg:inline">En Vivo</span>
+      </a>
+
       <form id="fixedSearchForm" class="flex-1 flex items-center gap-3">
         <div class="flex-1 relative">
           <input
@@ -40,6 +51,19 @@ import { Search, Bot } from "@lucide/astro";
         <Bot class="w-4 h-4" />
         <span class="hidden lg:inline">Config. Bot</span>
       </a>
+
+      <!-- Connect Twitch Button -->
+      <a
+        href="/account-management"
+        id="connectTwitchBtn"
+        class="twitch-btn flex items-center gap-2 h-[34px] px-4 text-sm font-semibold rounded-lg transition-all whitespace-nowrap"
+        title="Conectar Twitch"
+      >
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/>
+        </svg>
+        <span id="connectTwitchText" class="hidden lg:inline">Conectar Twitch</span>
+      </a>
     </div>
   </div>
 </header>
@@ -58,6 +82,26 @@ import { Search, Bot } from "@lucide/astro";
     const fixedSearchBtn = document.getElementById('fixedSearchBtn');
     if (fixedSearchBtn) {
       fixedSearchBtn.textContent = t('common.search', lang);
+    }
+
+    const liveStreamsBtn = document.getElementById('liveStreamsBtn');
+    if (liveStreamsBtn) {
+      liveStreamsBtn.setAttribute('title', t('footer.streams', lang) || 'Streams en Vivo');
+    }
+
+    const liveStreamsText = document.getElementById('liveStreamsText');
+    if (liveStreamsText) {
+      liveStreamsText.textContent = t('nav.streams', lang) || 'En Vivo';
+    }
+
+    const connectTwitchBtn = document.getElementById('connectTwitchBtn');
+    if (connectTwitchBtn) {
+      connectTwitchBtn.setAttribute('title', t('footer.connectTwitch', lang) || 'Conectar Twitch');
+    }
+
+    const connectTwitchText = document.getElementById('connectTwitchText');
+    if (connectTwitchText) {
+      connectTwitchText.textContent = t('footer.connectTwitch', lang) || 'Conectar Twitch';
     }
   }
 
@@ -80,3 +124,19 @@ import { Search, Bot } from "@lucide/astro";
   initSearchForm();
   document.addEventListener('astro:page-load', applyTranslations);
 </script>
+
+<style>
+  .twitch-btn {
+    background: linear-gradient(to bottom, rgb(147 51 234 / 0.2), rgb(126 34 206 / 0.25));
+    border: 1px solid rgb(147 51 234 / 0.4);
+    color: rgb(192 132 252);
+  }
+
+  .twitch-btn:hover {
+    background: linear-gradient(to bottom, rgb(147 51 234 / 0.35), rgb(126 34 206 / 0.4));
+    border-color: rgb(147 51 234 / 0.7);
+    box-shadow: 0 0 15px rgb(147 51 234 / 0.4);
+    color: rgb(216 180 254);
+    transform: translateY(-1px);
+  }
+</style>

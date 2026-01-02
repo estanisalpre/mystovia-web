@@ -36,7 +36,8 @@
     "highscores": "Highscores",
     "online": "Online",
     "latestDeaths": "Deaths",
-    "guides": "Bot Config"
+    "guides": "Bot Config",
+    "streams": "Live"
   },
   "auth": {
     "login": "Login",
@@ -276,6 +277,8 @@
     "serverRules": "Server Rules",
     "helpCenter": "Help Center",
     "lostAccount": "Lost Account",
+    "streams": "Live Streams",
+    "connectTwitch": "Connect Twitch",
     "terms": "Terms",
     "privacy": "Privacy",
     "allRightsReserved": "All rights reserved. Not affiliated with CipSoft GmbH."
@@ -693,5 +696,30 @@
     "errorLoading": "Error loading account information",
     "errorChangingPassword": "Error changing password",
     "errorChangingEmail": "Error changing email"
+  },
+  "twitch": {
+    "liveStreams": "Mystovia Players Live",
+    "liveNow": "Live Now",
+    "streamersLive": "players streaming now",
+    "streamerLive": "player streaming",
+    "noStreams": "No live streams at the moment",
+    "noStreamsTitle": "No one is streaming",
+    "noStreamsDesc": "Are you a streamer? Connect your Twitch",
+    "noStreamsTitleFull": "No live streams",
+    "noStreamsDescFull": "Are you a streamer? Connect your Twitch account and appear here automatically when you play Mystovia.",
+    "watchNow": "Watch now",
+    "viewers": "watching",
+    "connectAccount": "Connect my Twitch account",
+    "connectCta": "Are you a streamer? Connect your Twitch account and appear here automatically when you play Mystovia.",
+    "appearHere": "Want to appear here when you stream?",
+    "connectMy": "Connect my Twitch",
+    "loginFirst": "You need to log in first",
+    "live": "LIVE",
+    "viewOnTwitch": "View on Twitch",
+    "playing": "Playing Mystovia",
+    "viewAllStreams": "View all streams",
+    "home": "Home",
+    "breadcrumbLive": "Live Streams",
+    "latestFalls": "Record of the most recent falls in Mystovia"
   }
 }

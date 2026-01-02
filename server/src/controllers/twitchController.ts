@@ -313,14 +313,14 @@ export const getLiveStreams = async (req: Request, res: Response) => {
   }
 };
 
-// Refresh live status for all Twitch accounts (called by cron or manually)
-export const refreshLiveStatus = async (req: Request, res: Response) => {
+// Internal function to refresh live status (can be called by cron interval)
+export const refreshLiveStatusInternal = async (): Promise<{ success: boolean; total?: number; live?: number; error?: string }> => {
   try {
     const clientId = process.env.TWITCH_CLIENT_ID;
     const clientSecret = process.env.TWITCH_CLIENT_SECRET;
 
     if (!clientId || !clientSecret) {
-      return res.status(500).json({ success: false, error: 'Twitch not configured' });
+      return { success: false, error: 'Twitch not configured' };
     }
 
     // Get app access token for API calls
@@ -336,7 +336,7 @@ export const refreshLiveStatus = async (req: Request, res: Response) => {
 
     const tokenData = await tokenResponse.json() as TwitchTokenResponse;
     if (!tokenData.access_token) {
-      return res.status(500).json({ success: false, error: 'Failed to get app token' });
+      return { success: false, error: 'Failed to get app token' };
     }
 
     // Get all Twitch accounts
@@ -346,14 +346,14 @@ export const refreshLiveStatus = async (req: Request, res: Response) => {
     ) as any[];
 
     if (accounts.length === 0) {
-      return res.json({ success: true, message: 'No Twitch accounts to check', updated: 0 });
+      return { success: true, total: 0, live: 0 };
     }
 
     // Twitch API allows up to 100 user_ids per request
     const userIds = accounts.map((a: any) => a.platform_user_id).filter(Boolean);
 
     if (userIds.length === 0) {
-      return res.json({ success: true, message: 'No valid user IDs', updated: 0 });
+      return { success: true, total: 0, live: 0 };
     }
 
     // Check streams status
@@ -399,14 +399,25 @@ export const refreshLiveStatus = async (req: Request, res: Response) => {
       }
     }
 
+    return { success: true, total: accounts.length, live: liveStreams.size };
+  } catch (error) {
+    console.error('Error refreshing live status:', error);
+    return { success: false, error: 'Internal server error' };
+  }
+};
+
+// Refresh live status for all Twitch accounts (HTTP endpoint)
+export const refreshLiveStatus = async (req: Request, res: Response) => {
+  const result = await refreshLiveStatusInternal();
+
+  if (result.success) {
     res.json({
       success: true,
       message: 'Live status updated',
-      total: accounts.length,
-      live: liveStreams.size
+      total: result.total,
+      live: result.live
     });
-  } catch (error) {
-    console.error('Error refreshing live status:', error);
-    res.status(500).json({ success: false, error: 'Internal server error' });
+  } else {
+    res.status(500).json({ success: false, error: result.error });
   }
 };

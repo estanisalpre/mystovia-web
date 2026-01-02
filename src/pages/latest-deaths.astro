@@ -253,10 +253,19 @@ import { Skull, AlertTriangle, Heart, ChevronLeft } from '@lucide/astro';
     if (deathsBackHome) deathsBackHome.textContent = t('pages.deaths.backHome', lang);
   }
 
-  loadDeaths();
-  applyTranslations();
-  document.addEventListener('astro:page-load', () => {
+  // Initialize function
+  function init() {
     loadDeaths();
     applyTranslations();
-  });
+  }
+
+  // Run on initial page load
+  init();
+
+  // For View Transitions - prevent duplicate listeners using a unique key
+  const LISTENER_KEY = '__latestDeathsPageListener';
+  if (!(window as any)[LISTENER_KEY]) {
+    (window as any)[LISTENER_KEY] = true;
+    document.addEventListener('astro:page-load', init);
+  }
 </script>

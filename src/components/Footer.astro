@@ -161,6 +161,12 @@ import CornerOrnaments from "./ui/CornerOrnaments.astro";
     const footerDesc = document.getElementById('footerDescription');
     if (footerDesc) footerDesc.textContent = t('footer.description', lang);
 
+    const streams = document.getElementById('footerStreams');
+    if (streams) streams.textContent = t('footer.streams', lang);
+
+    const connectTwitch = document.getElementById('footerConnectTwitch');
+    if (connectTwitch) connectTwitch.textContent = t('footer.connectTwitch', lang);
+
     const gameTitle = document.getElementById('footerGameTitle');
     if (gameTitle) {
       const icon = gameTitle.querySelector('svg');

@@ -49,7 +49,7 @@ const hasMultipleStreams = streams.length > 1;
         <div class="absolute inset-0 rounded-b-lg border border-purple-400/30 pointer-events-none"></div>
         <div class="flex items-center gap-2 relative z-10">
           <Tv class="w-4 h-4 text-white" />
-          <h2 id="streamsTitle" class="text-sm font-bold text-white text-center medieval-font">En Vivo Ahora</h2>
+          <h2 id="liveStreamsTitle" class="text-sm font-bold text-white text-center medieval-font">En Vivo Ahora</h2>
           {hasStreams && (
             <span class="relative flex h-2 w-2">
               <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
@@ -103,13 +103,13 @@ const hasMultipleStreams = streams.length > 1;
                         </div>
 
                         <!-- Stream Title -->
-                        <p class="text-gray-400 text-sm truncate mb-2">{stream.title || 'Jugando Mystovia'}</p>
+                        <p class="text-gray-400 text-sm truncate mb-2">{stream.title || ''}<span class="playing-text">{!stream.title ? 'Jugando Mystovia' : ''}</span></p>
 
                         <!-- Meta -->
                         <div class="flex items-center gap-4 text-xs text-gray-500">
                           <span class="flex items-center gap-1 text-red-400">
                             <Users class="w-3 h-3" />
-                            {stream.viewerCount || 0} viendo
+                            <span>{stream.viewerCount || 0}</span> <span class="viewers-text">viendo</span>
                           </span>
                           {stream.game && (
                             <span class="flex items-center gap-1">
@@ -176,7 +176,7 @@ const hasMultipleStreams = streams.length > 1;
             href="/streams"
             class="inline-flex items-center gap-2 text-purple-400 hover:text-purple-300 text-sm font-medium transition-colors group"
           >
-            <span id="viewAllStreamsText">Ver todos los streams</span>
+            <span id="liveViewAllStreamsText">Ver todos los streams</span>
             <ExternalLink class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </a>
 
@@ -187,52 +187,102 @@ const hasMultipleStreams = streams.length > 1;
             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
               <path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/>
             </svg>
-            <span id="connectTwitchText">Conecta tu Twitch</span>
+            <span id="liveConnectTwitchText">Conecta tu Twitch</span>
           </a>
         </div>
       </div>
     ) : (
-      <!-- No Live Streams - Show CTA Banner -->
-      <div class="text-center py-8">
-        <!-- Twitch Logo with glow effect -->
-        <div class="relative inline-block mb-6">
-          <div class="absolute inset-0 bg-purple-500/20 blur-xl rounded-full"></div>
-          <div class="relative bg-gradient-to-br from-purple-600 to-purple-800 p-6 rounded-2xl border border-purple-500/30">
-            <svg class="w-12 h-12 text-white" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/>
-            </svg>
+      <!-- No Live Streams - Compact version -->
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4 py-2">
+        <!-- Left: Icon + Text -->
+        <div class="flex items-center gap-3">
+          <div class="relative flex-shrink-0">
+            <div class="absolute inset-0 bg-purple-500/20 blur-lg rounded-full"></div>
+            <div class="relative bg-gradient-to-br from-purple-600 to-purple-800 p-2.5 rounded-lg border border-purple-500/30">
+              <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/>
+              </svg>
+            </div>
+          </div>
+          <div class="text-center sm:text-left">
+            <p id="liveNoStreamsTitle" class="text-sm font-semibold text-white">
+              Nadie está transmitiendo
+            </p>
+            <p id="liveNoStreamsDesc" class="text-xs text-gray-500 hidden sm:block">
+              ¿Eres streamer? Conecta tu Twitch
+            </p>
           </div>
         </div>
 
-        <h3 id="noStreamsTitle" class="text-xl font-bold text-white mb-2 medieval-font">
-          Nadie está transmitiendo ahora mismo
-        </h3>
-        <p id="noStreamsDesc" class="text-gray-400 mb-6 max-w-md mx-auto">
-          ¿Eres streamer? Conecta tu cuenta de Twitch y aparece aquí cuando juegues Mystovia. ¡Muestra tus aventuras al mundo!
-        </p>
-
+        <!-- Right: CTA Button -->
         <a
           href={isLoggedIn ? '/account-management' : '/login?redirect=/account-management'}
-          class="inline-flex items-center gap-3 px-6 py-3 rounded-lg font-semibold transition-all duration-300 border border-purple-500/50 shadow-[0_0_20px_rgba(147,51,234,0.3)] hover:shadow-[0_0_30px_rgba(147,51,234,0.5)]"
-          style="background: linear-gradient(to bottom, rgb(147 51 234), rgb(126 34 206));"
+          class="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition-all duration-300 border border-purple-500/40 hover:border-purple-500/60 hover:shadow-[0_0_15px_rgba(147,51,234,0.3)]"
+          style="background: linear-gradient(to bottom, rgb(147 51 234 / 0.8), rgb(126 34 206 / 0.9));"
         >
-          <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="currentColor">
+          <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="currentColor">
             <path d="M11.571 4.714h1.715v5.143H11.57zm4.715 0H18v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714Z"/>
           </svg>
-          <span id="connectTwitchCTA" class="text-white">Conectar mi cuenta de Twitch</span>
+          <span id="liveConnectCTA" class="text-white">Conectar Twitch</span>
         </a>
-
-        {!isLoggedIn && (
-          <p id="loginFirst" class="text-xs text-gray-500 mt-3">
-            Necesitas iniciar sesión primero
-          </p>
-        )}
       </div>
     )}
   </div>
 </section>
 
 <script>
+  import { t, getStoredLanguage } from '../../../i18n/translations';
+
+  function applyTranslations() {
+    const lang = getStoredLanguage();
+
+    // Header title
+    const liveStreamsTitle = document.getElementById('liveStreamsTitle');
+    if (liveStreamsTitle) liveStreamsTitle.textContent = t('twitch.liveNow', lang);
+
+    // Playing Mystovia fallback
+    const playingTexts = document.querySelectorAll('.playing-text');
+    playingTexts.forEach(el => {
+      if (el.textContent) el.textContent = t('twitch.playing', lang);
+    });
+
+    // Viewers text
+    const viewersTexts = document.querySelectorAll('.viewers-text');
+    viewersTexts.forEach(el => {
+      el.textContent = t('twitch.viewers', lang);
+    });
+
+    // Footer links (when has streams)
+    const liveViewAllStreamsText = document.getElementById('liveViewAllStreamsText');
+    if (liveViewAllStreamsText) liveViewAllStreamsText.textContent = t('twitch.viewAllStreams', lang);
+
+    const liveConnectTwitchText = document.getElementById('liveConnectTwitchText');
+    if (liveConnectTwitchText) liveConnectTwitchText.textContent = t('twitch.connectMy', lang);
+
+    // No streams section
+    const liveNoStreamsTitle = document.getElementById('liveNoStreamsTitle');
+    if (liveNoStreamsTitle) liveNoStreamsTitle.textContent = t('twitch.noStreamsTitle', lang);
+
+    const liveNoStreamsDesc = document.getElementById('liveNoStreamsDesc');
+    if (liveNoStreamsDesc) liveNoStreamsDesc.textContent = t('twitch.noStreamsDesc', lang);
+
+    const liveConnectCTA = document.getElementById('liveConnectCTA');
+    if (liveConnectCTA) liveConnectCTA.textContent = t('twitch.connectAccount', lang);
+
+    const liveLoginFirst = document.getElementById('liveLoginFirst');
+    if (liveLoginFirst) liveLoginFirst.textContent = t('twitch.loginFirst', lang);
+  }
+
+  // Initialize translations
+  applyTranslations();
+
+  // For View Transitions - prevent duplicate listeners
+  const LISTENER_KEY = '__liveStreamsComponentListener';
+  if (!(window as any)[LISTENER_KEY]) {
+    (window as any)[LISTENER_KEY] = true;
+    document.addEventListener('astro:page-load', applyTranslations);
+  }
+
   // Carousel functionality
   const track = document.getElementById('streamsTrack');
   const prevBtn = document.getElementById('prevStream');

@@ -1,14 +1,23 @@
 import { useState, useEffect } from 'react';
 import { Twitch } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { verifyAuth } from '../utils/api';
+import '../i18n';
 
 export default function TwitchButton() {
+  const { t, i18n } = useTranslation();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    setIsClient(true);
+    const storedLang = localStorage.getItem('mystovia-language');
+    if (storedLang && storedLang !== i18n.language) {
+      i18n.changeLanguage(storedLang);
+    }
     checkAuth();
-  }, []);
+  }, [i18n]);
 
   const checkAuth = async () => {
     try {
@@ -23,7 +32,7 @@ export default function TwitchButton() {
     }
   };
 
-  if (isLoading) {
+  if (isLoading || !isClient) {
     return null;
   }
 
@@ -36,7 +45,7 @@ export default function TwitchButton() {
       style={{
         background: 'linear-gradient(to bottom, rgb(145 70 255 / 0.2), rgb(120 50 220 / 0.3))'
       }}
-      title="Conectar Twitch"
+      title={t('footer.connectTwitch')}
     >
       <Twitch size={18} className="text-purple-400" />
       <span className="hidden xl:inline text-sm font-medium text-purple-300 hover:text-purple-200">

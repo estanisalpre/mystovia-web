@@ -36,7 +36,8 @@
     "highscores": "Highscores",
     "online": "Online",
     "latestDeaths": "Muertes",
-    "guides": "Config. Bot"
+    "guides": "Config. Bot",
+    "streams": "En Vivo"
   },
   "auth": {
     "login": "Ingresar",
@@ -276,6 +277,8 @@
     "serverRules": "Reglas del Servidor",
     "helpCenter": "Centro de Ayuda",
     "lostAccount": "Cuenta Perdida",
+    "streams": "Streams en Vivo",
+    "connectTwitch": "Conectar Twitch",
     "terms": "Términos",
     "privacy": "Privacidad",
     "allRightsReserved": "Todos los derechos reservados. No afiliado con CipSoft GmbH."
@@ -693,5 +696,30 @@
     "errorLoading": "Error al cargar la información de la cuenta",
     "errorChangingPassword": "Error al cambiar la contraseña",
     "errorChangingEmail": "Error al cambiar el email"
+  },
+  "twitch": {
+    "liveStreams": "Jugadores de Mystovia en Vivo",
+    "liveNow": "En Vivo Ahora",
+    "streamersLive": "jugadores transmitiendo ahora mismo",
+    "streamerLive": "jugador transmitiendo",
+    "noStreams": "No hay streams en vivo en este momento",
+    "noStreamsTitle": "Nadie está transmitiendo",
+    "noStreamsDesc": "¿Eres streamer? Conecta tu Twitch",
+    "noStreamsTitleFull": "No hay streams en vivo",
+    "noStreamsDescFull": "¿Eres streamer? Conecta tu cuenta de Twitch y aparece aquí automáticamente cuando juegues Mystovia.",
+    "watchNow": "Ver ahora",
+    "viewers": "viendo",
+    "connectAccount": "Conectar mi cuenta de Twitch",
+    "connectCta": "¿Eres streamer? Conecta tu cuenta de Twitch y aparece aquí automáticamente cuando juegues Mystovia.",
+    "appearHere": "¿Quieres aparecer aquí cuando transmitas?",
+    "connectMy": "Conectar mi Twitch",
+    "loginFirst": "Necesitas iniciar sesión primero",
+    "live": "EN VIVO",
+    "viewOnTwitch": "Ver en Twitch",
+    "playing": "Jugando Mystovia",
+    "viewAllStreams": "Ver todos los streams",
+    "home": "Inicio",
+    "breadcrumbLive": "Streams en Vivo",
+    "latestFalls": "Registro de las caídas más recientes en Mystovia"
   }
 }

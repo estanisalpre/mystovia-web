@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Store, Menu, X, Gamepad2, Users, HelpCircle, Star, Bot } from 'lucide-react';
+import { Store, Menu, X, Gamepad2, Users, HelpCircle, Star, Bot, Radio } from 'lucide-react';
 import HeaderAuth from './HeaderAuth';
 import '../i18n';
 import { openDownloadModal } from './DownloadModal';
@@ -210,6 +210,16 @@ export default function MobileNav() {
                     >
                       <span className="w-1.5 h-1.5 rounded-full bg-gray-600 group-hover:bg-yellow-500 transition-colors" aria-hidden="true" />
                       {t('nav.guilds')}
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="/streams"
+                      onClick={closeMenu}
+                      className="flex items-center gap-3 text-purple-300 hover:text-purple-200 transition-colors py-3 px-4 rounded-lg hover:bg-purple-500/10 group"
+                    >
+                      <Radio size={14} className="text-purple-400 group-hover:text-purple-300 transition-colors" aria-hidden="true" />
+                      {t('nav.streams')}
                     </a>
                   </li>
                 </ul>
