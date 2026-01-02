@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { LogOut, User, Users, ChevronDown, Shield, Settings } from 'lucide-react';
+import { LogOut, User, Users, ChevronDown, Shield, Settings, Skull } from 'lucide-react';
 import { verifyAuth, logout as apiLogout } from '../utils/api';
 import { hasPermission } from '../utils/permissions';
 import '../i18n';
+
+const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3301';
 
 interface UserData {
   id: number;
@@ -18,11 +20,21 @@ export default function HeaderAuth() {
   const [user, setUser] = useState<UserData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [bossPoints, setBossPoints] = useState<number | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     checkAuth();
   }, []);
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      loadBossPoints();
+      const handleBpUpdate = () => loadBossPoints();
+      window.addEventListener('bosspoints-updated', handleBpUpdate);
+      return () => window.removeEventListener('bosspoints-updated', handleBpUpdate);
+    }
+  }, [isLoggedIn]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -65,6 +77,22 @@ export default function HeaderAuth() {
     }
   };
 
+  const loadBossPoints = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/boss-points/balance`, {
+        credentials: 'include'
+      });
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setBossPoints(data.bossPoints);
+        }
+      }
+    } catch (error) {
+      // Silently fail
+    }
+  };
+
   const getInitials = (name: string) => {
     const parts = name.split(' ');
     if (parts.length >= 2) {
@@ -92,21 +120,36 @@ export default function HeaderAuth() {
 
   if (isLoggedIn && user) {
     return (
-      <div className="relative" ref={dropdownRef}>
-        <button
-          onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-          className="flex items-center gap-2 px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition group"
-          title={user.accountName}
-        >
-          <div className="w-8 h-8 bg-yellow-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
-            {getInitials(user.accountName)}
-          </div>
-          <span className="hidden md:inline text-sm font-medium">{user.accountName}</span>
-          <ChevronDown
-            size={16}
-            className={`transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`}
-          />
-        </button>
+      <div className="flex items-center gap-3" ref={dropdownRef}>
+        {/* Boss Points Badge */}
+        {bossPoints !== null && (
+          <a
+            href="/marketplace"
+            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-yellow-900/40 to-orange-900/30 border border-yellow-600/40 rounded-lg hover:border-yellow-500/60 transition-colors"
+            title={t('bossPoints.title')}
+          >
+            <Skull size={16} className="text-yellow-500" />
+            <span className="text-yellow-400 font-bold text-sm">{bossPoints.toLocaleString()}</span>
+            <span className="text-yellow-500/70 text-xs">BP</span>
+          </a>
+        )}
+
+        {/* User Dropdown */}
+        <div className="relative">
+          <button
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            className="flex items-center gap-2 px-3 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition group"
+            title={user.accountName}
+          >
+            <div className="w-8 h-8 bg-yellow-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+              {getInitials(user.accountName)}
+            </div>
+            <span className="hidden md:inline text-sm font-medium">{user.accountName}</span>
+            <ChevronDown
+              size={16}
+              className={`transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`}
+            />
+          </button>
 
         {/* Dropdown Menu */}
         {isDropdownOpen && (
@@ -161,6 +204,7 @@ export default function HeaderAuth() {
             </div>
           </div>
         )}
+        </div>
       </div>
     );
   }

@@ -13,8 +13,12 @@ import {
 } from '../controllers/userManagementController.js';
 import { authenticateToken } from '../middleware/authMiddleware.js';
 import { checkPermission } from '../middleware/permissions.js';
+//import { requireWhitelistedIP } from '../middleware/ipMiddleware.js';
 
 const router = Router();
+
+// IP whitelist check for all admin user management routes
+//router.use(requireWhitelistedIP);
 
 // ============================================
 // GESTIÓN DE USUARIOS (requiere manage_users)

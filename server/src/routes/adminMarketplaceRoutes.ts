@@ -12,9 +12,12 @@ import {
 } from '../controllers/adminMarketplaceController.js';
 import { authenticateToken } from '../middleware/authMiddleware.js';
 import { requireAdmin } from '../middleware/adminMiddleware.js';
+//import { requireWhitelistedIP } from '../middleware/ipMiddleware.js';
 
 const router = Router();
 
+// IP whitelist check FIRST (before any authentication)
+//router.use(requireWhitelistedIP);
 router.use(authenticateToken);
 router.use(requireAdmin);
 

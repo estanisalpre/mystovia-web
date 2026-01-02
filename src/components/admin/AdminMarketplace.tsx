@@ -22,6 +22,8 @@ interface MarketItem {
   featured: boolean;
   items_json: GameItem[];
   weapon_options?: { itemId: number; name: string; imageUrl?: string }[] | null;
+  redeemable_with_bp?: boolean;
+  bp_price?: number | null;
   created_at: string;
   updated_at: string;
 }
@@ -266,8 +268,11 @@ export default function AdminMarketplace() {
                         {item.category}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-white font-semibold">
-                      ${Number(item.price).toFixed(2)}
+                    <td className="px-6 py-4">
+                      <div className="text-white font-semibold">${Number(item.price).toFixed(2)}</div>
+                      {item.redeemable_with_bp && item.bp_price && (
+                        <div className="text-yellow-400 text-sm">{item.bp_price} BP</div>
+                      )}
                     </td>
                     <td className="px-6 py-4 text-gray-300">
                       {item.stock === -1 ? 'Unlimited' : item.stock}
