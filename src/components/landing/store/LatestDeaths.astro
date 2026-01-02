@@ -101,9 +101,6 @@ import { Heart, ChevronRight } from '@lucide/astro';
     if (viewMoreDeathsBtn) viewMoreDeathsBtn.textContent = t('landing.viewMore', lang);
   }
 
-  applyTranslations();
-  document.addEventListener('astro:page-load', applyTranslations);
-
   async function loadLatestDeaths() {
     const lang = getStoredLanguage();
     const loadingEl = document.getElementById('deaths-loading');
@@ -156,6 +153,19 @@ import { Heart, ChevronRight } from '@lucide/astro';
     }
   }
 
-  // Load deaths on page load
-  loadLatestDeaths();
+  // Initialize function
+  function init() {
+    loadLatestDeaths();
+    applyTranslations();
+  }
+
+  // Run on initial page load
+  init();
+
+  // For View Transitions - prevent duplicate listeners using a unique key
+  const LISTENER_KEY = '__latestDeathsComponentListener';
+  if (!(window as any)[LISTENER_KEY]) {
+    (window as any)[LISTENER_KEY] = true;
+    document.addEventListener('astro:page-load', init);
+  }
 </script>

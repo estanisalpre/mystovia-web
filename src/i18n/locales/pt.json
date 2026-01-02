@@ -36,7 +36,8 @@
     "highscores": "Highscores",
     "online": "Online",
     "latestDeaths": "Mortes",
-    "guides": "Config. Bot"
+    "guides": "Config. Bot",
+    "streams": "Ao Vivo"
   },
   "auth": {
     "login": "Entrar",
@@ -276,6 +277,8 @@
     "serverRules": "Regras do Servidor",
     "helpCenter": "Central de Ajuda",
     "lostAccount": "Conta Perdida",
+    "streams": "Streams ao Vivo",
+    "connectTwitch": "Conectar Twitch",
     "terms": "Termos",
     "privacy": "Privacidade",
     "allRightsReserved": "Todos os direitos reservados. Não afiliado à CipSoft GmbH."
@@ -693,5 +696,30 @@
     "errorLoading": "Erro ao carregar informações da conta",
     "errorChangingPassword": "Erro ao alterar senha",
     "errorChangingEmail": "Erro ao alterar email"
+  },
+  "twitch": {
+    "liveStreams": "Jogadores de Mystovia ao Vivo",
+    "liveNow": "Ao Vivo Agora",
+    "streamersLive": "jogadores transmitindo agora",
+    "streamerLive": "jogador transmitindo",
+    "noStreams": "Não há streams ao vivo no momento",
+    "noStreamsTitle": "Ninguém está transmitindo",
+    "noStreamsDesc": "É streamer? Conecte sua Twitch",
+    "noStreamsTitleFull": "Sem streams ao vivo",
+    "noStreamsDescFull": "É streamer? Conecte sua conta Twitch e apareça aqui automaticamente quando jogar Mystovia.",
+    "watchNow": "Assistir agora",
+    "viewers": "assistindo",
+    "connectAccount": "Conectar minha conta Twitch",
+    "connectCta": "É streamer? Conecte sua conta Twitch e apareça aqui automaticamente quando jogar Mystovia.",
+    "appearHere": "Quer aparecer aqui quando transmitir?",
+    "connectMy": "Conectar minha Twitch",
+    "loginFirst": "Você precisa fazer login primeiro",
+    "live": "AO VIVO",
+    "viewOnTwitch": "Ver na Twitch",
+    "playing": "Jogando Mystovia",
+    "viewAllStreams": "Ver todos os streams",
+    "home": "Início",
+    "breadcrumbLive": "Streams ao Vivo",
+    "latestFalls": "Registro das quedas mais recentes em Mystovia"
   }
 }

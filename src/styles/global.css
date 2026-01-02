@@ -107,6 +107,28 @@ select.form-input option {
   @apply hover:text-yellow-500 transition text-sm;
 }
 
+/* Live streams button - Purple Twitch style */
+.nav-link-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.625rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: rgb(192 132 252);
+  background: linear-gradient(to bottom, rgb(147 51 234 / 0.15), rgb(126 34 206 / 0.2));
+  border: 1px solid rgb(147 51 234 / 0.4);
+  border-radius: 0.375rem;
+  transition: all 0.2s ease;
+}
+
+.nav-link-live:hover {
+  background: linear-gradient(to bottom, rgb(147 51 234 / 0.25), rgb(126 34 206 / 0.3));
+  border-color: rgb(147 51 234 / 0.6);
+  box-shadow: 0 0 12px rgb(147 51 234 / 0.3);
+  color: rgb(216 180 254);
+}
+
 /* Store button - Medieval gold style */
 .store-button {
   display: inline-flex;

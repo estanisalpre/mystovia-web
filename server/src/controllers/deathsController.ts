@@ -21,6 +21,8 @@ export const getLatestDeaths = async (req: Request, res: Response) => {
   try {
     const limit = Math.min(100, Math.max(1, parseInt(req.query.limit as string) || 10));
 
+    // Get unique deaths - only show one entry per death event
+    // Join with the killer that dealt the final hit (final_hit = 1)
     const [deaths] = await db.query(
       `SELECT
          pd.id,
@@ -29,11 +31,11 @@ export const getLatestDeaths = async (req: Request, res: Response) => {
          p.id as player_id,
          p.name as player_name,
          p.vocation as player_vocation,
-         COALESCE(killer_player.name, ek.name) AS killed_by,
+         COALESCE(killer_player.name, ek.name, 'Unknown') AS killed_by,
          CASE WHEN pk.player_id IS NOT NULL THEN 1 ELSE 0 END AS is_player_kill
        FROM player_deaths pd
        INNER JOIN players p ON p.id = pd.player_id
-       LEFT JOIN killers k ON k.death_id = pd.id
+       LEFT JOIN killers k ON k.death_id = pd.id AND k.final_hit = 1
        LEFT JOIN player_killers pk ON pk.kill_id = k.id
        LEFT JOIN players killer_player ON killer_player.id = pk.player_id
        LEFT JOIN environment_killers ek ON ek.kill_id = k.id
