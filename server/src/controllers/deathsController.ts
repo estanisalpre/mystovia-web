@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import db from '../config/database.js';
 
-// Mapeo de vocaciones
 function getVocationName(vocationId: number): string {
   const vocations: { [key: number]: string } = {
     0: 'None',
@@ -21,8 +20,6 @@ export const getLatestDeaths = async (req: Request, res: Response) => {
   try {
     const limit = Math.min(100, Math.max(1, parseInt(req.query.limit as string) || 10));
 
-    // Get unique deaths - only show one entry per death event
-    // Join with the killer that dealt the final hit (final_hit = 1)
     const [deaths] = await db.query(
       `SELECT
          pd.id,
