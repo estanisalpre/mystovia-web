@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Search, ChevronLeft, ChevronRight, Package, DollarSign, Clock, CheckCircle, XCircle, Truck, Eye } from 'lucide-react';
+import { Search, ChevronLeft, ChevronRight, Package, DollarSign, Clock, CheckCircle, XCircle, Truck, Eye, Skull } from 'lucide-react';
 
 const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3301';
 
@@ -16,6 +16,7 @@ interface Order {
   account_email: string;
   player_name: string;
   total_items: number;
+  order_type: 'payment' | 'boss_points';
 }
 
 interface Stats {
@@ -25,6 +26,8 @@ interface Stats {
   approved_count: number;
   delivered_count: number;
   cancelled_count: number;
+  bp_orders: number;
+  bp_total_spent: number;
 }
 
 interface OrderItem {
@@ -60,13 +63,14 @@ export default function AdminOrders() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [typeFilter, setTypeFilter] = useState('all');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
   const [loadingItems, setLoadingItems] = useState(false);
 
   useEffect(() => {
     loadOrders();
-  }, [pagination.page, statusFilter]);
+  }, [pagination.page, statusFilter, typeFilter]);
 
   const loadOrders = async () => {
     try {
@@ -75,6 +79,7 @@ export default function AdminOrders() {
         page: pagination.page.toString(),
         limit: pagination.limit.toString(),
         status: statusFilter,
+        type: typeFilter,
         ...(searchQuery && { search: searchQuery })
       });
 
@@ -123,10 +128,11 @@ export default function AdminOrders() {
     }).format(amount);
   };
 
-  const loadOrderItems = async (orderId: number) => {
+  const loadOrderItems = async (orderId: number, orderType: string) => {
     try {
       setLoadingItems(true);
-      const response = await fetch(`${API_URL}/api/admin/marketplace/orders/${orderId}/items`, {
+      const params = new URLSearchParams({ type: orderType });
+      const response = await fetch(`${API_URL}/api/admin/marketplace/orders/${orderId}/items?${params}`, {
         credentials: 'include'
       });
 
@@ -145,7 +151,7 @@ export default function AdminOrders() {
   const handleViewOrder = (order: Order) => {
     setSelectedOrder(order);
     setOrderItems([]);
-    loadOrderItems(order.id);
+    loadOrderItems(order.id, order.order_type);
   };
 
   return (
@@ -158,7 +164,7 @@ export default function AdminOrders() {
 
       {/* Stats Cards */}
       {stats && (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
           <div className="bg-gray-800 rounded-lg p-4 border border-gray-700">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-blue-500/10 rounded-lg">
@@ -206,6 +212,18 @@ export default function AdminOrders() {
               </div>
             </div>
           </div>
+
+          <div className="bg-gray-800 rounded-lg p-4 border border-yellow-600/30">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-yellow-500/10 rounded-lg">
+                <Skull size={20} className="text-yellow-500" />
+              </div>
+              <div>
+                <p className="text-gray-400 text-sm">Canjes con BP</p>
+                <p className="text-yellow-400 text-xl font-bold">{stats.bp_orders}</p>
+              </div>
+            </div>
+          </div>
         </div>
       )}
 
@@ -240,6 +258,20 @@ export default function AdminOrders() {
             <option value="cancelled">Cancelado</option>
           </select>
 
+          {/* Type Filter */}
+          <select
+            value={typeFilter}
+            onChange={(e) => {
+              setTypeFilter(e.target.value);
+              setPagination(prev => ({ ...prev, page: 1 }));
+            }}
+            className="bg-gray-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="all">Todos los tipos</option>
+            <option value="payment">Pagos</option>
+            <option value="boss_points">Boss Points</option>
+          </select>
+
           <button
             type="submit"
             className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors"
@@ -267,6 +299,7 @@ export default function AdminOrders() {
               <thead className="bg-gray-900">
                 <tr>
                   <th className="text-left px-6 py-4 text-gray-400 font-semibold">Orden #</th>
+                  <th className="text-left px-6 py-4 text-gray-400 font-semibold">Tipo</th>
                   <th className="text-left px-6 py-4 text-gray-400 font-semibold">Usuario</th>
                   <th className="text-left px-6 py-4 text-gray-400 font-semibold">Personaje</th>
                   <th className="text-left px-6 py-4 text-gray-400 font-semibold">Monto</th>
@@ -279,16 +312,34 @@ export default function AdminOrders() {
                 {orders.map((order, index) => {
                   const statusInfo = statusConfig[order.status] || statusConfig.pending;
                   const StatusIcon = statusInfo.icon;
+                  const isBpOrder = order.order_type === 'boss_points';
 
                   return (
                     <tr
-                      key={order.id}
-                      className={`border-t border-gray-700 ${
-                        index % 2 === 0 ? 'bg-gray-800' : 'bg-gray-800/50'
-                      } hover:bg-gray-700/50 transition-colors`}
+                      key={`${order.order_type}-${order.id}`}
+                      className={`border-t ${
+                        isBpOrder
+                          ? 'border-yellow-600/30 bg-yellow-900/10 hover:bg-yellow-900/20'
+                          : `border-gray-700 ${index % 2 === 0 ? 'bg-gray-800' : 'bg-gray-800/50'} hover:bg-gray-700/50`
+                      } transition-colors`}
                     >
                       <td className="px-6 py-4">
-                        <span className="text-white font-mono">#{order.id}</span>
+                        <span className={`font-mono ${isBpOrder ? 'text-yellow-400' : 'text-white'}`}>
+                          {isBpOrder ? 'BP-' : '#'}{order.id}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4">
+                        {isBpOrder ? (
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium text-yellow-400 bg-yellow-500/10">
+                            <Skull size={12} />
+                            Boss Points
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium text-green-400 bg-green-500/10">
+                            <DollarSign size={12} />
+                            Pago
+                          </span>
+                        )}
                       </td>
                       <td className="px-6 py-4">
                         <span className="text-gray-300">{order.account_email || 'N/A'}</span>
@@ -297,9 +348,16 @@ export default function AdminOrders() {
                         <span className="text-yellow-500 font-semibold">{order.player_name || 'N/A'}</span>
                       </td>
                       <td className="px-6 py-4">
-                        <span className="text-green-400 font-semibold">
-                          {formatCurrency(Number(order.total_amount))}
-                        </span>
+                        {isBpOrder ? (
+                          <span className="text-yellow-400 font-semibold flex items-center gap-1">
+                            <Skull size={14} />
+                            {Number(order.total_amount)} BP
+                          </span>
+                        ) : (
+                          <span className="text-green-400 font-semibold">
+                            {formatCurrency(Number(order.total_amount))}
+                          </span>
+                        )}
                       </td>
                       <td className="px-6 py-4">
                         <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${statusInfo.color}`}>
@@ -314,7 +372,7 @@ export default function AdminOrders() {
                         <div className="flex items-center justify-end gap-2">
                           <button
                             onClick={() => handleViewOrder(order)}
-                            className="p-2 bg-gray-700 hover:bg-gray-600 text-white rounded transition-colors"
+                            className={`p-2 ${isBpOrder ? 'bg-yellow-600/20 hover:bg-yellow-600/30 text-yellow-400' : 'bg-gray-700 hover:bg-gray-600 text-white'} rounded transition-colors`}
                             title="Ver detalles"
                           >
                             <Eye size={16} />
@@ -385,102 +443,127 @@ export default function AdminOrders() {
       )}
 
       {/* Order Details Modal */}
-      {selectedOrder && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div
-            className="absolute inset-0 bg-black/70 backdrop-blur-sm"
-            onClick={() => setSelectedOrder(null)}
-          />
-          <div className="relative w-full max-w-lg bg-gray-900 rounded-xl shadow-2xl border border-gray-800 p-6 mx-4">
-            <h3 className="text-xl font-bold text-white mb-4">Orden #{selectedOrder.id}</h3>
-
-            <div className="space-y-3">
-              <div className="flex justify-between py-2 border-b border-gray-700">
-                <span className="text-gray-400">Email:</span>
-                <span className="text-white">{selectedOrder.account_email || 'N/A'}</span>
-              </div>
-              <div className="flex justify-between py-2 border-b border-gray-700">
-                <span className="text-gray-400">Personaje:</span>
-                <span className="text-yellow-500 font-semibold">{selectedOrder.player_name || 'N/A'}</span>
-              </div>
-              <div className="flex justify-between py-2 border-b border-gray-700">
-                <span className="text-gray-400">Monto:</span>
-                <span className="text-green-400 font-semibold">{formatCurrency(Number(selectedOrder.total_amount))}</span>
-              </div>
-              <div className="py-2 border-b border-gray-700">
-                <div className="flex justify-between mb-2">
-                  <span className="text-gray-400">Items ({selectedOrder.total_items}):</span>
-                </div>
-                {loadingItems ? (
-                  <div className="flex items-center justify-center py-4">
-                    <div className="w-6 h-6 border-2 border-yellow-400 border-t-transparent rounded-full animate-spin"></div>
-                  </div>
-                ) : orderItems.length > 0 ? (
-                  <div className="space-y-2 mt-2">
-                    {orderItems.map((item) => (
-                      <div key={item.id} className="flex items-center gap-3 p-2 bg-gray-800 rounded-lg">
-                        {item.image_url ? (
-                          <img
-                            src={item.image_url}
-                            alt={item.item_name}
-                            className="w-10 h-10 rounded object-cover"
-                          />
-                        ) : (
-                          <div className="w-10 h-10 bg-gray-700 rounded flex items-center justify-center">
-                            <Package size={16} className="text-gray-500" />
-                          </div>
-                        )}
-                        <div className="flex-1 min-w-0">
-                          <p className="text-white text-sm font-medium truncate">{item.item_name}</p>
-                          <p className="text-gray-400 text-xs">
-                            {item.quantity}x {formatCurrency(Number(item.price))}
-                          </p>
-                        </div>
-                        <span className="text-yellow-500 font-semibold text-sm">
-                          {formatCurrency(Number(item.price) * item.quantity)}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-gray-500 text-sm">No se encontraron items</p>
+      {selectedOrder && (() => {
+        const isBpOrder = selectedOrder.order_type === 'boss_points';
+        return (
+          <div className="fixed inset-0 z-50 flex items-center justify-center">
+            <div
+              className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+              onClick={() => setSelectedOrder(null)}
+            />
+            <div className={`relative w-full max-w-lg bg-gray-900 rounded-xl shadow-2xl border ${isBpOrder ? 'border-yellow-600/50' : 'border-gray-800'} p-6 mx-4`}>
+              <div className="flex items-center gap-3 mb-4">
+                {isBpOrder && <Skull size={24} className="text-yellow-500" />}
+                <h3 className={`text-xl font-bold ${isBpOrder ? 'text-yellow-400' : 'text-white'}`}>
+                  {isBpOrder ? `Canje BP-${selectedOrder.id}` : `Orden #${selectedOrder.id}`}
+                </h3>
+                {isBpOrder && (
+                  <span className="ml-auto px-2.5 py-1 rounded-full text-xs font-medium text-yellow-400 bg-yellow-500/10">
+                    Boss Points
+                  </span>
                 )}
               </div>
-              <div className="flex justify-between py-2 border-b border-gray-700">
-                <span className="text-gray-400">Estado:</span>
-                <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${statusConfig[selectedOrder.status]?.color || ''}`}>
-                  {statusConfig[selectedOrder.status]?.label || selectedOrder.status}
-                </span>
-              </div>
-              <div className="flex justify-between py-2 border-b border-gray-700">
-                <span className="text-gray-400">Método de pago:</span>
-                <span className="text-white">{selectedOrder.payment_method || 'N/A'}</span>
-              </div>
-              <div className="flex justify-between py-2 border-b border-gray-700">
-                <span className="text-gray-400">ID de pago:</span>
-                <span className="text-white font-mono text-sm">{selectedOrder.payment_id || 'N/A'}</span>
-              </div>
-              <div className="flex justify-between py-2 border-b border-gray-700">
-                <span className="text-gray-400">Creada:</span>
-                <span className="text-white">{formatDate(selectedOrder.created_at)}</span>
-              </div>
-              {selectedOrder.delivered_at && (
-                <div className="flex justify-between py-2 border-b border-gray-700">
-                  <span className="text-gray-400">Entregada:</span>
-                  <span className="text-white">{formatDate(selectedOrder.delivered_at)}</span>
-                </div>
-              )}
-            </div>
 
-            <button
-              onClick={() => setSelectedOrder(null)}
-              className="w-full mt-6 bg-gray-700 hover:bg-gray-600 text-white py-3 rounded-lg font-semibold transition-colors"
-            >
-              Cerrar
-            </button>
+              <div className="space-y-3">
+                <div className="flex justify-between py-2 border-b border-gray-700">
+                  <span className="text-gray-400">Email:</span>
+                  <span className="text-white">{selectedOrder.account_email || 'N/A'}</span>
+                </div>
+                <div className="flex justify-between py-2 border-b border-gray-700">
+                  <span className="text-gray-400">Personaje:</span>
+                  <span className="text-yellow-500 font-semibold">{selectedOrder.player_name || 'N/A'}</span>
+                </div>
+                <div className="flex justify-between py-2 border-b border-gray-700">
+                  <span className="text-gray-400">{isBpOrder ? 'Puntos gastados:' : 'Monto:'}</span>
+                  {isBpOrder ? (
+                    <span className="text-yellow-400 font-semibold flex items-center gap-1">
+                      <Skull size={14} />
+                      {Number(selectedOrder.total_amount)} BP
+                    </span>
+                  ) : (
+                    <span className="text-green-400 font-semibold">{formatCurrency(Number(selectedOrder.total_amount))}</span>
+                  )}
+                </div>
+                <div className="py-2 border-b border-gray-700">
+                  <div className="flex justify-between mb-2">
+                    <span className="text-gray-400">Items ({selectedOrder.total_items}):</span>
+                  </div>
+                  {loadingItems ? (
+                    <div className="flex items-center justify-center py-4">
+                      <div className={`w-6 h-6 border-2 ${isBpOrder ? 'border-yellow-500' : 'border-yellow-400'} border-t-transparent rounded-full animate-spin`}></div>
+                    </div>
+                  ) : orderItems.length > 0 ? (
+                    <div className="space-y-2 mt-2">
+                      {orderItems.map((item) => (
+                        <div key={item.id} className={`flex items-center gap-3 p-2 ${isBpOrder ? 'bg-yellow-900/20' : 'bg-gray-800'} rounded-lg`}>
+                          {item.image_url ? (
+                            <img
+                              src={item.image_url}
+                              alt={item.item_name}
+                              className="w-10 h-10 rounded object-cover"
+                            />
+                          ) : (
+                            <div className="w-10 h-10 bg-gray-700 rounded flex items-center justify-center">
+                              <Package size={16} className="text-gray-500" />
+                            </div>
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <p className="text-white text-sm font-medium truncate">{item.item_name}</p>
+                            <p className="text-gray-400 text-xs">
+                              {item.quantity}x {isBpOrder ? `${Number(item.price)} BP` : formatCurrency(Number(item.price))}
+                            </p>
+                          </div>
+                          <span className={`${isBpOrder ? 'text-yellow-400' : 'text-yellow-500'} font-semibold text-sm flex items-center gap-1`}>
+                            {isBpOrder && <Skull size={12} />}
+                            {isBpOrder ? `${Number(item.price) * item.quantity} BP` : formatCurrency(Number(item.price) * item.quantity)}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-gray-500 text-sm">No se encontraron items</p>
+                  )}
+                </div>
+                <div className="flex justify-between py-2 border-b border-gray-700">
+                  <span className="text-gray-400">Estado:</span>
+                  <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${statusConfig[selectedOrder.status]?.color || ''}`}>
+                    {statusConfig[selectedOrder.status]?.label || selectedOrder.status}
+                  </span>
+                </div>
+                {!isBpOrder && (
+                  <>
+                    <div className="flex justify-between py-2 border-b border-gray-700">
+                      <span className="text-gray-400">Método de pago:</span>
+                      <span className="text-white">{selectedOrder.payment_method || 'N/A'}</span>
+                    </div>
+                    <div className="flex justify-between py-2 border-b border-gray-700">
+                      <span className="text-gray-400">ID de pago:</span>
+                      <span className="text-white font-mono text-sm">{selectedOrder.payment_id || 'N/A'}</span>
+                    </div>
+                  </>
+                )}
+                <div className="flex justify-between py-2 border-b border-gray-700">
+                  <span className="text-gray-400">{isBpOrder ? 'Canjeada:' : 'Creada:'}</span>
+                  <span className="text-white">{formatDate(selectedOrder.created_at)}</span>
+                </div>
+                {selectedOrder.delivered_at && !isBpOrder && (
+                  <div className="flex justify-between py-2 border-b border-gray-700">
+                    <span className="text-gray-400">Entregada:</span>
+                    <span className="text-white">{formatDate(selectedOrder.delivered_at)}</span>
+                  </div>
+                )}
+              </div>
+
+              <button
+                onClick={() => setSelectedOrder(null)}
+                className={`w-full mt-6 ${isBpOrder ? 'bg-yellow-600/20 hover:bg-yellow-600/30 text-yellow-400' : 'bg-gray-700 hover:bg-gray-600 text-white'} py-3 rounded-lg font-semibold transition-colors`}
+              >
+                Cerrar
+              </button>
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
     </div>
   );
 }
