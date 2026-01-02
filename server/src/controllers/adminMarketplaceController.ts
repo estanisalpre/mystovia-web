@@ -35,6 +35,7 @@ export const getAllMarketItems = async (req: Request, res: Response) => {
       ...item,
       is_active: Boolean(item.is_active),
       featured: Boolean(item.featured),
+      redeemable_with_bp: Boolean(item.redeemable_with_bp),
       items_json: typeof item.items_json === 'string'
         ? JSON.parse(item.items_json)
         : item.items_json
@@ -94,10 +95,12 @@ export const createMarketItem = async (req: Request, res: Response) => {
       });
     }
 
+    const { redeemable_with_bp, bp_price } = req.body;
+
     const [result] = await db.query(
       `INSERT INTO market_items
-        (name, description, price, image_url, category, stock, featured, items_json)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+        (name, description, price, image_url, category, stock, featured, items_json, redeemable_with_bp, bp_price)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         name,
         description || null,
@@ -106,7 +109,9 @@ export const createMarketItem = async (req: Request, res: Response) => {
         category,
         stock,
         featured ? 1 : 0,
-        JSON.stringify(items_json)
+        JSON.stringify(items_json),
+        redeemable_with_bp ? 1 : 0,
+        redeemable_with_bp && bp_price ? bp_price : null
       ]
     ) as any;
 
@@ -201,6 +206,17 @@ export const updateMarketItem = async (req: Request, res: Response) => {
       }
       updates.push('items_json = ?');
       values.push(JSON.stringify(updateData.items_json));
+    }
+
+    // Boss Points fields
+    if ((updateData as any).redeemable_with_bp !== undefined) {
+      updates.push('redeemable_with_bp = ?');
+      values.push((updateData as any).redeemable_with_bp ? 1 : 0);
+    }
+
+    if ((updateData as any).bp_price !== undefined) {
+      updates.push('bp_price = ?');
+      values.push((updateData as any).redeemable_with_bp && (updateData as any).bp_price ? (updateData as any).bp_price : null);
     }
 
     if (updates.length === 0) {

@@ -20,6 +20,8 @@ interface MarketItem {
   stock: number;
   featured: boolean;
   items_json: GameItem[];
+  redeemable_with_bp?: boolean;
+  bp_price?: number | null;
 }
 
 interface ItemFormModalProps {
@@ -43,7 +45,9 @@ export default function ItemFormModal({
     category: 'item' as 'knight' | 'paladin' | 'sorcerer' | 'druid' | 'item',
     stock: '-1',
     featured: false,
-    is_active: true
+    is_active: true,
+    redeemable_with_bp: false,
+    bp_price: ''
   });
 
   const [gameItems, setGameItems] = useState<GameItem[]>([
@@ -69,7 +73,9 @@ export default function ItemFormModal({
           category: category as 'knight' | 'paladin' | 'sorcerer' | 'druid' | 'item',
           stock: item.stock.toString(),
           featured: item.featured,
-          is_active: item.is_active
+          is_active: item.is_active,
+          redeemable_with_bp: item.redeemable_with_bp || false,
+          bp_price: item.bp_price?.toString() || ''
         });
         setGameItems(item.items_json.length > 0 ? item.items_json : [{ itemId: '', count: 1, name: '' }]);
       } else {
@@ -81,7 +87,9 @@ export default function ItemFormModal({
           category: 'item',
           stock: '-1',
           featured: false,
-          is_active: true
+          is_active: true,
+          redeemable_with_bp: false,
+          bp_price: ''
         });
         setGameItems([{ itemId: '', count: 1, name: '' }]);
       }
@@ -160,7 +168,9 @@ export default function ItemFormModal({
       category: formData.category,
       stock: stock,
       featured: formData.featured,
-      items_json: validGameItems
+      items_json: validGameItems,
+      redeemable_with_bp: formData.redeemable_with_bp,
+      bp_price: formData.redeemable_with_bp && formData.bp_price ? parseInt(formData.bp_price) : null
     };
 
     if (item) {
@@ -349,7 +359,7 @@ export default function ItemFormModal({
                 )}
               </label>
 
-              <div className="col-span-2 flex gap-4">
+              <div className="col-span-2 flex flex-wrap gap-4">
                 <label className="flex items-center gap-2 text-white cursor-pointer">
                   <input
                     type="checkbox"
@@ -357,7 +367,7 @@ export default function ItemFormModal({
                     onChange={(e) => setFormData({ ...formData, featured: e.target.checked })}
                     className="w-4 h-4 rounded bg-gray-700 border-gray-600"
                   />
-                  <span>Características</span>
+                  <span>Destacado</span>
                 </label>
 
                 {item && (
@@ -371,7 +381,38 @@ export default function ItemFormModal({
                     <span>Activo</span>
                   </label>
                 )}
+
+                <label className="flex items-center gap-2 text-yellow-400 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={formData.redeemable_with_bp}
+                    onChange={(e) => setFormData({ ...formData, redeemable_with_bp: e.target.checked })}
+                    className="w-4 h-4 rounded bg-gray-700 border-gray-600"
+                  />
+                  <span>Canjeable con Boss Points</span>
+                </label>
               </div>
+
+              {/* Boss Points Price - only show if redeemable */}
+              {formData.redeemable_with_bp && (
+                <label className="col-span-2">
+                  <span className="block text-yellow-400 font-semibold mb-2">
+                    Precio en Boss Points *
+                  </span>
+                  <input
+                    type="number"
+                    min="1"
+                    value={formData.bp_price}
+                    onChange={(e) => setFormData({ ...formData, bp_price: e.target.value })}
+                    className="w-full bg-gray-800 text-yellow-400 border border-yellow-600/50 rounded-lg px-4 py-2 focus:outline-none focus:border-yellow-500"
+                    placeholder="Ej: 100"
+                    required={formData.redeemable_with_bp}
+                  />
+                  <small className="text-gray-500 text-xs mt-1 block">
+                    Los jugadores podrán canjear este item usando Boss Points ganados al matar bosses.
+                  </small>
+                </label>
+              )}
             </section>
 
             {/* Game Items */}

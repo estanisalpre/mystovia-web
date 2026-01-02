@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Package, Coins, Shield, Search, Sword, Wand2, Heart, X } from 'lucide-react';
+import { Package, Coins, Shield, Search, Sword, Wand2, Heart, X, Skull } from 'lucide-react';
 import ItemCard from './ItemCard';
 import WeaponSelectionModal from './WeaponSelectionModal';
+import BossPointsPurchaseModal from './BossPointsPurchaseModal';
 import '../../i18n';
 
 const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3301';
@@ -31,6 +32,8 @@ interface MarketItem {
   featured: boolean;
   items_json: GameItem[];
   weapon_options: WeaponOption[] | null;
+  redeemable_with_bp?: boolean;
+  bp_price?: number | null;
   created_at: string;
   updated_at: string;
 }
@@ -51,13 +54,18 @@ export default function MarketplaceView() {
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [showFeaturedOnly, setShowFeaturedOnly] = useState(false);
+  const [showRedeemableOnly, setShowRedeemableOnly] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [weaponModalOpen, setWeaponModalOpen] = useState(false);
+  const [bpPurchaseModalOpen, setBpPurchaseModalOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<MarketItem | null>(null);
   const [flippedCardId, setFlippedCardId] = useState<number | null>(null);
+  const [bossPoints, setBossPoints] = useState(0);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
     loadMarketItems();
+    loadBossPoints();
   }, []);
 
   useEffect(() => {
@@ -76,7 +84,13 @@ export default function MarketplaceView() {
 
   useEffect(() => {
     filterItems();
-  }, [items, selectedCategory, showFeaturedOnly, searchQuery]);
+  }, [items, selectedCategory, showFeaturedOnly, showRedeemableOnly, searchQuery]);
+
+  useEffect(() => {
+    const handleBpUpdate = () => loadBossPoints();
+    window.addEventListener('bosspoints-updated', handleBpUpdate);
+    return () => window.removeEventListener('bosspoints-updated', handleBpUpdate);
+  }, []);
 
   const loadMarketItems = async () => {
     try {
@@ -93,6 +107,23 @@ export default function MarketplaceView() {
     }
   };
 
+  const loadBossPoints = async () => {
+    try {
+      const response = await fetch(`${API_URL}/api/boss-points/balance`, {
+        credentials: 'include'
+      });
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setIsLoggedIn(true);
+          setBossPoints(data.bossPoints);
+        }
+      }
+    } catch (error) {
+      // Not logged in or error
+    }
+  };
+
   const filterItems = () => {
     let filtered = items;
 
@@ -104,6 +135,10 @@ export default function MarketplaceView() {
       filtered = filtered.filter(item => item.featured);
     }
 
+    if (showRedeemableOnly) {
+      filtered = filtered.filter(item => item.redeemable_with_bp && item.bp_price);
+    }
+
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(item =>
@@ -113,6 +148,18 @@ export default function MarketplaceView() {
     }
 
     setFilteredItems(filtered);
+  };
+
+  const handleBpPurchase = (item: MarketItem) => {
+    setSelectedItem(item);
+    setBpPurchaseModalOpen(true);
+  };
+
+  const handleBpPurchaseSuccess = (newBalance: number) => {
+    setBossPoints(newBalance);
+    setBpPurchaseModalOpen(false);
+    setSelectedItem(null);
+    window.dispatchEvent(new Event('bosspoints-updated'));
   };
 
   const handleAddToCart = (item: MarketItem) => {
@@ -221,15 +268,28 @@ export default function MarketplaceView() {
           })}
         </menu>
 
-        <label className="flex items-center gap-2 text-sm md:text-base text-gray-300 cursor-pointer w-fit">
-          <input
-            type="checkbox"
-            checked={showFeaturedOnly}
-            onChange={(e) => setShowFeaturedOnly(e.target.checked)}
-            className="w-4 h-4 rounded bg-gray-700 border-gray-600"
-          />
-          <span>{t('marketplace.showFeaturedOnly')}</span>
-        </label>
+        <div className="flex flex-wrap gap-4">
+          <label className="flex items-center gap-2 text-sm md:text-base text-gray-300 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={showFeaturedOnly}
+              onChange={(e) => setShowFeaturedOnly(e.target.checked)}
+              className="w-4 h-4 rounded bg-gray-700 border-gray-600"
+            />
+            <span>{t('marketplace.showFeaturedOnly')}</span>
+          </label>
+
+          <label className="flex items-center gap-2 text-sm md:text-base text-yellow-400 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={showRedeemableOnly}
+              onChange={(e) => setShowRedeemableOnly(e.target.checked)}
+              className="w-4 h-4 rounded bg-gray-700 border-yellow-600"
+            />
+            <Skull size={16} />
+            <span>{t('marketplace.showRedeemableOnly')}</span>
+          </label>
+        </div>
       </nav>
 
       {/* Items Grid */}
@@ -251,6 +311,7 @@ export default function MarketplaceView() {
                 <ItemCard
                   item={item}
                   onAddToCart={() => handleAddToCart(item)}
+                  onBpPurchase={() => handleBpPurchase(item)}
                   isFlipped={flippedCardId === item.id}
                   onFlip={() => setFlippedCardId(item.id)}
                   onUnflip={() => setFlippedCardId(null)}
@@ -262,7 +323,7 @@ export default function MarketplaceView() {
       )}
 
       {/* Weapon Selection Modal */}
-      {selectedItem && (
+      {selectedItem && weaponModalOpen && (
         <WeaponSelectionModal
           isOpen={weaponModalOpen}
           onClose={() => {
@@ -272,6 +333,23 @@ export default function MarketplaceView() {
           weapons={selectedItem.weapon_options || []}
           onSelect={handleWeaponSelect}
           itemName={selectedItem.name}
+        />
+      )}
+
+      {/* Boss Points Purchase Modal */}
+      {selectedItem && bpPurchaseModalOpen && (
+        <BossPointsPurchaseModal
+          isOpen={bpPurchaseModalOpen}
+          onClose={() => {
+            setBpPurchaseModalOpen(false);
+            setSelectedItem(null);
+          }}
+          itemId={selectedItem.id}
+          itemName={selectedItem.name}
+          itemImage={selectedItem.image_url}
+          bpPrice={selectedItem.bp_price || 0}
+          currentBalance={bossPoints}
+          onSuccess={handleBpPurchaseSuccess}
         />
       )}
     </main>

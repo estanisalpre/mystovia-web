@@ -6,6 +6,7 @@
     "success": "Sucesso",
     "back": "Voltar",
     "backHome": "Voltar ao início",
+    "home": "Início",
     "search": "Buscar",
     "submit": "Enviar",
     "cancel": "Cancelar",
@@ -162,6 +163,7 @@
     "items": "Itens",
     "item": "Item",
     "showFeaturedOnly": "Mostrar apenas destaques",
+    "showRedeemableOnly": "Resgatável com BP",
     "loading": "Carregando marketplace...",
     "noItems": "Nenhum item encontrado",
     "addToCart": "",
@@ -172,7 +174,22 @@
     "moreItems": "mais itens...",
     "seeMore": "Ver mais",
     "goBack": "Voltar",
-    "viewAttributes": "Ver atributos"
+    "viewAttributes": "Ver atributos",
+    "buyWithBP": "{{points}} BP"
+  },
+  "bossPoints": {
+    "title": "Boss Points",
+    "subtitle": "Resgate seus pontos ganhos matando bosses",
+    "yourBalance": "Seu Saldo",
+    "purchaseWithBP": "Resgatar com Boss Points",
+    "selectCharacter": "Selecione o personagem para receber os itens",
+    "confirmBuy": "Confirmar Resgate",
+    "purchaseSuccess": "{{item}} resgatado com sucesso!",
+    "itemDelivered": "O item foi entregue no depot do seu personagem.",
+    "purchaseError": "Erro ao processar resgate",
+    "insufficientPoints": "Boss Points insuficientes",
+    "noCharacters": "Você não tem personagens",
+    "errorLoadingCharacters": "Erro ao carregar personagens"
   },
   "cart": {
     "title": "Carrinho de compras",
@@ -502,6 +519,17 @@
       "locked": "Bloqueado",
       "home": "Início",
       "loginInfo": "para criar tópicos e participar das discussões."
+    },
+    "logs": {
+      "title": "Changelog",
+      "subtitle": "Histórico de alterações e novidades do site",
+      "lastUpdate": "Última atualização",
+      "types": {
+        "feature": "Nova Função",
+        "improvement": "Melhoria",
+        "fix": "Correção",
+        "release": "Lançamento"
+      }
     }
   },
   "createCharacter": {

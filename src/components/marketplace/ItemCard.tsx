@@ -1,4 +1,4 @@
-import { ShoppingCart, Package, Star, ArrowLeft, Eye } from 'lucide-react';
+import { ShoppingCart, Package, Star, ArrowLeft, Eye, Skull } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import '../../i18n';
 
@@ -19,11 +19,14 @@ interface MarketItem {
   stock: number;
   featured: boolean;
   items_json: GameItem[];
+  redeemable_with_bp?: boolean;
+  bp_price?: number | null;
 }
 
 interface ItemCardProps {
   item: MarketItem;
   onAddToCart: () => void;
+  onBpPurchase?: () => void;
   isFlipped: boolean;
   onFlip: () => void;
   onUnflip: () => void;
@@ -37,7 +40,7 @@ const CATEGORY_COLORS = {
   item: 'from-purple-500 to-purple-700'
 };
 
-export default function ItemCard({ item, onAddToCart, isFlipped, onFlip, onUnflip }: ItemCardProps) {
+export default function ItemCard({ item, onAddToCart, onBpPurchase, isFlipped, onFlip, onUnflip }: ItemCardProps) {
   const { t } = useTranslation();
   const categoryColor = CATEGORY_COLORS[item.category] || 'from-gray-500 to-gray-700';
 
@@ -145,26 +148,42 @@ export default function ItemCard({ item, onAddToCart, isFlipped, onFlip, onUnfli
             </div>
 
             {/* Price and action */}
-            <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-700">
-              <div>
-                <p className="text-xs text-gray-500">{t('common.price')}</p>
-                <p className="text-2xl font-bold text-white">
-                  AR$ {Number(item.price).toFixed(2)}
-                </p>
-              </div>
+            <div className="mt-auto pt-4 border-t border-gray-700">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs text-gray-500">{t('common.price')}</p>
+                  <p className="text-2xl font-bold text-white">
+                    AR$ {Number(item.price).toFixed(2)}
+                  </p>
+                </div>
 
-              <button
-                onClick={onAddToCart}
-                disabled={isOutOfStock}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all ${
-                  isOutOfStock
-                    ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
-                    : 'bg-gradient-to-r cursor-pointer from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 hover:shadow-lg'
-                }`}
-              >
-                <ShoppingCart size={18} />
-                {isOutOfStock ? t('marketplace.outOfStock') : t('marketplace.addToCart')}
-              </button>
+                <div className="flex flex-col gap-2">
+                  {/* Boss Points Purchase Option - Compact */}
+                  {item.redeemable_with_bp && item.bp_price && !isOutOfStock && (
+                    <button
+                      onClick={onBpPurchase}
+                      className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg font-bold text-sm bg-gradient-to-r from-yellow-600 to-orange-600 text-black hover:from-yellow-500 hover:to-orange-500 transition-all"
+                      title={t('bossPoints.purchaseWithBP')}
+                    >
+                      <Skull size={16} />
+                      <span>{item.bp_price}</span>
+                    </button>
+                  )}
+
+                  <button
+                    onClick={onAddToCart}
+                    disabled={isOutOfStock}
+                    className={`flex items-center justify-center gap-2 px-4 py-2 rounded-lg font-semibold transition-all ${
+                      isOutOfStock
+                        ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                        : 'bg-gradient-to-r cursor-pointer from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 hover:shadow-lg'
+                    }`}
+                  >
+                    <ShoppingCart size={18} />
+                    {isOutOfStock ? t('marketplace.outOfStock') : t('marketplace.addToCart')}
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -214,26 +233,42 @@ export default function ItemCard({ item, onAddToCart, isFlipped, onFlip, onUnfli
             </div>
 
             {/* Price footer */}
-            <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-700">
-              <div>
-                <p className="text-xs text-gray-500">{t('common.price')}</p>
-                <p className="text-xl font-bold text-white">
-                  AR$ {Number(item.price).toFixed(2)}
-                </p>
-              </div>
+            <div className="mt-auto pt-4 border-t border-gray-700">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs text-gray-500">{t('common.price')}</p>
+                  <p className="text-xl font-bold text-white">
+                    AR$ {Number(item.price).toFixed(2)}
+                  </p>
+                </div>
 
-              <button
-                onClick={onAddToCart}
-                disabled={isOutOfStock}
-                className={`flex items-center gap-2 px-3 py-2 rounded-lg font-semibold text-sm transition-all ${
-                  isOutOfStock
-                    ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
-                    : 'bg-gradient-to-r cursor-pointer from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 hover:shadow-lg'
-                }`}
-              >
-                <ShoppingCart size={16} />
-                {isOutOfStock ? t('marketplace.outOfStock') : t('marketplace.addToCart')}
-              </button>
+                <div className="flex flex-col gap-2">
+                  {/* Boss Points Purchase Option - Compact */}
+                  {item.redeemable_with_bp && item.bp_price && !isOutOfStock && (
+                    <button
+                      onClick={onBpPurchase}
+                      className="flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-lg font-bold text-sm bg-gradient-to-r from-yellow-600 to-orange-600 text-black hover:from-yellow-500 hover:to-orange-500 transition-all"
+                      title={t('bossPoints.purchaseWithBP')}
+                    >
+                      <Skull size={14} />
+                      <span>{item.bp_price}</span>
+                    </button>
+                  )}
+
+                  <button
+                    onClick={onAddToCart}
+                    disabled={isOutOfStock}
+                    className={`flex items-center justify-center gap-2 px-3 py-1.5 rounded-lg font-semibold text-sm transition-all ${
+                      isOutOfStock
+                        ? 'bg-gray-700 text-gray-500 cursor-not-allowed'
+                        : 'bg-gradient-to-r cursor-pointer from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 hover:shadow-lg'
+                    }`}
+                  >
+                    <ShoppingCart size={16} />
+                    {isOutOfStock ? t('marketplace.outOfStock') : t('marketplace.addToCart')}
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>

@@ -6,6 +6,7 @@
     "success": "Success",
     "back": "Back",
     "backHome": "Back to home",
+    "home": "Home",
     "search": "Search",
     "submit": "Submit",
     "cancel": "Cancel",
@@ -162,6 +163,7 @@
     "items": "Items",
     "item": "Item",
     "showFeaturedOnly": "Show featured only",
+    "showRedeemableOnly": "Redeemable with BP",
     "loading": "Loading marketplace...",
     "noItems": "No items found",
     "addToCart": "",
@@ -172,7 +174,22 @@
     "moreItems": "more items...",
     "seeMore": "See more",
     "goBack": "Go back",
-    "viewAttributes": "View attributes"
+    "viewAttributes": "View attributes",
+    "buyWithBP": "{{points}} BP"
+  },
+  "bossPoints": {
+    "title": "Boss Points",
+    "subtitle": "Redeem your points earned by killing bosses",
+    "yourBalance": "Your Balance",
+    "purchaseWithBP": "Redeem with Boss Points",
+    "selectCharacter": "Select character to receive items",
+    "confirmBuy": "Confirm Redemption",
+    "purchaseSuccess": "{{item}} redeemed successfully!",
+    "itemDelivered": "The item has been delivered to your character's depot.",
+    "purchaseError": "Error processing redemption",
+    "insufficientPoints": "Insufficient Boss Points",
+    "noCharacters": "You don't have any characters",
+    "errorLoadingCharacters": "Error loading characters"
   },
   "cart": {
     "title": "Shopping Cart",
@@ -502,6 +519,17 @@
       "locked": "Locked",
       "home": "Home",
       "loginInfo": "to create topics and participate in discussions."
+    },
+    "logs": {
+      "title": "Changelog",
+      "subtitle": "History of changes and updates to the site",
+      "lastUpdate": "Last update",
+      "types": {
+        "feature": "New Feature",
+        "improvement": "Improvement",
+        "fix": "Fix",
+        "release": "Release"
+      }
     }
   },
   "createCharacter": {

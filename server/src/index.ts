@@ -19,10 +19,12 @@ import downloadsRoutes from './routes/downloadsRoutes.js';
 import rulesRoutes from './routes/rulesRoutes.js';
 import supportRoutes from './routes/supportRoutes.js';
 import userManagementRoutes from './routes/userManagementRoutes.js';
+//import adminIPRoutes from './routes/adminIPRoutes.js';
 import highscoresRoutes from './routes/highscoresRoutes.js';
 import deathsRoutes from './routes/deathsRoutes.js';
 import guildRoutes from './routes/guildRoutes.js';
 import twitchRoutes from './routes/twitchRoutes.js';
+import bossPointsRoutes from './routes/bossPointsRoutes.js';
 import { refreshLiveStatusInternal } from './controllers/twitchController.js';
 
 // Load .env from project root
@@ -72,9 +74,11 @@ app.use('/api/highscores', highscoresRoutes);
 app.use('/api/deaths', deathsRoutes);
 app.use('/api/guilds', guildRoutes);
 app.use('/api/twitch', twitchRoutes);
+app.use('/api/boss-points', bossPointsRoutes);
 
 // Admin routes
 app.use('/api/admin/users', userManagementRoutes);
+//app.use('/api/admin/ip', adminIPRoutes);
 
 // Serve Astro client assets
 app.use(express.static(path.resolve(__dirname, "../../dist/client")));
