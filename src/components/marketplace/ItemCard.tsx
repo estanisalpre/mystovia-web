@@ -159,7 +159,7 @@ export default function ItemCard({ item, onAddToCart, onBpPurchase, isFlipped, o
 
                 <div className="flex flex-col gap-2">
                   {/* Boss Points Purchase Option - Compact */}
-                  {item.redeemable_with_bp && item.bp_price && !isOutOfStock && (
+                  {Boolean(item.redeemable_with_bp) && Number(item.bp_price) > 0 && !isOutOfStock && (
                     <button
                       onClick={onBpPurchase}
                       className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg font-bold text-sm bg-gradient-to-r from-yellow-600 to-orange-600 text-black hover:from-yellow-500 hover:to-orange-500 transition-all"
@@ -244,7 +244,7 @@ export default function ItemCard({ item, onAddToCart, onBpPurchase, isFlipped, o
 
                 <div className="flex flex-col gap-2">
                   {/* Boss Points Purchase Option - Compact */}
-                  {item.redeemable_with_bp && item.bp_price && !isOutOfStock && (
+                  {(item.redeemable_with_bp === true && Number(item.bp_price) > 0 && !isOutOfStock) ? (
                     <button
                       onClick={onBpPurchase}
                       className="flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-lg font-bold text-sm bg-gradient-to-r from-yellow-600 to-orange-600 text-black hover:from-yellow-500 hover:to-orange-500 transition-all"
@@ -253,7 +253,7 @@ export default function ItemCard({ item, onAddToCart, onBpPurchase, isFlipped, o
                       <Skull size={14} />
                       <span>{item.bp_price}</span>
                     </button>
-                  )}
+                  ) : null}
 
                   <button
                     onClick={onAddToCart}

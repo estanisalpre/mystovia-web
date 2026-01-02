@@ -136,7 +136,7 @@ export default function MarketplaceView() {
     }
 
     if (showRedeemableOnly) {
-      filtered = filtered.filter(item => item.redeemable_with_bp && item.bp_price);
+      filtered = filtered.filter(item => item.redeemable_with_bp && Number(item.bp_price) > 0);
     }
 
     if (searchQuery.trim()) {

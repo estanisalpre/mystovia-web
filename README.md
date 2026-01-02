@@ -10,7 +10,7 @@
 
 **Plataforma web completa para servidor privado de Tibia MMORPG**
 
-[Características](#-características) • [Tecnologías](#-stack-tecnológico) • [Instalación](#-instalación) • [Estructura](#-estructura-del-proyecto) • [API](#-api-endpoints) • [Contribuir](#-contribuir)
+[Características](#características) • [Tecnologías](#stack-tecnológico) • [Instalación](#instalación) • [Estructura](#estructura-del-proyecto) • [API](#api-endpoints)
 
 </div>
 
@@ -18,7 +18,7 @@
 
 ## Descripción
 
-Mystovia Web es un monorepo que contiene tanto el frontend como el backend de una plataforma web completa para un servidor privado de Tibia. Incluye sistema de cuentas, gestión de personajes, marketplace, foro, wiki, noticias, y panel de administración.
+Mystovia Web es un monorepo que contiene tanto el frontend como el backend de una plataforma web completa para un servidor privado de Tibia. Incluye sistema de cuentas, gestión de personajes, marketplace con pagos y Boss Points, foro, noticias, integración con Twitch, y panel de administración.
 
 ---
 
@@ -29,14 +29,40 @@ Mystovia Web es un monorepo que contiene tanto el frontend como el backend de un
 - Login/logout con sesiones basadas en cookies
 - Recuperación de cuenta vía email
 - Restablecimiento de contraseña
-- Generación de claves de recuperación (códigos alfanuméricos de 16 caracteres)
+- Generación de claves de recuperación
 - Gestión de días premium
 
 ### Gestión de Personajes
-- Creación de personajes
+- Creación de personajes con selección de vocación
 - Visualización de información del personaje
 - Seguimiento de habilidades, experiencia y salud
 - Personalización de apariencia
+
+### Boss Points System
+- Acumulación automática de puntos al derrotar bosses en el juego
+- Visualización del balance de BP en el header del sitio
+- Canje de puntos por items exclusivos en el Marketplace
+- Historial de canjes en el panel de cuenta
+- Filtro de productos canjeables con BP en la tienda
+- Panel de administración para gestionar canjes
+
+### Marketplace/Tienda
+- Catálogo de items con categorías (Knight, Paladin, Sorcerer, Druid, Items)
+- Sistema de carrito de compras persistente
+- **Dos métodos de compra:**
+  - Pago con dinero real (MercadoPago)
+  - Canje con Boss Points
+- Entrega de items al personaje seleccionado
+- Seguimiento de órdenes y estado
+- Items destacados y gestión de stock
+- Selección/personalización de armas
+- Cards con efecto flip para ver descripción completa
+
+### Integración con Twitch
+- Conexión de cuenta Twitch desde gestión de cuenta
+- Página de streams en vivo
+- Widget de streams en la página principal
+- Detección automática cuando estás transmitiendo Mystovia
 
 ### Comunidad
 
@@ -45,31 +71,16 @@ Mystovia Web es un monorepo que contiene tanto el frontend como el backend de un
 - Comentarios y respuestas
 - Sistema de votación (upvote/downvote)
 - Bloqueo y fijación de temas (admin)
-- Eliminación de temas
 
 #### Noticias
 - Crear/editar/eliminar noticias (admin)
 - Categorías de noticias
-- Paginación
-- Sistema de likes
-- Páginas de detalle de artículos
-
-#### Wiki
-- Organización de base de conocimientos
-- Categorías y artículos
-- URLs basadas en slug
-- Funcionalidad de búsqueda
-
-#### FAQ
-- Categorías de FAQ
-- Búsqueda de FAQ
-- Gestión de administrador
+- Paginación y sistema de likes
 
 #### Guilds
 - Creación de guilds
 - Perfiles de guild con detalles
-- Listado de guilds
-- Miembros de guild
+- Listado y miembros de guild
 
 ### Información del Juego
 - Tabla de clasificación (highscores globales)
@@ -77,52 +88,34 @@ Mystovia Web es un monorepo que contiene tanto el frontend como el backend de un
 - Lista de jugadores online
 - Estado del servidor
 - Reglas del juego
-- Guías y estrategias
-
-### Marketplace/Tienda
-- Catálogo de items con categorías (knight, paladin, sorcerer, druid, items)
-- Sistema de carrito de compras
-- Entrega de items específicos por personaje
-- Integración de pagos con MercadoPago
-- Seguimiento de órdenes y estado
-- Items destacados
-- Selección/personalización de armas
-- Gestión de stock
-- Gestión de inventario para admin
-
-### Soporte y Recursos
-- Sistema de tickets de soporte
-- Seguimiento de estado de tickets (pendiente, procesando, aprobado, etc.)
-- Respuestas de soporte
-- Página de descargas (para cliente del juego)
-- Analíticas de descargas
+- Changelog de actualizaciones
 
 ### Panel de Administración
-- Gestión de usuarios (búsqueda, asignación de roles, permisos)
+- Dashboard de estadísticas
+- Gestión de usuarios (búsqueda, roles, permisos)
 - Bloqueo/desbloqueo de usuarios
 - Asignación de días premium
-- Moderación del foro (bloquear/fijar/eliminar temas)
-- Gestión de noticias (crear/editar/eliminar)
-- Gestión de items del marketplace (agregar/editar/eliminar)
-- Gestión de tickets de soporte
-- Sistema de permisos (acceso basado en roles granular)
-- Dashboard de estadísticas
+- Moderación del foro
+- Gestión de noticias
+- **Gestión de Marketplace:**
+  - Items (crear/editar/eliminar)
+  - Órdenes de pago y canjes de BP unificados
+  - Filtro por tipo de orden (Pagos / Boss Points)
+  - Estadísticas de ventas y canjes
+- Sistema de permisos granular
 
 ### Internacionalización
 - 3 idiomas: Español (por defecto), Inglés, Portugués
 - Detección de idioma por navegador
-- Preferencia de idioma guardada en localStorage
+- Preferencia guardada en localStorage
 - Integración con i18next
 
 ### UI/UX
 - Tema medieval/fantasía con acentos dorados
 - Efectos de partículas en el fondo
 - Transiciones de página con Astro ViewTransitions
-- Componente de reproductor de música (opcional)
-- Estética de modo oscuro
+- Estética dark mode
 - Diseño responsive (mobile-friendly)
-- Funcionalidad de barra de búsqueda
-- Diálogos modales (descarga, checkout, formularios)
 
 ---
 
@@ -131,38 +124,28 @@ Mystovia Web es un monorepo que contiene tanto el frontend como el backend de un
 ### Frontend
 | Tecnología | Versión | Descripción |
 |------------|---------|-------------|
-| **Astro** | 5.15.3 | Framework principal con SSR (Node.js adapter) |
+| **Astro** | 5.15.3 | Framework principal con SSR |
 | **React** | 19.2.0 | Componentes interactivos |
-| **Vue** | 3.5.22 | Componentes opcionales |
-| **Tailwind CSS** | 4.1.16 | Framework de estilos con PostCSS |
-| **Lucide** | 0.552.0 | Librería de iconos (React & Astro) |
-| **i18next** | 25.7.2 | Internacionalización con detección de idioma |
+| **Tailwind CSS** | 4.1.16 | Framework de estilos |
+| **Lucide** | 0.552.0 | Librería de iconos |
+| **i18next** | 25.7.2 | Internacionalización |
 | **tsParticles** | 3.9.1 | Efectos de partículas |
 
 ### Backend
 | Tecnología | Versión | Descripción |
 |------------|---------|-------------|
-| **Node.js** | - | Runtime |
+| **Node.js** | 18+ | Runtime |
 | **Express** | 5.1.0 | Framework web |
 | **TypeScript** | 5.9.3 | Lenguaje tipado |
 | **MySQL** | 3.15.3 | Base de datos (mysql2/promise) |
 | **bcryptjs** | 3.0.3 | Hash de contraseñas |
-| **cookie-parser** | 1.4.7 | Manejo de cookies |
-| **cors** | 2.8.5 | Control de acceso HTTP |
 
 ### Servicios Externos
 | Servicio | Descripción |
 |----------|-------------|
-| **MercadoPago SDK** | Pasarela de pagos (Pesos Argentinos) |
+| **MercadoPago SDK** | Pasarela de pagos (ARS) |
 | **Resend** | Servicio de emails |
-
-### Herramientas de Desarrollo
-| Herramienta | Versión | Descripción |
-|-------------|---------|-------------|
-| **pnpm** | 10.17.0 | Gestor de paquetes |
-| **concurrently** | 9.2.1 | Desarrollo concurrente |
-| **nodemon** | 3.1.10 | Watch mode |
-| **tsx** | 4.20.6 | Ejecución de TypeScript |
+| **Twitch API** | Integración de streams |
 
 ---
 
@@ -211,15 +194,19 @@ API_KEY_EMAIL_SERVICE=re_xxxxxxxxxxxxx
 MP_ACCESS_TOKEN=TEST-xxxxxxxxxxxxx
 MP_PUBLIC_KEY=TEST-xxxxxxxxxxxxx
 PUBLIC_MP_PUBLIC_KEY=TEST-xxxxxxxxxxxxx
+
+# Twitch (opcional)
+TWITCH_CLIENT_ID=xxxxxxxxxxxxx
+TWITCH_CLIENT_SECRET=xxxxxxxxxxxxx
 ```
 
 4. **Configurar base de datos**
 
-Ejecutar los scripts SQL en orden:
+Ejecutar los scripts SQL:
 ```bash
 mysql -u root -p otserver < database/schema.sql
 mysql -u root -p otserver < database/marketplace.sql
-mysql -u root -p otserver < database/permission_forum_schemas.sql
+mysql -u root -p otserver < server/src/migrations/create_boss_points_shop.sql
 ```
 
 5. **Iniciar en desarrollo**
@@ -227,7 +214,8 @@ mysql -u root -p otserver < database/permission_forum_schemas.sql
 pnpm dev
 ```
 
-El frontend estará en `http://localhost:4321` y el backend en `http://localhost:3301`.
+Frontend: `http://localhost:4321`
+Backend: `http://localhost:3301`
 
 ---
 
@@ -238,10 +226,8 @@ El frontend estará en `http://localhost:4321` y el backend en `http://localhost
 | `pnpm dev` | Inicia frontend y backend concurrentemente |
 | `pnpm dev:astro` | Solo frontend (Astro) |
 | `pnpm dev:server` | Solo backend (Express con nodemon) |
-| `pnpm build` | Compila frontend y backend para producción |
-| `pnpm preview` | Preview del build de Astro |
-| `pnpm server:prod` | Inicia servidor de producción |
-| `pnpm start` | Alias de server:prod |
+| `pnpm build` | Compila para producción |
+| `pnpm start` | Inicia servidor de producción |
 
 ---
 
@@ -250,213 +236,72 @@ El frontend estará en `http://localhost:4321` y el backend en `http://localhost
 ```
 mystovia-web/
 ├── src/                              # Frontend (Astro)
-│   ├── assets/                       # Recursos estáticos
-│   │   ├── backgrounds/              # Imágenes de fondo
-│   │   ├── characters/               # Imágenes de personajes
-│   │   └── logos/                    # Logos y branding
-│   │
-│   ├── components/                   # Componentes reutilizables
+│   ├── components/
 │   │   ├── account/                  # Gestión de cuenta
-│   │   │   └── AccountManagement.tsx
 │   │   ├── admin/                    # Panel de administración
 │   │   │   ├── AdminMarketplace.tsx
-│   │   │   ├── ItemFormModal.tsx
-│   │   │   ├── ModalButton.astro
-│   │   │   └── StatsCard.astro
-│   │   ├── forum/                    # Componentes del foro
-│   │   │   └── TopicCards.astro
+│   │   │   ├── AdminOrders.tsx
+│   │   │   └── ...
+│   │   ├── forum/                    # Foro
 │   │   ├── landing/                  # Página principal
-│   │   │   ├── HeroSection.astro
-│   │   │   ├── layouts/
-│   │   │   └── store/
 │   │   ├── marketplace/              # Tienda
-│   │   │   ├── CheckoutModal.tsx
 │   │   │   ├── ItemCard.tsx
 │   │   │   ├── MarketplaceView.tsx
-│   │   │   ├── MercadoPagoCardForm.tsx
-│   │   │   ├── ShoppingCartSidebar.tsx
-│   │   │   └── WeaponSelectionModal.tsx
-│   │   ├── CartButton.tsx
-│   │   ├── DownloadModal.tsx
-│   │   ├── Footer.astro
-│   │   ├── Header.astro
-│   │   ├── HeaderAuth.tsx
-│   │   ├── HeaderNav.tsx
-│   │   ├── I18nProvider.tsx
-│   │   ├── LanguageSelector.tsx
-│   │   ├── MobileNav.tsx
-│   │   └── Pagination.astro
+│   │   │   ├── BossPointsPurchaseModal.tsx
+│   │   │   ├── CheckoutModal.tsx
+│   │   │   └── ...
+│   │   └── twitch/                   # Integración Twitch
 │   │
-│   ├── hooks/                        # React hooks
-│   │   ├── useAuth.ts                # Hook de autenticación
-│   │   └── useServerStats.ts         # Hook de estadísticas
+│   ├── data/
+│   │   └── changelog.json            # Historial de cambios
 │   │
 │   ├── i18n/                         # Internacionalización
-│   │   ├── index.ts                  # Configuración i18next
-│   │   ├── locales/                  # Archivos de traducción
-│   │   │   ├── es.json               # Español
-│   │   │   ├── en.json               # Inglés
-│   │   │   └── pt.json               # Portugués
-│   │   └── translations.ts
+│   │   └── locales/
+│   │       ├── es.json
+│   │       ├── en.json
+│   │       └── pt.json
 │   │
-│   ├── layouts/                      # Layouts de Astro
-│   │   ├── Layout.astro              # Layout principal
-│   │   └── AdminLayout.astro         # Layout de admin
-│   │
-│   ├── lib/                          # Librerías
-│   │   ├── api.ts                    # Cliente API centralizado
-│   │   └── components/               # Componentes compartidos
-│   │       ├── PageTransition.astro
-│   │       ├── Particles.astro
-│   │       ├── MusicPlayer.astro
-│   │       ├── shared/
-│   │       │   ├── WarnErrorSuccessMessage.astro
-│   │       │   └── HeaderComponent.astro
-│   │       └── ui/                   # Componentes base UI
-│   │           ├── ErrorMessage.astro
-│   │           ├── SubmitBtn.astro
-│   │           └── Input.astro
-│   │
-│   ├── pages/                        # Rutas de páginas
+│   ├── pages/
 │   │   ├── index.astro               # Inicio
-│   │   ├── 404.astro                 # Página no encontrada
-│   │   ├── login.astro               # Login
-│   │   ├── register.astro            # Registro
-│   │   ├── characters.astro          # Personajes
-│   │   ├── create-character.astro    # Crear personaje
-│   │   ├── character-information.astro
-│   │   ├── account-management.astro
-│   │   ├── account-recovery.astro
-│   │   ├── recovery-verify.astro
-│   │   ├── forgot-password.astro
-│   │   ├── lost-account.astro
-│   │   ├── reset-password.astro
-│   │   ├── highscores.astro          # Clasificación
-│   │   ├── latest-deaths.astro       # Muertes recientes
-│   │   ├── online.astro              # Jugadores online
 │   │   ├── marketplace.astro         # Tienda
-│   │   ├── terms.astro               # Términos de servicio
-│   │   ├── privacy.astro             # Política de privacidad
-│   │   ├── rules.astro               # Reglas del juego
-│   │   │
-│   │   ├── forum/                    # Foro
-│   │   │   ├── index.astro
-│   │   │   ├── new-topic.astro
-│   │   │   ├── category/[id].astro
-│   │   │   └── topic/[id].astro
-│   │   │
-│   │   ├── news/                     # Noticias
-│   │   │   ├── index.astro
-│   │   │   └── [id].astro
-│   │   │
-│   │   ├── wiki/                     # Wiki
-│   │   │   ├── index.astro
-│   │   │   └── [slug].astro
-│   │   │
-│   │   ├── guilds/                   # Guilds
-│   │   │   ├── index.astro
-│   │   │   ├── [id].astro
-│   │   │   └── create.astro
-│   │   │
-│   │   └── admin/                    # Panel de admin
-│   │       ├── index.astro
-│   │       ├── users.astro
-│   │       ├── forum.astro
-│   │       ├── news.astro
-│   │       └── marketplace.astro
+│   │   ├── logs/                     # Changelog
+│   │   ├── streams/                  # Streams de Twitch
+│   │   ├── forum/
+│   │   ├── news/
+│   │   ├── guilds/
+│   │   └── admin/
 │   │
-│   ├── styles/
-│   │   └── global.css                # Estilos globales Tailwind
-│   │
-│   └── utils/                        # Utilidades
+│   └── styles/
+│       └── global.css
 │
 ├── server/                           # Backend (Express)
 │   └── src/
-│       ├── config/
-│       │   └── database.ts           # Pool de conexión MySQL
-│       │
-│       ├── controllers/              # Manejadores de requests
+│       ├── controllers/
 │       │   ├── authController.ts
-│       │   ├── accountController.ts
-│       │   ├── characterController.ts
 │       │   ├── marketplaceController.ts
 │       │   ├── adminMarketplaceController.ts
-│       │   ├── forumController.ts
-│       │   ├── newsController.ts
-│       │   ├── wikiController.ts
-│       │   ├── faqController.ts
-│       │   ├── downloadsController.ts
-│       │   ├── rulesController.ts
-│       │   ├── supportController.ts
-│       │   ├── userManagementController.ts
-│       │   ├── highscoresController.ts
-│       │   ├── deathsController.ts
-│       │   ├── guildController.ts
-│       │   └── serverController.ts
+│       │   ├── bossPointsController.ts
+│       │   ├── twitchController.ts
+│       │   └── ...
 │       │
-│       ├── routes/                   # Definición de rutas
-│       │   ├── authRoutes.ts
-│       │   ├── accountRoutes.ts
-│       │   ├── characterRoutes.ts
+│       ├── routes/
 │       │   ├── marketplaceRoutes.ts
 │       │   ├── adminMarketplaceRoutes.ts
-│       │   ├── forumRoutes.ts
-│       │   ├── newsRoutes.ts
-│       │   ├── wikiRoutes.ts
-│       │   ├── faqRoutes.ts
-│       │   ├── downloadsRoutes.ts
-│       │   ├── rulesRoutes.ts
-│       │   ├── supportRoutes.ts
-│       │   ├── userManagementRoutes.ts
-│       │   ├── highscoresRoutes.ts
-│       │   ├── deathsRoutes.ts
-│       │   ├── guildRoutes.ts
-│       │   └── serverRoutes.ts
+│       │   ├── bossPointsRoutes.ts
+│       │   ├── twitchRoutes.ts
+│       │   └── ...
 │       │
-│       ├── middleware/               # Middlewares
-│       │   ├── authMiddleware.ts     # Autenticación por cookies
-│       │   ├── adminMiddleware.ts    # Verificación de admin
-│       │   └── permissions.ts        # Gestión de permisos
+│       ├── middleware/
+│       │   ├── authMiddleware.ts
+│       │   └── adminMiddleware.ts
 │       │
-│       ├── services/                 # Servicios
-│       │   ├── emailService.ts       # Envío de emails (Resend)
-│       │   └── itemDeliveryService.ts
-│       │
-│       ├── lib/
-│       │   └── mercadopago.ts        # Integración de pagos
-│       │
-│       ├── types/                    # Definiciones TypeScript
-│       │
-│       └── index.ts                  # Entry point de Express
+│       └── migrations/
+│           ├── create_boss_points_shop.sql
+│           └── fix_boss_points_purchases.sql
 │
-├── database/                         # Scripts de base de datos
-│   ├── schema.sql                    # Esquema base (accounts, players)
-│   ├── marketplace.sql               # Tablas del marketplace
-│   ├── marketplace_fresh_install.sql
-│   ├── marketplace_migration.sql
-│   ├── permission_forum_schemas.sql
-│   ├── 001_add_payment_fields.sql
-│   └── 002_create_refresh_tokens.sql
-│
+├── database/                         # Scripts SQL base
 ├── public/                           # Archivos públicos
-│   ├── assets/
-│   ├── downloads/                    # Descargas del cliente
-│   └── favicon.ico
-│
-├── dist/                             # Build output
-│   ├── client/                       # Assets estáticos
-│   └── server/                       # Entry point del servidor
-│
-├── .github/
-│   └── workflows/
-│       ├── ci.yml                    # Pipeline CI/CD
-│       └── keep-alive.yml            # Tarea programada
-│
-├── astro.config.mjs                  # Configuración de Astro
-├── tsconfig.json                     # Configuración TypeScript
-├── tailwind.config.ts                # Configuración Tailwind
-├── package.json                      # Dependencias y scripts
-└── pnpm-lock.yaml                    # Lockfile de pnpm
+└── package.json
 ```
 
 ---
@@ -476,28 +321,21 @@ mystovia-web/
 ### Cuenta (`/api/account`)
 | Método | Endpoint | Descripción |
 |--------|----------|-------------|
-| GET | `/` | Obtener información de cuenta |
+| GET | `/` | Información de cuenta |
 | PUT | `/` | Actualizar cuenta |
 | POST | `/recovery-key` | Generar clave de recuperación |
 
-### Personajes (`/api/characters`)
+### Boss Points (`/api/boss-points`)
 | Método | Endpoint | Descripción |
 |--------|----------|-------------|
-| GET | `/` | Listar personajes |
-| GET | `/:id` | Obtener personaje |
-| POST | `/` | Crear personaje |
-
-### Servidor (`/api/server`)
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| GET | `/status` | Estado del servidor |
-| GET | `/online` | Jugadores online |
+| GET | `/balance` | Obtener balance de BP |
+| POST | `/purchase` | Canjear BP por item |
+| GET | `/history` | Historial de canjes |
 
 ### Marketplace (`/api/marketplace`)
 | Método | Endpoint | Descripción |
 |--------|----------|-------------|
 | GET | `/items` | Listar items |
-| GET | `/items/:id` | Detalle de item |
 | GET | `/cart` | Ver carrito |
 | POST | `/cart` | Agregar al carrito |
 | DELETE | `/cart/:id` | Eliminar del carrito |
@@ -507,19 +345,29 @@ mystovia-web/
 ### Admin Marketplace (`/api/admin/marketplace`)
 | Método | Endpoint | Descripción |
 |--------|----------|-------------|
-| GET | `/items` | Listar items (admin) |
+| GET | `/items` | Listar items |
 | POST | `/items` | Crear item |
 | PUT | `/items/:id` | Actualizar item |
 | DELETE | `/items/:id` | Eliminar item |
+| GET | `/orders` | Ver todas las órdenes (pagos + BP) |
+| GET | `/orders/:id/items` | Ver items de una orden |
+| PATCH | `/orders/:id/status` | Actualizar estado |
+| GET | `/stats` | Estadísticas |
+
+### Twitch (`/api/twitch`)
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| GET | `/auth` | Iniciar OAuth |
+| GET | `/callback` | Callback OAuth |
+| GET | `/streams` | Obtener streams activos |
+| DELETE | `/disconnect` | Desconectar cuenta |
 
 ### Foro (`/api/forum`)
 | Método | Endpoint | Descripción |
 |--------|----------|-------------|
 | GET | `/categories` | Listar categorías |
 | GET | `/topics` | Listar temas |
-| GET | `/topics/:id` | Ver tema |
 | POST | `/topics` | Crear tema |
-| POST | `/topics/:id/comments` | Comentar |
 | POST | `/topics/:id/vote` | Votar |
 
 ### Noticias (`/api/news`)
@@ -530,15 +378,6 @@ mystovia-web/
 | POST | `/` | Crear noticia (admin) |
 | PUT | `/:id` | Editar noticia (admin) |
 | DELETE | `/:id` | Eliminar noticia (admin) |
-| POST | `/:id/like` | Dar like |
-
-### Wiki (`/api/wiki`)
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| GET | `/categories` | Listar categorías |
-| GET | `/articles` | Listar artículos |
-| GET | `/articles/:slug` | Ver artículo |
-| GET | `/search` | Buscar |
 
 ### Guilds (`/api/guilds`)
 | Método | Endpoint | Descripción |
@@ -557,15 +396,6 @@ mystovia-web/
 |--------|----------|-------------|
 | GET | `/` | Muertes recientes |
 
-### Admin Users (`/api/admin/users`)
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| GET | `/` | Listar usuarios |
-| GET | `/:id` | Ver usuario |
-| PUT | `/:id` | Editar usuario |
-| PUT | `/:id/block` | Bloquear usuario |
-| PUT | `/:id/permissions` | Editar permisos |
-
 ---
 
 ## Esquema de Base de Datos
@@ -573,61 +403,30 @@ mystovia-web/
 ### Tablas Principales
 
 #### `accounts`
-```sql
-- id (INT, PK)
-- name (VARCHAR)
-- email (VARCHAR, UNIQUE)
-- password (VARCHAR)
-- premdays (INT)
-- group_id (INT)
-- creation (TIMESTAMP)
-- recovery_key (VARCHAR)
+```
+id, name, email, password, premdays, group_id, creation, recovery_key
 ```
 
 #### `players`
-```sql
-- id (INT, PK)
-- account_id (INT, FK)
-- name (VARCHAR, UNIQUE)
-- level (INT)
-- vocation (INT)
-- health (INT)
-- healthmax (INT)
-- mana (INT)
-- manamax (INT)
-- experience (BIGINT)
-- lookbody (INT)
-- lookfeet (INT)
-- lookhead (INT)
-- looklegs (INT)
-- looktype (INT)
-- posx (INT)
-- posy (INT)
-- posz (INT)
+```
+id, account_id, name, level, vocation, health, mana, experience, look*
 ```
 
 #### `market_items`
-```sql
-- id (INT, PK)
-- name (VARCHAR)
-- description (TEXT)
-- price (DECIMAL)
-- category (VARCHAR)
-- image_url (VARCHAR)
-- stock (INT)
-- featured (BOOLEAN)
-- active (BOOLEAN)
+```
+id, name, description, price, category, image_url, stock, featured, is_active,
+redeemable_with_bp (BOOLEAN), bp_price (INT), items_json, weapon_options
 ```
 
 #### `orders`
-```sql
-- id (INT, PK)
-- account_id (INT, FK)
-- character_id (INT, FK)
-- total (DECIMAL)
-- status (ENUM)
-- payment_id (VARCHAR)
-- created_at (TIMESTAMP)
+```
+id, account_id, player_id, total_amount, status, payment_method, payment_id,
+created_at, delivered_at
+```
+
+#### `boss_points_purchases`
+```
+id, account_id, player_name, market_item_id, item_name, points_spent, timestamp
 ```
 
 ---
@@ -639,22 +438,16 @@ mystovia-web/
 pnpm build
 ```
 
-### Iniciar Servidor
-```bash
-pnpm start
-```
-
-### Variables de Entorno (Producción)
+### Variables de Entorno
 ```env
 NODE_ENV=production
 BACKEND_URL=https://api.tudominio.com
 FRONTEND_URL=https://tudominio.com
 PUBLIC_API_URL=https://api.tudominio.com
 
-# Usar tokens de producción de MercadoPago
+# Tokens de producción de MercadoPago
 MP_ACCESS_TOKEN=APP_USR-xxxxxxxxxxxxx
 MP_PUBLIC_KEY=APP_USR-xxxxxxxxxxxxx
-PUBLIC_MP_PUBLIC_KEY=APP_USR-xxxxxxxxxxxxx
 ```
 
 ---
@@ -670,67 +463,26 @@ PUBLIC_MP_PUBLIC_KEY=APP_USR-xxxxxxxxxxxxx
 │                 │     │                 │     │                 │
 └─────────────────┘     └─────────────────┘     └─────────────────┘
         │                       │
-        │                       │
         ▼                       ▼
-┌─────────────────┐     ┌─────────────────┐
-│                 │     │                 │
-│   MercadoPago   │     │     Resend      │
-│   (Payments)    │     │    (Emails)     │
-│                 │     │                 │
-└─────────────────┘     └─────────────────┘
+┌───────────────────────────────────────────────────────────────┐
+│                     Servicios Externos                        │
+├─────────────────┬─────────────────┬─────────────────┐         │
+│   MercadoPago   │     Resend      │   Twitch API    │         │
+│   (Payments)    │    (Emails)     │   (Streams)     │         │
+└─────────────────┴─────────────────┴─────────────────┘         │
+└───────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## Flujo de Autenticación
+## Changelog
 
-```
-┌────────────┐    ┌────────────┐    ┌────────────┐
-│   Client   │───▶│   Server   │───▶│  Database  │
-│            │    │            │    │            │
-│ 1. Login   │    │ 2. Verify  │    │ 3. Query   │
-│    Form    │    │    Creds   │    │   Account  │
-│            │    │            │    │            │
-│ 6. Receive │◀───│ 5. Set     │◀───│ 4. Return  │
-│    Cookie  │    │    Cookie  │    │    Data    │
-└────────────┘    └────────────┘    └────────────┘
-```
+Ver [changelog.json](src/data/changelog.json) para el historial completo de cambios.
 
----
-
-## Integraciones
-
-### MercadoPago
-- Creación de preferencias de pago
-- Procesamiento de pagos con tarjeta
-- Manejo de webhooks para notificaciones
-- Moneda: ARS (Pesos Argentinos)
-- Ambientes de prueba y producción
-
-### Resend (Email)
-- Emails de restablecimiento de contraseña
-- Plantillas HTML de email
-- Branding personalizado
-- Links con expiración (1 hora)
-
----
-
-## CI/CD
-
-El proyecto incluye workflows de GitHub Actions:
-
-- **ci.yml**: Pipeline de integración continua
-- **keep-alive.yml**: Tarea programada para mantener servicios activos
-
----
-
-## Contribuir
-
-1. Fork el repositorio
-2. Crear rama feature (`git checkout -b feature/nueva-funcionalidad`)
-3. Commit cambios (`git commit -am 'Agregar nueva funcionalidad'`)
-4. Push a la rama (`git push origin feature/nueva-funcionalidad`)
-5. Crear Pull Request
+### Versión Actual: 1.2.5
+- Sistema de Boss Points
+- Canjes de BP en Marketplace
+- Panel de administración de canjes
 
 ---
 

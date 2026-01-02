@@ -270,7 +270,7 @@ export default function AdminMarketplace() {
                     </td>
                     <td className="px-6 py-4">
                       <div className="text-white font-semibold">${Number(item.price).toFixed(2)}</div>
-                      {item.redeemable_with_bp && item.bp_price && (
+                      {item.redeemable_with_bp && Number(item.bp_price) > 0 && (
                         <div className="text-yellow-400 text-sm">{item.bp_price} BP</div>
                       )}
                     </td>

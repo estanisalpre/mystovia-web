@@ -1,6 +1,21 @@
 {
   "logs": [
     {
+      "version": "1.2.5",
+      "date": "2026-01-02",
+      "title": "Sistema de Boss Points",
+      "description": "Nuevo sistema de recompensas por matar bosses. Acumula puntos y canjéalos por items exclusivos en la tienda.",
+      "changes": [
+        "Acumulación automática de Boss Points al derrotar bosses",
+        "Visualización de BP en el header del sitio",
+        "Productos canjeables con Boss Points en el Marketplace",
+        "Filtro para ver solo items canjeables con BP",
+        "Historial de canjes en el panel de cuenta",
+        "Panel de administración para gestionar canjes de BP"
+      ],
+      "type": "feature"
+    },
+    {
       "version": "1.2.4",
       "date": "2026-01-01",
       "title": "Integración de Twitch",
