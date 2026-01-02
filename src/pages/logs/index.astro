@@ -1,0 +1,225 @@
+---
+import Layout from "@layouts/Layout.astro";
+import DiamondPattern from "../../components/ui/DiamondPattern.astro";
+import GoldenLine from "../../components/ui/GoldenLine.astro";
+import CornerOrnaments from "../../components/ui/CornerOrnaments.astro";
+import { FileText, Sparkles, Wrench, Rocket, ChevronRight, Home } from '@lucide/astro';
+import changelog from "../../data/changelog.json";
+
+// Type icons based on log type
+const typeConfig = {
+  feature: {
+    icon: Sparkles,
+    color: 'yellow',
+    label: 'Nueva Función'
+  },
+  improvement: {
+    icon: Wrench,
+    color: 'blue',
+    label: 'Mejora'
+  },
+  fix: {
+    icon: Wrench,
+    color: 'red',
+    label: 'Corrección'
+  },
+  release: {
+    icon: Rocket,
+    color: 'purple',
+    label: 'Lanzamiento'
+  }
+};
+
+function formatDate(dateStr: string, lang: string = 'es') {
+  const date = new Date(dateStr);
+  return date.toLocaleDateString(lang === 'en' ? 'en-US' : lang === 'pt' ? 'pt-BR' : 'es-ES', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+  });
+}
+---
+
+<Layout
+  title="Changelog - Novedades"
+  description="Historial de cambios y novedades del sitio web de Mystovia. Mantente al día con las últimas actualizaciones."
+  keywords="changelog mystovia, novedades, actualizaciones, versiones, cambios"
+>
+  <section class="page-container max-w-4xl mx-auto">
+    <!-- Breadcrumb -->
+    <nav class="flex items-center gap-2 text-xs sm:text-sm text-gray-400 mb-4 sm:mb-6">
+      <a href="/" class="hover:text-yellow-500 transition-colors flex items-center gap-1">
+        <Home class="w-3 h-3" />
+        <span id="breadcrumbHome">Inicio</span>
+      </a>
+      <ChevronRight class="w-3 h-3 text-gray-600" />
+      <span class="text-yellow-500" id="breadcrumbLogs">Changelog</span>
+    </nav>
+
+    <!-- Header -->
+    <header class="text-center mb-10">
+      <div class="flex items-center justify-center gap-3 mb-3">
+        <div class="h-px w-12 bg-gradient-to-r from-transparent to-yellow-500/50"></div>
+        <FileText class="w-7 h-7 text-yellow-500" />
+        <div class="h-px w-12 bg-gradient-to-l from-transparent to-yellow-500/50"></div>
+      </div>
+      <h1 id="pageTitle" class="text-3xl md:text-4xl font-bold text-yellow-500 medieval-font mb-2">
+        Changelog
+      </h1>
+      <p id="pageSubtitle" class="text-gray-400">
+        Historial de cambios y novedades del sitio
+      </p>
+    </header>
+
+    <!-- Changelog Timeline -->
+    <div class="relative">
+      <!-- Timeline line -->
+      <div class="absolute left-4 md:left-8 top-0 bottom-0 w-px bg-gradient-to-b from-yellow-500/50 via-yellow-600/30 to-transparent"></div>
+
+      <!-- Log entries -->
+      <div class="space-y-6">
+        {changelog.logs.map((log, index) => {
+          const config = typeConfig[log.type as keyof typeof typeConfig] || typeConfig.feature;
+          const IconComponent = config.icon;
+
+          return (
+            <article class="relative pl-10 md:pl-16">
+              <!-- Timeline dot -->
+              <div class={`absolute left-2 md:left-6 w-4 h-4 rounded-full border-2 bg-gray-900
+                ${config.color === 'yellow' ? 'border-yellow-500' : ''}
+                ${config.color === 'blue' ? 'border-blue-500' : ''}
+                ${config.color === 'red' ? 'border-red-500' : ''}
+                ${config.color === 'purple' ? 'border-purple-500' : ''}
+              `}></div>
+
+              <!-- Card -->
+              <div class="relative rounded-xl overflow-hidden"
+                   style="background: linear-gradient(to bottom, rgb(31 41 55 / 0.6), rgb(17 24 39 / 0.8)); border: 1px solid rgb(234 179 8 / 0.15);">
+                <GoldenLine position="top" opacity={0.2} />
+                <DiamondPattern opacity={0.02} class="rounded-xl" />
+
+                <div class="relative z-10 p-5">
+                  <!-- Header -->
+                  <div class="flex flex-wrap items-start justify-between gap-3 mb-3">
+                    <div class="flex items-center gap-3">
+                      <!-- Version badge -->
+                      <span class={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold
+                        ${config.color === 'yellow' ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' : ''}
+                        ${config.color === 'blue' ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30' : ''}
+                        ${config.color === 'red' ? 'bg-red-500/20 text-red-400 border border-red-500/30' : ''}
+                        ${config.color === 'purple' ? 'bg-purple-500/20 text-purple-400 border border-purple-500/30' : ''}
+                      `}>
+                        <IconComponent class="w-3.5 h-3.5" />
+                        v{log.version}
+                      </span>
+
+                      <!-- Type label -->
+                      <span class="text-xs text-gray-500 uppercase tracking-wider log-type-label">
+                        {config.label}
+                      </span>
+                    </div>
+
+                    <!-- Date -->
+                    <time class="text-sm text-gray-500 log-date" data-date={log.date}>
+                      {formatDate(log.date)}
+                    </time>
+                  </div>
+
+                  <!-- Title -->
+                  <h2 class="text-lg font-bold text-white mb-2 medieval-font">
+                    {log.title}
+                  </h2>
+
+                  <!-- Description -->
+                  <p class="text-gray-400 text-sm mb-4">
+                    {log.description}
+                  </p>
+
+                  <!-- Changes list -->
+                  {log.changes && log.changes.length > 0 && (
+                    <ul class="space-y-1.5">
+                      {log.changes.map((change) => (
+                        <li class="flex items-start gap-2 text-sm text-gray-300">
+                          <ChevronRight class="w-4 h-4 text-yellow-500/60 flex-shrink-0 mt-0.5" />
+                          <span>{change}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </div>
+
+    <!-- Footer info -->
+    <div class="mt-10 text-center text-gray-500 text-sm">
+      <p id="lastUpdateText">
+        Última actualización: {formatDate(changelog.logs[0]?.date || new Date().toISOString().split('T')[0])}
+      </p>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  import { t, getStoredLanguage } from '../../i18n/translations';
+
+  function formatDateLocalized(dateStr: string, lang: string) {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString(lang === 'en' ? 'en-US' : lang === 'pt' ? 'pt-BR' : 'es-ES', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    });
+  }
+
+  function applyTranslations() {
+    const lang = getStoredLanguage();
+
+    const breadcrumbHome = document.getElementById('breadcrumbHome');
+    if (breadcrumbHome) breadcrumbHome.textContent = t('common.home', lang) || 'Inicio';
+
+    const breadcrumbLogs = document.getElementById('breadcrumbLogs');
+    if (breadcrumbLogs) breadcrumbLogs.textContent = t('pages.logs.title', lang) || 'Changelog';
+
+    const pageTitle = document.getElementById('pageTitle');
+    if (pageTitle) pageTitle.textContent = t('pages.logs.title', lang) || 'Changelog';
+
+    const pageSubtitle = document.getElementById('pageSubtitle');
+    if (pageSubtitle) pageSubtitle.textContent = t('pages.logs.subtitle', lang) || 'Historial de cambios y novedades del sitio';
+
+    // Update dates with localized format
+    const dates = document.querySelectorAll('.log-date');
+    dates.forEach((el) => {
+      const dateStr = (el as HTMLElement).dataset.date;
+      if (dateStr) {
+        el.textContent = formatDateLocalized(dateStr, lang);
+      }
+    });
+
+    // Type labels
+    const typeLabels = document.querySelectorAll('.log-type-label');
+    typeLabels.forEach((el) => {
+      const text = el.textContent?.trim().toLowerCase();
+      if (text === 'nueva función' || text === 'new feature' || text === 'nova função') {
+        el.textContent = t('pages.logs.types.feature', lang) || 'Nueva Función';
+      } else if (text === 'mejora' || text === 'improvement' || text === 'melhoria') {
+        el.textContent = t('pages.logs.types.improvement', lang) || 'Mejora';
+      } else if (text === 'corrección' || text === 'fix' || text === 'correção') {
+        el.textContent = t('pages.logs.types.fix', lang) || 'Corrección';
+      } else if (text === 'lanzamiento' || text === 'release' || text === 'lançamento') {
+        el.textContent = t('pages.logs.types.release', lang) || 'Lanzamiento';
+      }
+    });
+  }
+
+  applyTranslations();
+
+  const LISTENER_KEY = '__logsPageListener';
+  if (!(window as any)[LISTENER_KEY]) {
+    (window as any)[LISTENER_KEY] = true;
+    document.addEventListener('astro:page-load', applyTranslations);
+  }
+</script>

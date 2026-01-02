@@ -1,0 +1,67 @@
+{
+  "logs": [
+    {
+      "version": "1.2.4",
+      "date": "2026-01-01",
+      "title": "Integración de Twitch",
+      "description": "Conecta tu cuenta de Twitch y aparece en vivo cuando transmitas Mystovia.",
+      "changes": [
+        "Nueva página de streams en vivo",
+        "Conexión de cuenta Twitch desde gestión de cuenta",
+        "Widget de streams en la página principal",
+        "Detección automática cuando estás transmitiendo"
+      ],
+      "type": "feature"
+    },
+    {
+      "version": "1.2.3",
+      "date": "2025-12-28",
+      "title": "Sistema de Marketplace",
+      "description": "Nuevo sistema de tienda para comprar items y servicios del servidor.",
+      "changes": [
+        "Carrito de compras con persistencia",
+        "Integración con MercadoPago",
+        "Historial de compras",
+        "Sistema de coins"
+      ],
+      "type": "feature"
+    },
+    {
+      "version": "1.2.2",
+      "date": "2025-12-20",
+      "title": "Mejoras de rendimiento",
+      "description": "Optimizaciones generales para mejorar la velocidad del sitio.",
+      "changes": [
+        "Lazy loading de imágenes",
+        "Optimización de consultas a la base de datos",
+        "Caché mejorado para highscores"
+      ],
+      "type": "improvement"
+    },
+    {
+      "version": "1.2.1",
+      "date": "2025-12-18",
+      "title": "Correcciones varias",
+      "description": "Correcciones de errores y mejoras menores.",
+      "changes": [
+        "Corrección de muertes duplicadas en el registro",
+        "Mejoras en traducciones"
+      ],
+      "type": "fix"
+    },
+    {
+      "version": "1.2.0",
+      "date": "2025-12-15",
+      "title": "Lanzamiento inicial",
+      "description": "Primera versión pública del sitio web de Mystovia.",
+      "changes": [
+        "Sistema de cuentas y personajes",
+        "Highscores y rankings",
+        "Foro de la comunidad",
+        "Sistema de guilds",
+        "Noticias y actualizaciones"
+      ],
+      "type": "release"
+    }
+  ]
+}

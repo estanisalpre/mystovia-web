@@ -6,6 +6,7 @@
     "success": "Éxito",
     "back": "Volver",
     "backHome": "Volver al inicio",
+    "home": "Inicio",
     "search": "Buscar",
     "submit": "Enviar",
     "cancel": "Cancelar",
@@ -502,6 +503,17 @@
       "locked": "Cerrado",
       "home": "Inicio",
       "loginInfo": "para crear temas y participar en las discusiones."
+    },
+    "logs": {
+      "title": "Changelog",
+      "subtitle": "Historial de cambios y novedades del sitio",
+      "lastUpdate": "Última actualización",
+      "types": {
+        "feature": "Nueva Función",
+        "improvement": "Mejora",
+        "fix": "Corrección",
+        "release": "Lanzamiento"
+      }
     }
   },
   "createCharacter": {
