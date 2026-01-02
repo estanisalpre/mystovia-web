@@ -338,55 +338,110 @@ export const toggleMarketItemStatus = async (req: Request, res: Response) => {
 };
 
 /**
- * Get all orders with details
+ * Get all orders with details (including Boss Points purchases)
  * Admin only - supports pagination and search
  */
 export const getAllOrders = async (req: Request, res: Response) => {
   try {
-    const { status, search, page = 1, limit = 20 } = req.query;
+    const { status, search, page = 1, limit = 20, type = 'all' } = req.query;
     const offset = (Number(page) - 1) * Number(limit);
 
-    let baseQuery = `
+    // Build query for regular orders
+    let regularOrdersQuery = `
+      SELECT
+        o.id,
+        o.account_id,
+        o.player_id,
+        o.total_amount,
+        o.status,
+        o.payment_method,
+        o.payment_id,
+        o.created_at,
+        o.delivered_at,
+        a.email as account_email,
+        p.name as player_name,
+        (SELECT COUNT(*) FROM order_items WHERE order_id = o.id) as total_items,
+        'payment' as order_type
       FROM orders o
       LEFT JOIN accounts a ON o.account_id = a.id
       LEFT JOIN players p ON o.player_id = p.id
       WHERE 1=1
     `;
-    const params: any[] = [];
+    const regularParams: any[] = [];
 
     if (status && status !== 'all') {
-      baseQuery += ' AND o.status = ?';
-      params.push(status);
+      regularOrdersQuery += ' AND o.status = ?';
+      regularParams.push(status);
     }
 
     if (search) {
-      baseQuery += ' AND (a.email LIKE ? OR p.name LIKE ? OR o.id = ?)';
+      regularOrdersQuery += ' AND (a.email LIKE ? OR p.name LIKE ? OR o.id = ?)';
       const searchTerm = `%${search}%`;
-      params.push(searchTerm, searchTerm, Number(search) || 0);
+      regularParams.push(searchTerm, searchTerm, Number(search) || 0);
     }
 
-    // Count total orders
+    // Build query for Boss Points purchases
+    let bpOrdersQuery = `
+      SELECT
+        bp.id,
+        bp.account_id,
+        0 as player_id,
+        bp.points_spent as total_amount,
+        'delivered' as status,
+        'boss_points' as payment_method,
+        NULL as payment_id,
+        bp.timestamp as created_at,
+        bp.timestamp as delivered_at,
+        a.email as account_email,
+        bp.player_name,
+        1 as total_items,
+        'boss_points' as order_type
+      FROM boss_points_purchases bp
+      LEFT JOIN accounts a ON bp.account_id = a.id
+      WHERE 1=1
+    `;
+    const bpParams: any[] = [];
+
+    if (status && status !== 'all' && status !== 'delivered') {
+      // BP purchases are always "delivered", so if filtering by other status, exclude them
+      bpOrdersQuery = 'SELECT NULL as id WHERE 1=0'; // Empty result
+    } else if (search) {
+      bpOrdersQuery += ' AND (a.email LIKE ? OR bp.player_name LIKE ? OR bp.id = ?)';
+      const searchTerm = `%${search}%`;
+      bpParams.push(searchTerm, searchTerm, Number(search) || 0);
+    }
+
+    // Combine queries based on type filter
+    let combinedQuery = '';
+    let combinedParams: any[] = [];
+
+    if (type === 'payment') {
+      combinedQuery = regularOrdersQuery;
+      combinedParams = regularParams;
+    } else if (type === 'boss_points') {
+      combinedQuery = bpOrdersQuery;
+      combinedParams = bpParams;
+    } else {
+      // All orders - combine both
+      combinedQuery = `(${regularOrdersQuery}) UNION ALL (${bpOrdersQuery})`;
+      combinedParams = [...regularParams, ...bpParams];
+    }
+
+    // Get total count
     const [countResult] = await db.query(
-      `SELECT COUNT(DISTINCT o.id) as total ${baseQuery}`,
-      params
+      `SELECT COUNT(*) as total FROM (${combinedQuery}) as combined`,
+      combinedParams
     ) as any[];
     const total = countResult[0].total;
 
-    // Get orders with pagination
+    // Get paginated orders
     const [orders] = await db.query(
-      `SELECT
-        o.*,
-        a.email as account_email,
-        p.name as player_name,
-        (SELECT COUNT(*) FROM order_items WHERE order_id = o.id) as total_items
-      ${baseQuery}
-      ORDER BY o.created_at DESC
-      LIMIT ? OFFSET ?`,
-      [...params, Number(limit), offset]
+      `SELECT * FROM (${combinedQuery}) as combined ORDER BY created_at DESC LIMIT ? OFFSET ?`,
+      [...combinedParams, Number(limit), offset]
     ) as any[];
 
-    // Get summary stats
-    const [statsResult] = await db.query(`
+    // Get summary stats (including BP purchases)
+    const [regularStatsResult] = await db.query(`
       SELECT
         COUNT(*) as total_orders,
         SUM(CASE WHEN status = 'approved' OR status = 'delivered' THEN total_amount ELSE 0 END) as total_revenue,
@@ -395,6 +450,13 @@ export const getAllOrders = async (req: Request, res: Response) => {
         SUM(CASE WHEN status = 'delivered' THEN 1 ELSE 0 END) as delivered_count,
         SUM(CASE WHEN status = 'cancelled' THEN 1 ELSE 0 END) as cancelled_count
       FROM orders
+    `) as any[];
+
+    const [bpStatsResult] = await db.query(`
+      SELECT
+        COUNT(*) as bp_orders,
+        SUM(points_spent) as bp_total_spent
+      FROM boss_points_purchases
     `) as any[];
 
     res.json({
@@ -406,7 +468,11 @@ export const getAllOrders = async (req: Request, res: Response) => {
         total,
         totalPages: Math.ceil(total / Number(limit))
       },
-      stats: statsResult[0]
+      stats: {
+        ...regularStatsResult[0],
+        bp_orders: bpStatsResult[0].bp_orders || 0,
+        bp_total_spent: bpStatsResult[0].bp_total_spent || 0
+      }
     });
   } catch (error) {
     console.error('Error fetching all orders:', error);
@@ -475,45 +541,82 @@ export const updateOrderStatus = async (req: Request, res: Response) => {
 };
 
 /**
- * Get order items
+ * Get order items (supports both regular orders and Boss Points purchases)
  * Admin only
  */
 export const getOrderItems = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+    const { type } = req.query; // 'payment' or 'boss_points'
 
-    // Check if order exists
-    const [orderResult] = await db.query(
-      'SELECT id FROM orders WHERE id = ?',
-      [id]
-    ) as any[];
+    if (type === 'boss_points') {
+      // Get Boss Points purchase details
+      const [bpResult] = await db.query(
+        `SELECT
+          bp.id,
+          bp.market_item_id,
+          bp.item_name,
+          bp.points_spent,
+          mi.image_url,
+          mi.category
+        FROM boss_points_purchases bp
+        LEFT JOIN market_items mi ON bp.market_item_id = mi.id
+        WHERE bp.id = ?`,
+        [id]
+      ) as any[];
 
-    if (!orderResult || orderResult.length === 0) {
-      return res.status(404).json({
-        error: 'Order not found'
+      if (!bpResult || bpResult.length === 0) {
+        return res.status(404).json({
+          error: 'Boss Points purchase not found'
+        });
+      }
+
+      const purchase = bpResult[0];
+      res.json({
+        success: true,
+        items: [{
+          id: purchase.id,
+          market_item_id: purchase.market_item_id,
+          quantity: 1,
+          price: purchase.points_spent,
+          item_name: purchase.item_name,
+          image_url: purchase.image_url,
+          category: purchase.category
+        }]
+      });
+    } else {
+      // Regular order items
+      const [orderResult] = await db.query(
+        'SELECT id FROM orders WHERE id = ?',
+        [id]
+      ) as any[];
+
+      if (!orderResult || orderResult.length === 0) {
+        return res.status(404).json({
+          error: 'Order not found'
+        });
+      }
+
+      const [items] = await db.query(
+        `SELECT
+          oi.id,
+          oi.market_item_id,
+          oi.quantity,
+          oi.price,
+          oi.item_name,
+          mi.image_url,
+          mi.category
+        FROM order_items oi
+        LEFT JOIN market_items mi ON oi.market_item_id = mi.id
+        WHERE oi.order_id = ?`,
+        [id]
+      ) as any[];
+
+      res.json({
+        success: true,
+        items
       });
     }
-
-    // Get order items
-    const [items] = await db.query(
-      `SELECT
-        oi.id,
-        oi.market_item_id,
-        oi.quantity,
-        oi.price,
-        oi.item_name,
-        mi.image_url,
-        mi.category
-      FROM order_items oi
-      LEFT JOIN market_items mi ON oi.market_item_id = mi.id
-      WHERE oi.order_id = ?`,
-      [id]
-    ) as any[];
-
-    res.json({
-      success: true,
-      items
-    });
   } catch (error) {
     console.error('Error fetching order items:', error);
     res.status(500).json({
