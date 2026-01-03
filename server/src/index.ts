@@ -25,6 +25,7 @@ import deathsRoutes from './routes/deathsRoutes.js';
 import guildRoutes from './routes/guildRoutes.js';
 import twitchRoutes from './routes/twitchRoutes.js';
 import bossPointsRoutes from './routes/bossPointsRoutes.js';
+import bansRoutes from './routes/bansRoutes.js';
 import { refreshLiveStatusInternal } from './controllers/twitchController.js';
 
 // Load .env from project root
@@ -75,6 +76,7 @@ app.use('/api/deaths', deathsRoutes);
 app.use('/api/guilds', guildRoutes);
 app.use('/api/twitch', twitchRoutes);
 app.use('/api/boss-points', bossPointsRoutes);
+app.use('/api/bans', bansRoutes);
 
 // Admin routes
 app.use('/api/admin/users', userManagementRoutes);

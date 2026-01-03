@@ -115,6 +115,12 @@ import CornerOrnaments from "./ui/CornerOrnaments.astro";
             </a>
           </li>
           <li>
+            <a href="/bans" id="footerBans" class="text-gray-400 hover:text-red-400 transition-colors text-sm flex items-center gap-2 group">
+              <span class="w-1 h-1 rounded-full bg-gray-600 group-hover:bg-red-400 transition-colors" aria-hidden="true"></span>
+              Baneos
+            </a>
+          </li>
+          <li>
             <a href="/lost-account" class="text-gray-400 hover:text-yellow-500 transition-colors text-sm flex items-center gap-2 group">
               <span class="w-1 h-1 rounded-full bg-gray-600 group-hover:bg-yellow-500 transition-colors" aria-hidden="true"></span>
               <span id="footerLostAccount">Cuenta Perdida</span>
@@ -235,6 +241,14 @@ import CornerOrnaments from "./ui/CornerOrnaments.astro";
     const lostAccount = document.getElementById('footerLostAccount');
     if (lostAccount) lostAccount.textContent = t('footer.lostAccount', lang);
 
+    const bans = document.getElementById('footerBans');
+    if (bans) {
+      const bullet = bans.querySelector('span');
+      bans.textContent = '';
+      if (bullet) bans.appendChild(bullet);
+      bans.appendChild(document.createTextNode(t('footer.bans', lang)));
+    }
+
     const terms = document.getElementById('footerTerms');
     if (terms) terms.textContent = t('footer.terms', lang);
 
@@ -242,7 +256,7 @@ import CornerOrnaments from "./ui/CornerOrnaments.astro";
     if (privacy) privacy.textContent = t('footer.privacy', lang);
 
     const copyright = document.getElementById('footerCopyright');
-    if (copyright) copyright.textContent = `© 2025 Mystovia. ${t('footer.allRightsReserved', lang)}`;
+    if (copyright) copyright.textContent = `© 2026 Mystovia. ${t('footer.allRightsReserved', lang)}`;
   }
 
   // Run on initial load and on View Transitions navigation

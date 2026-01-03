@@ -38,7 +38,8 @@
     "online": "Online",
     "latestDeaths": "Mortes",
     "guides": "Config. Bot",
-    "streams": "Ao Vivo"
+    "streams": "Ao Vivo",
+    "bans": "Banimentos"
   },
   "auth": {
     "login": "Entrar",
@@ -298,7 +299,8 @@
     "connectTwitch": "Conectar Twitch",
     "terms": "Termos",
     "privacy": "Privacidade",
-    "allRightsReserved": "Todos os direitos reservados. Não afiliado à CipSoft GmbH."
+    "allRightsReserved": "Todos os direitos reservados. Não afiliado à CipSoft GmbH.",
+    "bans": "Banimentos"
   },
   "languages": {
     "es": "Español",
@@ -530,6 +532,23 @@
         "fix": "Correção",
         "release": "Lançamento"
       }
+    },
+    "bans": {
+      "title": "Banimentos Ativos",
+      "subtitle": "Lista de jogadores banidos em Mystovia",
+      "lastUpdate": "Última atualização",
+      "bansCount": "Banimentos",
+      "player": "Jogador",
+      "type": "Tipo",
+      "reason": "Motivo",
+      "duration": "Duração",
+      "permanent": "Permanente",
+      "expired": "Expirado",
+      "loading": "Carregando banimentos...",
+      "error": "Erro ao carregar dados",
+      "empty": "Não há jogadores banidos atualmente",
+      "emptySubtext": "A comunidade está se comportando bem!",
+      "backHome": "Voltar ao início"
     }
   },
   "createCharacter": {
