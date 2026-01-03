@@ -1,0 +1,304 @@
+---
+import Layout from "@layouts/Layout.astro";
+import DiamondPattern from "../components/ui/DiamondPattern.astro";
+import GoldenLine from "../components/ui/GoldenLine.astro";
+import CornerOrnaments from "../components/ui/CornerOrnaments.astro";
+import { Ban, AlertTriangle, ShieldCheck, ChevronLeft, Clock, Infinity } from '@lucide/astro';
+---
+
+<Layout
+  title="Baneos Activos"
+  description="Lista de jugadores baneados en Mystovia. Consulta quién está baneado, por cuánto tiempo y el motivo."
+  keywords="baneos mystovia, bans tibia, jugadores baneados, sanciones servidor"
+>
+  <section class="page-container">
+    <!-- Header -->
+    <header class="text-center mb-8">
+      <div class="flex items-center justify-center gap-3 mb-2">
+        <div class="h-px w-16 bg-gradient-to-r from-transparent to-red-500/50"></div>
+        <Ban class="w-6 h-6 text-red-500/60" />
+        <div class="h-px w-16 bg-gradient-to-l from-transparent to-red-500/50"></div>
+      </div>
+      <h1 id="bansTitle" class="text-3xl md:text-4xl font-bold text-red-500 medieval-font mb-2">Baneos Activos</h1>
+      <p id="bansSubtitle" class="text-gray-400">Lista de jugadores sancionados en Mystovia</p>
+    </header>
+
+    <!-- Results Info -->
+    <div class="flex justify-between items-center mb-4 text-sm text-gray-400">
+      <span id="lastUpdate">Última actualización: --</span>
+      <span id="resultsCount">Baneos: --</span>
+    </div>
+
+    <!-- Table -->
+    <div class="relative rounded-xl overflow-hidden"
+         style="background: linear-gradient(to bottom, rgb(31 41 55 / 0.6), rgb(17 24 39 / 0.8)); border: 1px solid rgb(220 38 38 / 0.15);">
+      <GoldenLine position="top" color="red" opacity={0.3} />
+
+      <!-- Diamond pattern overlay -->
+      <DiamondPattern opacity={0.02} class="rounded-xl" />
+
+      <!-- Corner ornaments -->
+      <CornerOrnaments variant="curve" size="lg" opacity={0.15} color="red" offset={2} />
+
+      <!-- Table Header - Desktop -->
+      <div class="hidden sm:grid grid-cols-12 gap-2 px-4 py-3 text-sm text-red-500 font-semibold border-b border-red-600/20 bg-black/20 relative z-10">
+        <div class="col-span-1 text-center">#</div>
+        <div id="bansHeaderName" class="col-span-2">Jugador</div>
+        <div id="bansHeaderType" class="col-span-2">Tipo</div>
+        <div id="bansHeaderReason" class="col-span-4">Motivo</div>
+        <div id="bansHeaderDuration" class="col-span-3 text-right">Duración</div>
+      </div>
+      <!-- Table Header - Mobile -->
+      <div class="sm:hidden px-4 py-3 text-sm text-red-500 font-semibold border-b border-red-600/20 bg-black/20 flex justify-between relative z-10">
+        <span id="bansMobileName">Jugador</span>
+        <span id="bansMobileReason">Motivo</span>
+      </div>
+
+      <!-- Loading State -->
+      <div id="loadingState" class="py-12 text-center relative z-10">
+        <div class="w-8 h-8 border-2 border-red-500/30 border-t-red-500 rounded-full animate-spin mx-auto mb-3"></div>
+        <p id="bansLoadingText" class="text-gray-400">Cargando baneos...</p>
+      </div>
+
+      <!-- Error State -->
+      <div id="errorState" class="hidden py-12 text-center relative z-10">
+        <AlertTriangle class="w-12 h-12 mx-auto text-red-500/50 mb-3" />
+        <p id="bansErrorText" class="text-red-400">Error al cargar los datos</p>
+      </div>
+
+      <!-- Empty State -->
+      <div id="emptyState" class="hidden py-12 text-center relative z-10">
+        <ShieldCheck class="w-12 h-12 mx-auto text-green-500/50 mb-3" />
+        <p id="bansEmptyText" class="text-gray-400">No hay jugadores baneados actualmente</p>
+        <p id="bansEmptySubtext" class="text-gray-500 text-sm mt-1">¡La comunidad se está comportando bien!</p>
+      </div>
+
+      <!-- Bans List -->
+      <div id="bansList" class="hidden relative z-10">
+        <!-- Bans will be inserted here -->
+      </div>
+    </div>
+
+    <!-- Back button -->
+    <div class="mt-6 text-center">
+      <a href="/" class="inline-flex items-center gap-2 text-gray-400 hover:text-red-400 transition-colors">
+        <ChevronLeft class="w-4 h-4" />
+        <span id="bansBackHome">Volver al inicio</span>
+      </a>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  import { t, getStoredLanguage } from '../i18n/translations';
+
+  const API_URL = import.meta.env.PUBLIC_API_URL || 'http://localhost:3301';
+
+  interface Ban {
+    id: number;
+    type: string;
+    bannedName: string;
+    comment: string | null;
+    reason: string | null;
+    action: string | null;
+    statement: string | null;
+    expires: number;
+    isPermanent: boolean;
+    addedAt: number;
+    bannedBy: string;
+  }
+
+  interface BansResponse {
+    bans: Ban[];
+    total: number;
+    lastUpdate?: string;
+  }
+
+  function formatDate(timestamp: number): string {
+    const date = new Date(timestamp * 1000);
+    return date.toLocaleString('es-ES', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
+
+  function formatDuration(expires: number, isPermanent: boolean, lang: string): string {
+    if (isPermanent) {
+      return t('pages.bans.permanent', lang);
+    }
+
+    const now = Math.floor(Date.now() / 1000);
+    const remaining = expires - now;
+
+    if (remaining <= 0) {
+      return t('pages.bans.expired', lang);
+    }
+
+    const days = Math.floor(remaining / 86400);
+    const hours = Math.floor((remaining % 86400) / 3600);
+
+    if (days > 0) {
+      return `${days}d ${hours}h`;
+    }
+    return `${hours}h`;
+  }
+
+  async function loadBans() {
+    const loadingState = document.getElementById('loadingState');
+    const errorState = document.getElementById('errorState');
+    const emptyState = document.getElementById('emptyState');
+    const bansList = document.getElementById('bansList');
+    const lastUpdate = document.getElementById('lastUpdate');
+    const resultsCount = document.getElementById('resultsCount');
+    const lang = getStoredLanguage();
+
+    // Show loading
+    loadingState?.classList.remove('hidden');
+    errorState?.classList.add('hidden');
+    emptyState?.classList.add('hidden');
+    bansList?.classList.add('hidden');
+
+    try {
+      const response = await fetch(`${API_URL}/api/bans?limit=50`);
+
+      if (!response.ok) throw new Error('Failed to fetch');
+
+      const data: BansResponse = await response.json();
+
+      loadingState?.classList.add('hidden');
+
+      if (!data.bans || data.bans.length === 0) {
+        emptyState?.classList.remove('hidden');
+        return;
+      }
+
+      // Update info
+      if (lastUpdate) {
+        lastUpdate.textContent = `${t('pages.bans.lastUpdate', lang)}: ${data.lastUpdate || 'Ahora'}`;
+      }
+      if (resultsCount) {
+        resultsCount.textContent = `${t('pages.bans.bansCount', lang)}: ${data.total}`;
+      }
+
+      // Render bans
+      if (bansList) {
+        bansList.innerHTML = data.bans.map((ban, index) => {
+          const duration = formatDuration(ban.expires, ban.isPermanent, lang);
+          const isPermanent = ban.isPermanent;
+          // Usar comment como motivo principal, si no hay usar reason
+          const displayReason = ban.comment || ban.reason || 'No especificado';
+          const fullTooltip = [
+            ban.comment ? `Comentario: ${ban.comment}` : '',
+            ban.reason ? `Razón: ${ban.reason}` : '',
+            ban.action ? `Acción: ${ban.action}` : '',
+            ban.statement ? `Declaración: ${ban.statement}` : ''
+          ].filter(Boolean).join(' | ') || displayReason;
+
+          return `
+            <div class="block sm:grid sm:grid-cols-12 gap-2 px-4 py-3 border-b border-red-600/10 transition-all duration-300 hover:bg-red-500/5"
+                 style="background: linear-gradient(to right, rgba(220, 38, 38, ${0.03 - index * 0.0005}), transparent);">
+              <!-- Desktop Layout -->
+              <div class="hidden sm:block col-span-1 text-center text-gray-500">${index + 1}</div>
+              <div class="hidden sm:block col-span-2">
+                <span class="text-red-400 font-semibold truncate block">${ban.bannedName}</span>
+                <span class="text-gray-500 text-xs">${formatDate(ban.addedAt)}</span>
+              </div>
+              <div class="hidden sm:block col-span-2 text-gray-400 text-sm truncate">
+                <span class="px-2 py-0.5 rounded bg-red-500/10 text-red-400 text-xs">${ban.type}</span>
+              </div>
+              <div class="hidden sm:block col-span-4 text-gray-300 text-sm truncate" title="${fullTooltip}">${displayReason}</div>
+              <div class="hidden sm:flex col-span-3 justify-end items-center gap-2">
+                ${isPermanent
+                  ? '<span class="text-red-500 font-semibold flex items-center gap-1"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.178 8c5.096 0 5.096 8 0 8-5.095 0-7.133-8-12.739-8-4.781 0-4.781 8 0 8 5.606 0 7.644-8 12.74-8z"></path></svg>' + t('pages.bans.permanent', lang) + '</span>'
+                  : `<span class="text-yellow-500 flex items-center gap-1"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>${duration}</span>`
+                }
+              </div>
+
+              <!-- Mobile Layout -->
+              <div class="sm:hidden">
+                <div class="flex justify-between items-start mb-1">
+                  <span class="text-red-400 font-semibold">${ban.bannedName}</span>
+                  <span class="px-2 py-0.5 rounded bg-red-500/10 text-red-400 text-xs">${ban.type}</span>
+                </div>
+                <div class="text-gray-400 text-sm mb-1 truncate" title="${fullTooltip}">${displayReason}</div>
+                <div class="flex justify-between items-center text-xs text-gray-500">
+                  <span>${formatDate(ban.addedAt)}</span>
+                  <span class="${isPermanent ? 'text-red-500 font-semibold' : 'text-yellow-500'}">${duration}</span>
+                </div>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        bansList.classList.remove('hidden');
+      }
+
+    } catch (error) {
+      console.error('Error loading bans:', error);
+      loadingState?.classList.add('hidden');
+      errorState?.classList.remove('hidden');
+    }
+  }
+
+  function applyTranslations() {
+    const lang = getStoredLanguage();
+
+    const bansTitle = document.getElementById('bansTitle');
+    if (bansTitle) bansTitle.textContent = t('pages.bans.title', lang);
+
+    const bansSubtitle = document.getElementById('bansSubtitle');
+    if (bansSubtitle) bansSubtitle.textContent = t('pages.bans.subtitle', lang);
+
+    const bansHeaderName = document.getElementById('bansHeaderName');
+    if (bansHeaderName) bansHeaderName.textContent = t('pages.bans.player', lang);
+
+    const bansHeaderType = document.getElementById('bansHeaderType');
+    if (bansHeaderType) bansHeaderType.textContent = t('pages.bans.type', lang);
+
+    const bansHeaderReason = document.getElementById('bansHeaderReason');
+    if (bansHeaderReason) bansHeaderReason.textContent = t('pages.bans.reason', lang);
+
+    const bansHeaderDuration = document.getElementById('bansHeaderDuration');
+    if (bansHeaderDuration) bansHeaderDuration.textContent = t('pages.bans.duration', lang);
+
+    const bansMobileName = document.getElementById('bansMobileName');
+    if (bansMobileName) bansMobileName.textContent = t('pages.bans.player', lang);
+
+    const bansMobileReason = document.getElementById('bansMobileReason');
+    if (bansMobileReason) bansMobileReason.textContent = t('pages.bans.reason', lang);
+
+    const bansLoadingText = document.getElementById('bansLoadingText');
+    if (bansLoadingText) bansLoadingText.textContent = t('pages.bans.loading', lang);
+
+    const bansErrorText = document.getElementById('bansErrorText');
+    if (bansErrorText) bansErrorText.textContent = t('pages.bans.error', lang);
+
+    const bansEmptyText = document.getElementById('bansEmptyText');
+    if (bansEmptyText) bansEmptyText.textContent = t('pages.bans.empty', lang);
+
+    const bansEmptySubtext = document.getElementById('bansEmptySubtext');
+    if (bansEmptySubtext) bansEmptySubtext.textContent = t('pages.bans.emptySubtext', lang);
+
+    const bansBackHome = document.getElementById('bansBackHome');
+    if (bansBackHome) bansBackHome.textContent = t('pages.bans.backHome', lang);
+  }
+
+  // Initialize function
+  function init() {
+    loadBans();
+    applyTranslations();
+  }
+
+  // Run on initial page load
+  init();
+
+  // For View Transitions - prevent duplicate listeners using a unique key
+  const LISTENER_KEY = '__bansPageListener';
+  if (!(window as any)[LISTENER_KEY]) {
+    (window as any)[LISTENER_KEY] = true;
+    document.addEventListener('astro:page-load', init);
+  }
+</script>
