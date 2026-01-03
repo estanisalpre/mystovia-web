@@ -120,9 +120,13 @@ import { Search, Bot, Radio } from "@lucide/astro";
     });
   }
 
-  applyTranslations();
-  initSearchForm();
-  document.addEventListener('astro:page-load', applyTranslations);
+  function init() {
+    applyTranslations();
+    initSearchForm();
+  }
+
+  init();
+  document.addEventListener('astro:page-load', init);
 </script>
 
 <style>
