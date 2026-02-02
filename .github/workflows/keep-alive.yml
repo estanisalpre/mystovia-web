@@ -1,36 +1,35 @@
 # Keep Render services alive by pinging them periodically
 # This prevents the free tier from going to sleep after 15 minutes of inactivity
 
-name: Keep Render Alive
+# name: Keep Render Alive
 
-on:
-  schedule:
+# on:
+  # schedule:
     # Run every 14 minutes to prevent Render's 15-minute sleep timeout
-    - cron: '*/14 * * * *'
-  workflow_dispatch: # Allow manual trigger
+    # - cron: '*/14 * * * *'
+  # workflow_dispatch: # Allow manual trigger
 
-jobs:
-  ping-services:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Ping Backend API
-        run: |
-          echo "Pinging backend..."
-          response=$(curl -s -o /dev/null -w "%{http_code}" ${{ secrets.BACKEND_URL }}/api/server/stats || echo "000")
-          echo "Backend response: $response"
-          if [ "$response" = "000" ]; then
-            echo "Warning: Backend might be starting up..."
-          fi
+# jobs:
+  # ping-services:
+    # runs-on: ubuntu-latest
+    # steps:
+      # - name: Ping Backend API
+        # run: |
+          # echo "Pinging backend..."
+          # response=$(curl -s -o /dev/null -w "%{http_code}" ${{ secrets.BACKEND_URL }}/api/server/stats || echo "000")
+          # echo "Backend response: $response"
+          # if [ "$response" = "000" ]; then
+            # echo "Warning: Backend might be starting up..."
+          # fi
 
-      - name: Ping Frontend
-        run: |
-          echo "Pinging frontend..."
-          response=$(curl -s -o /dev/null -w "%{http_code}" ${{ secrets.FRONTEND_URL }} || echo "000")
-          echo "Frontend response: $response"
-          if [ "$response" = "000" ]; then
-            echo "Warning: Frontend might be starting up..."
-          fi
-
-      - name: Log timestamp
-        run: |
-          echo "Keep-alive ping completed at $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
+      # - name: Ping Frontend
+        # run: |
+          # echo "Pinging frontend..."
+          # response=$(curl -s -o /dev/null -w "%{http_code}" ${{ secrets.FRONTEND_URL }} || echo "000")
+          # echo "Frontend response: $response"
+          # if [ "$response" = "000" ]; then
+            # echo "Warning: Frontend might be starting up..."
+          # fi
+      # - name: Log timestamp
+        # run: |
+          # echo "Keep-alive ping completed at $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
